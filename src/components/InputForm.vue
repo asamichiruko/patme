@@ -26,7 +26,7 @@ function saveAchievement() {
 <template>
     <div class="form-group">
         <label for="inputText">達成内容</label>
-        <textarea v-model="inputText" placeholder="できたことを教えてください"></textarea>
+        <textarea id="inputText" v-model="inputText" placeholder="できたことを教えてください"></textarea>
     </div>
     <button @click="saveAchievement">記録する</button>
     <p v-if="message">{{ message }}</p>
