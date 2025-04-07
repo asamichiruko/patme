@@ -1,5 +1,5 @@
-# Vue 3 + Vite
+# Give yourself a pat on the back!
 
-This template should help get you started developing with Vue 3 in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+自己達成感を高めるための振り返りアプリです。達成したことを記録したり、記録を振り返って自由に評価したりすることができます。
 
-Learn more about IDE Support for Vue in the [Vue Docs Scaling up Guide](https://vuejs.org/guide/scaling-up/tooling.html#ide-support).
+達成記録の保存にはブラウザのLocalStorageを使用しています。達成記録は予告なく失われる場合があります。ご了承ください。
