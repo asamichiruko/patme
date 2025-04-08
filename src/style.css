@@ -19,25 +19,15 @@ h1 {
   padding: 20px;
   margin-bottom: 20px;
 }
-.form-group {
-  margin-bottom: 15px;
-}
-label {
-  display: block;
-  margin-bottom: 5px;
-  font-weight: bold;
-}
-textarea {
-  width: -webkit-fill-available;
-  width: -moz-available;
-  width: stretch;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  height: 100px;
-  font-size: 16px;
-}
 button {
+  all: unset;
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+.primary-button {
   background-color: #3498db;
   color: white;
   border: none;
@@ -47,68 +37,10 @@ button {
   font-size: 16px;
   transition: background-color 0.3s;
 }
-button:hover {
+.primary-button:hover {
   background-color: #2980b9;
-}
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-.achievement-item {
-  background-color: #f8f9fa;
-  border-left: 4px solid #3498db;
-  margin-bottom: 15px;
-  padding: 15px;
-  border-radius: 4px;
-}
-.achievement-content {
-  margin-bottom: 10px;
-  font-size: 18px;
-}
-.achievement-date {
-  color: #7f8c8d;
-  font-size: 14px;
-  margin-bottom: 10px;
-}
-.achievement-star {
-  font-weight: bold;
-  color: #27ae60;
-  margin-bottom: 10px;
-}
-.star-button {
-  background-color: #2ecc71;
-  font-size: 14px;
-  padding: 5px 10px;
-  margin-right: 5px;
-}
-.star-button:hover {
-  background-color: #27ae60;
-}
-.star-history {
-  margin-top: 10px;
-  font-size: 14px;
-  color: #7f8c8d;
 }
 .tab-container {
   display: flex;
   margin-bottom: 20px;
-}
-.tab {
-  padding: 10px 20px;
-  background-color: #f1f1f1;
-  cursor: pointer;
-  border-radius: 4px 4px 0 0;
-  margin-right: 5px;
-}
-.tab.active {
-  background-color: #3498db;
-  color: white;
-}
-.empty-state {
-  text-align: center;
-  padding: 40px 0;
-  color: #7f8c8d;
-}
-.achievement-actions {
-  display: flex;
 }

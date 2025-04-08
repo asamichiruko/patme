@@ -49,4 +49,56 @@ onMounted(() => {
   </ul>
 </template>
 
-<style scoped></style>
+<style scoped>
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+.achievement-item {
+  background-color: #f8f9fa;
+  border-left: 4px solid #3498db;
+  margin-bottom: 15px;
+  padding: 15px;
+  border-radius: 4px;
+}
+.achievement-content {
+  margin-bottom: 10px;
+  font-size: 18px;
+}
+.achievement-date {
+  color: #7f8c8d;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+.achievement-star {
+  font-weight: bold;
+  color: #27ae60;
+  margin-bottom: 10px;
+}
+.star-button {
+  background-color: #2ecc71;
+  color: white;
+  font-size: 14px;
+  padding: 5px 10px;
+  margin-right: 5px;
+  border: none;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+}
+.star-button:hover {
+  background-color: #27ae60;
+}
+.star-history {
+  margin-top: 10px;
+  font-size: 14px;
+  color: #333;
+}
+.empty-state {
+  text-align: center;
+  padding: 40px 0;
+  color: #7f8c8d;
+}
+.achievement-actions {
+  display: flex;
+}
+</style>

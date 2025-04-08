@@ -49,7 +49,7 @@ async function importRecords() {
     現在ブラウザにあるデータをJSON形式のファイルとしてダウンロードします。保存したファイルを使って後からデータを復元できます。
   </p>
   <p>
-    <button @click="exportRecords">現在のデータをダウンロードする</button>
+    <button class="primary-button" @click="exportRecords">現在のデータをダウンロードする</button>
   </p>
   <p>{{ exportMessage }}</p>
   <p>
@@ -57,7 +57,9 @@ async function importRecords() {
   </p>
   <p><input type="file" @change="onFileSelected" accept=".json" /></p>
   <p>
-    <button @click="importRecords">ファイルをアップロードして復元する</button>
+    <button class="primary-button" @click="importRecords">
+      ファイルをアップロードして復元する
+    </button>
   </p>
   <p>{{ importMessage }}</p>
 </template>

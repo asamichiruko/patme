@@ -32,8 +32,27 @@ function saveAchievement() {
       placeholder="できたことを教えてください"
     ></textarea>
   </div>
-  <button @click="saveAchievement">記録する</button>
+  <button class="primary-button" @click="saveAchievement">記録する</button>
   <p v-if="message">{{ message }}</p>
 </template>
 
-<style scoped></style>
+<style scoped>
+.form-group {
+  margin-bottom: 15px;
+}
+label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+textarea {
+  width: -webkit-fill-available;
+  width: -moz-available;
+  width: stretch;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  height: 100px;
+  font-size: 16px;
+}
+</style>
