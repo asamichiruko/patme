@@ -9,33 +9,31 @@ import TabNavigation from "./components/TabNavigation.vue"
 
 const recordModel = new RecordModel(new Storage())
 const tabs = [
-    { key: "Input", label: "入力する", component: InputForm },
-    { key: "Records", label: "リスト", component: RecordList },
-    { key: "Settings", label: "設定", component: SettingsForm }
+  { key: "Input", label: "入力する", component: InputForm },
+  { key: "Records", label: "リスト", component: RecordList },
+  { key: "Settings", label: "設定", component: SettingsForm },
 ]
 const currentTabKey = ref("Input")
 const currentTabContent = computed(() => {
-    const activeTab = tabs.find((tab) => tab.key === currentTabKey.value)
-    if (activeTab.component) {
-        return activeTab.component
-    } else {
-        return InputForm
-    }
+  const activeTab = tabs.find((tab) => tab.key === currentTabKey.value)
+  if (activeTab.component) {
+    return activeTab.component
+  } else {
+    return InputForm
+  }
 })
-
 </script>
 
 <template>
-    <TabNavigation :tabs="tabs" v-model:currentTab="currentTabKey" />
+  <TabNavigation :tabs="tabs" v-model:currentTab="currentTabKey" />
 
-    <div class="tab-content">
-        <div class="container">
-            <keep-alive>
-                <component :is="currentTabContent" :record-model="recordModel" />
-            </keep-alive>
-        </div>
+  <div class="tab-content">
+    <div class="container">
+      <keep-alive>
+        <component :is="currentTabContent" :record-model="recordModel" />
+      </keep-alive>
     </div>
+  </div>
 </template>
 
-<style scoped>
-</style>
+<style scoped></style>
