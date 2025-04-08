@@ -40,7 +40,3 @@ button {
 .primary-button:hover {
   background-color: #2980b9;
 }
-.tab-container {
-  display: flex;
-  margin-bottom: 20px;
-}

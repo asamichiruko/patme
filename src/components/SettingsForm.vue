@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from "vue"
+import { ref, useTemplateRef } from "vue"
 
 const props = defineProps({
   recordModel: Object,
@@ -7,61 +7,84 @@ const props = defineProps({
 
 const exportMessage = ref("")
 const importMessage = ref("")
-const file = ref(null)
-
-function onFileSelected(e) {
-  file.value = e.target.files[0]
-}
+const fileInput = useTemplateRef("openfile")
 
 function exportRecords() {
   const jsonString = props.recordModel.exportAsJsonString()
   const blob = new Blob([jsonString], { type: "application/json" })
   const url = URL.createObjectURL(blob)
-  const link = document.createElement("a")
-  link.href = url
   const dateString = new Date().toLocaleDateString("sv-SE")
-  link.download = `records-${dateString}.json`
-  document.body.appendChild(link)
-  link.click()
-  document.body.removeChild(link)
+
+  const a = Object.assign(document.createElement("a"), {
+    href: url,
+    download: `records-${dateString}.json`,
+  })
+  a.click()
   URL.revokeObjectURL(url)
 
   exportMessage.value = "データをダウンロードしました"
 }
 
-async function importRecords() {
-  if (!file.value || file.value.type !== "application/json") {
+function selectFile() {
+  if (fileInput.value) {
+    fileInput.value.click()
+  }
+}
+
+async function importRecords(e) {
+  const file = e.target.files[0]
+  if (!file) {
+    return
+  }
+  if (file.type !== "application/json") {
     importMessage.value = ".json形式のファイルを選択してください"
     return
   }
-  const jsonString = await file.value.text()
-  const result = props.recordModel.importFromJsonString(jsonString)
-  if (result) {
-    importMessage.value = "データを復元しました"
-  } else {
+  try {
+    const jsonString = await file.text()
+    const result = props.recordModel.importFromJsonString(jsonString)
+    if (result) {
+      importMessage.value = "データを復元しました"
+    } else {
+      throw new Error("Import Failed Error")
+    }
+  } catch {
     importMessage.value = `データの復元に失敗しました。選択したデータの内容を確認し、時間をおいて再度お試しください`
   }
 }
 </script>
 
 <template>
-  <p>
-    現在ブラウザにあるデータをJSON形式のファイルとしてダウンロードします。保存したファイルを使って後からデータを復元できます。
-  </p>
-  <p>
-    <button class="primary-button" @click="exportRecords">現在のデータをダウンロードする</button>
-  </p>
-  <p>{{ exportMessage }}</p>
-  <p>
-    保存したJSON形式のファイルをアップロードし、ブラウザにデータを復元します。いまブラウザに残っているデータは上書きせず、差分のデータだけを追加します。
-  </p>
-  <p><input type="file" @change="onFileSelected" accept=".json" /></p>
-  <p>
-    <button class="primary-button" @click="importRecords">
-      ファイルをアップロードして復元する
-    </button>
-  </p>
-  <p>{{ importMessage }}</p>
+  <div class="settings-form">
+    <section>
+      <p>
+        記録を JSON
+        ファイルとしてエクスポートします。エクスポートファイルは記録の復元に利用できます。
+      </p>
+      <p>
+        <button class="primary-button" @click="exportRecords">データをエクスポートする</button>
+      </p>
+      <p>{{ exportMessage }}</p>
+    </section>
+
+    <section>
+      <p>
+        保存した JSON
+        ファイルをアップロードして記録を復元します。差分の記録だけを追加し、既存の記録は削除しません。
+      </p>
+      <button class="primary-button" @click="selectFile">ファイルをアップロードして復元する</button>
+      <input ref="openfile" type="file" accept=".json" @change="importRecords" />
+      <p>{{ importMessage }}</p>
+    </section>
+  </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+input[type="file"] {
+  display: none;
+}
+
+section {
+  margin-bottom: 40px;
+}
+</style>
