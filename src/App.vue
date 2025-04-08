@@ -1,26 +1,38 @@
 <script setup>
-import { ref } from "vue"
+import { ref, computed } from "vue"
 import { RecordModel } from "./models/RecordModel.js"
 import { Storage } from "./models/Storage.js"
 import InputForm from "./components/InputForm.vue"
 import RecordList from "./components/RecordList.vue"
 import SettingsForm from "./components/SettingsForm.vue"
+import TabNavigation from "./components/TabNavigation.vue"
 
 const recordModel = new RecordModel(new Storage())
-const currentView = ref("InputForm")
+const tabs = [
+    { key: "Input", label: "入力する", component: InputForm },
+    { key: "Records", label: "リスト", component: RecordList },
+    { key: "Settings", label: "設定", component: SettingsForm }
+]
+const currentTabKey = ref("Input")
+const currentTabContent = computed(() => {
+    const activeTab = tabs.find((tab) => tab.key === currentTabKey.value)
+    if (activeTab.component) {
+        return activeTab.component
+    } else {
+        return InputForm
+    }
+})
+
 </script>
 
 <template>
-    <div class="tab-container">
-        <div class="tab" :class="{ active: currentView === 'InputForm' }" @click="currentView = 'InputForm'">入力する</div>
-        <div class="tab" :class="{ active: currentView === 'RecordList' }" @click="currentView = 'RecordList'">リスト</div>
-        <div class="tab" :class="{ active: currentView === 'SettingsForm' }" @click="currentView = 'SettingsForm'">設定</div>
-    </div>
+    <TabNavigation :tabs="tabs" v-model:currentTab="currentTabKey" />
+
     <div class="tab-content">
         <div class="container">
-            <InputForm :record-model="recordModel" v-if="currentView === 'InputForm'" />
-            <RecordList :record-model="recordModel" v-if="currentView === 'RecordList'" />
-            <SettingsForm :record-model="recordModel" v-if="currentView === 'SettingsForm'" />
+            <keep-alive>
+                <component :is="currentTabContent" :record-model="recordModel" />
+            </keep-alive>
         </div>
     </div>
 </template>
