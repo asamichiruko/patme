@@ -9,7 +9,7 @@ const exportMessage = ref("")
 const importMessage = ref("")
 const fileInput = useTemplateRef("openfile")
 
-function exportRecords() {
+const exportRecords = () => {
   const jsonString = props.recordModel.exportAsJsonString()
   const blob = new Blob([jsonString], { type: "application/json" })
   const url = URL.createObjectURL(blob)
@@ -25,13 +25,13 @@ function exportRecords() {
   exportMessage.value = "データをダウンロードしました"
 }
 
-function selectFile() {
+const selectFile = () => {
   if (fileInput.value) {
     fileInput.value.click()
   }
 }
 
-async function importRecords(e) {
+const importRecords = async (e) => {
   const file = e.target.files[0]
   if (!file) {
     return

@@ -7,7 +7,7 @@ const props = defineProps({
 
 const message = ref("")
 const inputText = ref("")
-function saveAchievement() {
+const saveAchievement = () => {
   const content = inputText.value.trim()
   if (!content) {
     message.value = "できたことを入力してください"
