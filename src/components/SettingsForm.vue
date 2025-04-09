@@ -83,8 +83,9 @@ const importRecords = async (e) => {
 input[type="file"] {
   display: none;
 }
-
-section {
-  margin-bottom: 40px;
+.settings-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 </style>
