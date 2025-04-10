@@ -1,24 +1,26 @@
 <script setup>
 import { ref } from "vue"
+import { useNotification } from "../composables/useNotification.js"
 
 const props = defineProps({
   recordModel: Object,
 })
 
-const message = ref("")
+const { trigger } = useNotification()
 const inputText = ref("")
+
 const saveAchievement = () => {
   const content = inputText.value.trim()
   if (!content) {
-    message.value = "できたことを入力してください"
+    trigger("できたことを入力してください", "error")
     return
   }
   const result = props.recordModel.addAchievement({ content })
   if (result) {
     inputText.value = ""
-    message.value = "できたことを記録しました！"
+    trigger("できたことを記録しました！", "success")
   } else {
-    message.value = "記録に失敗しました。時間をおいて再度お試しください"
+    trigger("記録に失敗しました。時間をおいて再度お試しください", "error")
   }
 }
 </script>
@@ -33,7 +35,6 @@ const saveAchievement = () => {
     ></textarea>
   </div>
   <button class="primary-button" @click="saveAchievement">記録する</button>
-  <p v-if="message">{{ message }}</p>
 </template>
 
 <style scoped>

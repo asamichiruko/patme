@@ -1,12 +1,12 @@
 <script setup>
 import { ref, useTemplateRef } from "vue"
+import { useNotification } from "../composables/useNotification.js"
 
 const props = defineProps({
   recordModel: Object,
 })
 
-const exportMessage = ref("")
-const importMessage = ref("")
+const { trigger } = useNotification()
 const fileInput = useTemplateRef("openfile")
 
 const exportRecords = () => {
@@ -22,7 +22,7 @@ const exportRecords = () => {
   a.click()
   URL.revokeObjectURL(url)
 
-  exportMessage.value = "データをダウンロードしました"
+  trigger("データをエクスポートしました", "success")
 }
 
 const selectFile = () => {
@@ -37,19 +37,22 @@ const importRecords = async (e) => {
     return
   }
   if (file.type !== "application/json") {
-    importMessage.value = ".json形式のファイルを選択してください"
+    trigger(".json 形式のファイルを選択してください", "error")
     return
   }
   try {
     const jsonString = await file.text()
     const result = props.recordModel.importFromJsonString(jsonString)
     if (result) {
-      importMessage.value = "データを復元しました"
+      trigger("データを復元しました", "success")
     } else {
       throw new Error("Import Failed Error")
     }
   } catch {
-    importMessage.value = `データの復元に失敗しました。選択したデータの内容を確認し、時間をおいて再度お試しください`
+    trigger(
+      `データの復元に失敗しました。選択したデータの内容を確認し、時間をおいて再度お試しください`,
+      "error",
+    )
   }
 }
 </script>
@@ -64,7 +67,6 @@ const importRecords = async (e) => {
       <p>
         <button class="primary-button" @click="exportRecords">データをエクスポートする</button>
       </p>
-      <p>{{ exportMessage }}</p>
     </section>
 
     <section>
@@ -74,7 +76,6 @@ const importRecords = async (e) => {
       </p>
       <button class="primary-button" @click="selectFile">ファイルをアップロードして復元する</button>
       <input ref="openfile" type="file" accept=".json" @change="importRecords" />
-      <p>{{ importMessage }}</p>
     </section>
   </div>
 </template>

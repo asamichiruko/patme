@@ -6,6 +6,7 @@ import InputForm from "./components/InputForm.vue"
 import RecordList from "./components/RecordList.vue"
 import SettingsForm from "./components/SettingsForm.vue"
 import TabNavigation from "./components/TabNavigation.vue"
+import NotificationBar from "./components/NotificationBar.vue"
 
 const recordModel = new RecordModel(new Storage())
 const tabs = [
@@ -25,6 +26,7 @@ const currentTabContent = computed(() => {
 </script>
 
 <template>
+  <NotificationBar />
   <TabNavigation :tabs="tabs" v-model:currentTab="currentTabKey" />
 
   <div class="tab-content">
