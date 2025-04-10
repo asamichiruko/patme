@@ -1,5 +1,5 @@
 <script setup>
-import { useNotification } from "../composables/useNotification.js"
+import { useNotification } from "@/composables/useNotification.js"
 
 const { notification } = useNotification()
 </script>

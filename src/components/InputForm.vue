@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from "vue"
-import { useNotification } from "../composables/useNotification.js"
+import { useNotification } from "@/composables/useNotification.js"
 
 const props = defineProps({
   recordModel: Object,
