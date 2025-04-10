@@ -1,14 +1,14 @@
 <script setup>
 import { ref, computed } from "vue"
 import { RecordModel } from "./models/RecordModel.js"
-import { Storage } from "./models/Storage.js"
+import { LocalStorageAdapter } from "./models/LocalStorageAdapter.js"
 import InputForm from "./components/InputForm.vue"
 import RecordList from "./components/RecordList.vue"
 import SettingsForm from "./components/SettingsForm.vue"
 import TabNavigation from "./components/TabNavigation.vue"
 import NotificationBar from "./components/NotificationBar.vue"
 
-const recordModel = new RecordModel(new Storage())
+const recordModel = new RecordModel(new LocalStorageAdapter())
 const tabs = [
   { key: "Input", label: "入力する", component: InputForm },
   { key: "Records", label: "リスト", component: RecordList },

@@ -13,8 +13,12 @@ export class RecordModel {
     this.listeners.forEach((listener) => listener(records))
   }
 
+  generateId() {
+    return crypto.randomUUID()
+  }
+
   addAchievement({ content }) {
-    const id = this.storage.generateId()
+    const id = this.generateId()
     const date = new Date()
     const result = this.storage.addAchievement({ id, content, date })
     if (result) {
@@ -24,7 +28,7 @@ export class RecordModel {
   }
 
   addStar({ achievementId, content }) {
-    const id = this.storage.generateId()
+    const id = this.generateId()
     const date = new Date()
     const result = this.storage.addStar({ id, achievementId, content, date })
     if (result) {

@@ -1,4 +1,4 @@
-export class Storage {
+export class LocalStorageAdapter {
   constructor() {}
 
   loadAchievements() {
@@ -57,15 +57,6 @@ export class Storage {
     return stars
   }
 
-  generateId() {
-    return crypto.randomUUID()
-  }
-
-  isValidId(id) {
-    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
-    return id && uuidRegex.test(id)
-  }
-
   addAchievements(achievements) {
     const storageAchievements = this.loadAchievements()
     const achievementIds = new Set(storageAchievements.map((a) => a.id))
@@ -99,6 +90,11 @@ export class Storage {
       storageStars.push(star)
     })
     this.saveStars(storageStars)
+  }
+
+  isValidId(id) {
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+    return id && uuidRegex.test(id)
   }
 
   isValidAchievement({ id, content, date }) {
