@@ -88,8 +88,8 @@ export class RecordModel {
       return a
     })
 
-    this.storage.addAchievements(achievements)
-    this.storage.addStars(stars)
+    this.storage.importAchievements(achievements)
+    this.storage.importStars(stars)
     this.notify()
     return true
   }

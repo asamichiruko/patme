@@ -57,7 +57,7 @@ export class LocalStorageAdapter {
     return stars
   }
 
-  addAchievements(achievements) {
+  importAchievements(achievements) {
     const storageAchievements = this.loadAchievements()
     const achievementIds = new Set(storageAchievements.map((a) => a.id))
     achievements.forEach((a) => {
@@ -71,7 +71,7 @@ export class LocalStorageAdapter {
     this.saveAchievements(storageAchievements)
   }
 
-  addStars(stars) {
+  importStars(stars) {
     const achievements = this.loadAchievements()
     const storageStars = this.loadStars()
     const starIds = new Set(storageStars.map((a) => a.id))
