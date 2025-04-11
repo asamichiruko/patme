@@ -1,5 +1,5 @@
 <script setup>
-import { ref, useTemplateRef } from "vue"
+import { useTemplateRef } from "vue"
 import { useNotification } from "@/composables/useNotification.js"
 
 const props = defineProps({

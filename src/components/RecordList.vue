@@ -106,6 +106,11 @@ ul {
 .star-button:hover {
   background-color: #27ae60;
 }
+.star-button:focus-visible {
+  outline: 2px solid #27ae60;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
 .star-history {
   margin-top: 10px;
   font-size: 14px;

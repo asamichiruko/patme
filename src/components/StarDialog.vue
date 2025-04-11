@@ -2,7 +2,15 @@
   <dialog ref="dialogEl" @close="onClose">
     <form @submit.prevent="submit">
       <label for="text">コメント</label>
-      <textarea class="text" id="text" v-model="text" required></textarea>
+      <textarea
+        class="text"
+        name="text"
+        @keydown.ctrl.enter="submit"
+        ref="textareaRef"
+        v-model="text"
+        placeholder="どのような点がよかったですか？"
+        required
+      ></textarea>
       <div class="actions">
         <button class="primary-button" type="submit">記録する</button>
         <button class="primary-button" type="button" @click="cancel">キャンセル</button>
@@ -12,7 +20,7 @@
 </template>
 
 <script setup>
-import { ref, watch } from "vue"
+import { nextTick, ref, watch } from "vue"
 
 const props = defineProps({
   show: Boolean,
@@ -22,12 +30,14 @@ const emit = defineEmits(["submit", "cancel"])
 
 const dialogEl = ref(null)
 const text = ref("")
+const textareaRef = ref("")
 
 watch(
   () => props.show,
   (value) => {
     if (value) {
       text.value = ""
+      nextTick(() => textareaRef.value.focus())
       dialogEl.value?.showModal()
     } else {
       dialogEl.value?.close()

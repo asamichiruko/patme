@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from "vue"
+import { nextTick, ref, onActivated } from "vue"
 import { useNotification } from "@/composables/useNotification.js"
 
 const props = defineProps({
@@ -7,40 +7,44 @@ const props = defineProps({
 })
 
 const { trigger } = useNotification()
-const inputText = ref("")
+const text = ref("")
+const textareaRef = ref(null)
 
-const saveAchievement = () => {
-  const content = inputText.value.trim()
+const submit = () => {
+  const content = text.value.trim()
   if (!content) {
     trigger("できたことを入力してください", "error")
     return
   }
   const result = props.recordModel.addAchievement({ content })
   if (result) {
-    inputText.value = ""
+    text.value = ""
     trigger("できたことを記録しました！", "success")
   } else {
     trigger("記録に失敗しました。時間をおいて再度お試しください", "error")
   }
 }
+
+onActivated(() => {
+  nextTick(() => textareaRef.value?.focus())
+})
 </script>
 
 <template>
-  <div class="form-group">
-    <label for="inputText">達成内容</label>
+  <form @submit.prevent="submit">
+    <label for="text">達成内容</label>
     <textarea
-      id="inputText"
-      v-model="inputText"
+      ref="textareaRef"
+      v-model="text"
+      @keydown.ctrl.enter="submit"
+      name="text"
       placeholder="できたことを教えてください"
     ></textarea>
-  </div>
-  <button class="primary-button" @click="saveAchievement">記録する</button>
+    <button class="primary-button" type="submit">記録する</button>
+  </form>
 </template>
 
 <style scoped>
-.form-group {
-  margin-bottom: 15px;
-}
 label {
   display: block;
   margin-bottom: 5px;
@@ -55,5 +59,6 @@ textarea {
   border-radius: 4px;
   height: 100px;
   font-size: 16px;
+  margin-bottom: 1em;
 }
 </style>

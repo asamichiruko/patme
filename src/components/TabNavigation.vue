@@ -36,4 +36,9 @@ defineEmits(["update:currentTab"])
   background-color: #3498db;
   color: #fff;
 }
+.tab-button:focus-visible {
+  outline: 2px solid #4c9ffe;
+  outline-offset: 2px;
+  border-radius: 4px 4px 0 0;
+}
 </style>
