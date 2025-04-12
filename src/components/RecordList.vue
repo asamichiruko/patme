@@ -1,27 +1,23 @@
 <script setup>
 import { onMounted, ref } from "vue"
-import StarDialog from "@/components/StarDialog.vue"
+import PromptDialog from "@/components/PromptDialog.vue"
 
 const props = defineProps({
   recordModel: Object,
 })
 
 const records = ref([])
-const showDialog = ref(false)
-const selectedId = ref(null)
+const showPrompt = ref(false)
+const dialogRequested = ref(null)
 
-const openStarDialog = (id) => {
-  selectedId.value = id
-  showDialog.value = true
+const openDialog = (e) => {
+  dialogRequested.value = e.target
+  showPrompt.value = true
 }
 
-const handleSubmit = ({ achievementId, content }) => {
+const handleSubmit = (content) => {
+  const achievementId = dialogRequested.value?.getAttribute("achievement-id")
   props.recordModel.addStar({ achievementId, content })
-  showDialog.value = false
-}
-
-const handleCancel = () => {
-  showDialog.value = false
 }
 
 onMounted(() => {
@@ -42,11 +38,7 @@ onMounted(() => {
       <div class="achievement-content">{{ record.achievement.content }}</div>
       <div class="achievement-date">記録日時: {{ record.achievement.date.toLocaleString() }}</div>
       <div class="achievement-actions">
-        <button
-          class="star-button"
-          :achievement-id="record.achievement.id"
-          @click="openStarDialog(record.achievement.id)"
-        >
+        <button class="star-button" :achievement-id="record.achievement.id" @click="openDialog">
           ほめる
         </button>
       </div>
@@ -59,11 +51,14 @@ onMounted(() => {
     </li>
   </ul>
 
-  <StarDialog
-    :show="showDialog"
-    :achievementId="selectedId"
+  <PromptDialog
+    :show="showPrompt"
+    @update:show="showPrompt = $event"
+    :message="'コメント'"
+    :submittext="'記録する'"
+    :canceltext="'キャンセル'"
+    :placeholder="'どんな点がよかったですか？'"
     @submit="handleSubmit"
-    @cancel="handleCancel"
   />
 </template>
 
