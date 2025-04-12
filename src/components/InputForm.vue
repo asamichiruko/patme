@@ -32,12 +32,12 @@ onActivated(() => {
 
 <template>
   <form @submit.prevent="submit">
-    <label for="text">達成内容</label>
+    <label for="achievement-text">達成内容</label>
     <textarea
       ref="textareaRef"
       v-model="text"
       @keydown.ctrl.enter="submit"
-      name="text"
+      id="achievement-text"
       placeholder="できたことを教えてください"
     ></textarea>
     <button class="primary-button" type="submit">記録する</button>
