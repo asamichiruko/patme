@@ -54,29 +54,18 @@ export class RecordModel {
     return records
   }
 
-  exportAsJsonString() {
+  exportAsJson() {
     const achievements = this.storage.getAchievements()
     const stars = this.storage.getStars()
     const exportObject = { achievements, stars }
-    return JSON.stringify(exportObject)
+    return exportObject
   }
 
-  importFromJsonString(jsonString) {
-    let parsedData
-    try {
-      parsedData = JSON.parse(jsonString)
-    } catch (err) {
-      if (err instanceof SyntaxError) {
-        console.warn(`JSON Syntax Error: ${err.message}`)
-        return false
-      } else {
-        throw err
-      }
-    }
-    let achievements = parsedData["achievements"]
-    let stars = parsedData["stars"]
+  importFromJson(json) {
+    let achievements = json["achievements"]
+    let stars = json["stars"]
     if (!Array.isArray(achievements) || !Array.isArray(stars)) {
-      console.warn(`Invalid data type: ${parsedData}`)
+      console.warn(`Invalid data type: ${json}`)
       return false
     }
     achievements.map((a) => {

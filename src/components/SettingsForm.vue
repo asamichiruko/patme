@@ -10,8 +10,8 @@ const { trigger } = useNotification()
 const fileInput = useTemplateRef("openfile")
 
 const exportRecords = () => {
-  const jsonString = props.recordModel.exportAsJsonString()
-  const blob = new Blob([jsonString], { type: "application/json" })
+  const json = props.recordModel.exportAsJson()
+  const blob = new Blob([JSON.stringify(json)], { type: "application/json" })
   const url = URL.createObjectURL(blob)
   const dateString = new Date().toLocaleDateString("sv-SE")
 
@@ -42,7 +42,18 @@ const importRecords = async (e) => {
   }
   try {
     const jsonString = await file.text()
-    const result = props.recordModel.importFromJsonString(jsonString)
+    let json
+    try {
+      json = JSON.parse(jsonString)
+    } catch (err) {
+      if (err instanceof SyntaxError) {
+        console.warn(`JSON Syntax Error: ${err.message}`)
+        return false
+      } else {
+        throw err
+      }
+    }
+    const result = props.recordModel.importFromJson(json)
     if (result) {
       trigger("データを復元しました", "success")
     } else {
