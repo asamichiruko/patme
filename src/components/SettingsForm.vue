@@ -35,31 +35,18 @@ const importRecords = async (e) => {
   const file = e.target.files[0]
   if (!file) {
     return
-  }
-  if (file.type !== "application/json") {
+  } else if (file.type !== "application/json") {
     trigger(".json 形式のファイルを選択してください", "error")
     return
   }
   try {
     const jsonString = await file.text()
-    let json
-    try {
-      json = JSON.parse(jsonString)
-    } catch (err) {
-      if (err instanceof SyntaxError) {
-        console.warn(`JSON Syntax Error: ${err.message}`)
-        return false
-      } else {
-        throw err
-      }
-    }
-    const result = props.recordModel.importFromJson(json)
-    if (result) {
-      trigger("データを復元しました", "success")
-    } else {
-      throw new Error("Import Failed Error")
-    }
-  } catch {
+    const json = JSON.parse(jsonString)
+    props.recordModel.importFromJson(json)
+
+    trigger("データを復元しました", "success")
+  } catch (err) {
+    console.warn(err)
     trigger(
       `データの復元に失敗しました。選択したデータの内容を確認し、時間をおいて再度お試しください`,
       "error",

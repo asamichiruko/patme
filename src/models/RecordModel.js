@@ -20,21 +20,29 @@ export class RecordModel {
   addAchievement({ content }) {
     const id = this.generateId()
     const date = new Date()
-    const result = this.storage.addAchievement({ id, content, date })
-    if (result) {
-      this.notify()
+    const achievement = { id, content, date }
+
+    if (!this.isValidAchievement(achievement)) {
+      return false
     }
-    return result
+
+    this.storage.addAchievement({ id, content, date })
+    this.notify()
+    return true
   }
 
   addStar({ achievementId, content }) {
     const id = this.generateId()
     const date = new Date()
-    const result = this.storage.addStar({ id, achievementId, content, date })
-    if (result) {
-      this.notify()
+    const star = { id, achievementId, content, date }
+
+    if (!this.isValidAchievement(star)) {
+      return false
     }
-    return result
+
+    this.storage.addStar(star)
+    this.notify()
+    return true
   }
 
   getRecords() {
@@ -62,24 +70,96 @@ export class RecordModel {
   }
 
   importFromJson(json) {
-    let achievements = json["achievements"]
-    let stars = json["stars"]
-    if (!Array.isArray(achievements) || !Array.isArray(stars)) {
-      console.warn(`Invalid data type: ${json}`)
-      return false
+    let newAchievements = json["achievements"]
+    let newStars = json["stars"]
+
+    if (!Array.isArray(newAchievements) || !Array.isArray(newStars)) {
+      throw new SyntaxError(`Invalid data type: ${json}`)
     }
-    achievements.map((a) => {
-      a.date = new Date(a.date)
-      return a
-    })
-    stars.map((a) => {
-      a.date = new Date(a.date)
-      return a
-    })
+
+    const existingAchievementIds = new Set(this.storage.getAchievements().map((a) => a.id))
+    const existingStarIds = new Set(this.storage.getStars().map((a) => a.id))
+
+    const { validated: achievements, idSet: allAchievementIds } = this.validateAchievements(
+      newAchievements,
+      existingAchievementIds,
+    )
+
+    const { validated: stars } = this.validateStars(newStars, existingStarIds, allAchievementIds)
 
     this.storage.importAchievements(achievements)
     this.storage.importStars(stars)
     this.notify()
-    return true
+  }
+
+  validateAchievements(jsonArray, existingIds = new Set()) {
+    const validated = []
+
+    for (const a of jsonArray) {
+      const achievement = {
+        id: a.id,
+        content: a.content,
+        date: new Date(a.date),
+      }
+
+      if (existingIds.has(achievement.id) || !this.isValidAchievement(achievement)) {
+        continue
+      }
+
+      validated.push(achievement)
+      existingIds.add(achievement.id)
+    }
+
+    return { validated, idSet: existingIds }
+  }
+
+  validateStars(jsonArray, existingIds = new Set(), validAchievementIds) {
+    const validated = []
+
+    for (const a of jsonArray) {
+      const star = {
+        id: a.id,
+        achievementId: a.achievementId,
+        content: a.content,
+        date: new Date(a.date),
+      }
+
+      if (
+        existingIds.has(star.id) ||
+        !validAchievementIds.has(star.achievementId) ||
+        !this.isValidStar(star)
+      ) {
+        continue
+      }
+
+      validated.push(star)
+      existingIds.add(star.id)
+    }
+
+    return { validated }
+  }
+
+  isValidId(id) {
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+    return id && uuidRegex.test(id)
+  }
+
+  isValidAchievement({ id, content, date }) {
+    let isValid = true
+    isValid = isValid && this.isValidId(id)
+    isValid = isValid && content && content !== ""
+    isValid = isValid && new Date(date).toString() !== "Invalid Date"
+
+    return isValid
+  }
+
+  isValidStar({ id, achievementId, content, date }) {
+    let isValid = true
+    isValid = isValid && this.isValidId(id)
+    isValid = isValid && this.isValidId(achievementId)
+    isValid = isValid && typeof content == "string"
+    isValid = isValid && new Date(date).toString() !== "Invalid Date"
+
+    return isValid
   }
 }
