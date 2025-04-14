@@ -25,12 +25,6 @@ const exportRecords = () => {
   trigger("データをエクスポートしました", "success")
 }
 
-const selectFile = () => {
-  if (fileInput.value) {
-    fileInput.value.click()
-  }
-}
-
 const importRecords = async (e) => {
   const file = e.target.files[0]
   if (!file) {
@@ -45,13 +39,16 @@ const importRecords = async (e) => {
     props.recordModel.importFromJson(json)
 
     trigger("データを復元しました", "success")
-  } catch (err) {
-    console.warn(err)
+  } catch {
     trigger(
       `データの復元に失敗しました。選択したデータの内容を確認し、時間をおいて再度お試しください`,
       "error",
     )
   }
+}
+
+const selectFile = () => {
+  fileInput.value?.click()
 }
 </script>
 
@@ -63,7 +60,9 @@ const importRecords = async (e) => {
         ファイルとしてエクスポートします。エクスポートファイルは記録の復元に利用できます。
       </p>
       <p>
-        <button class="primary-button" @click="exportRecords">データをエクスポートする</button>
+        <button class="primary-button" data-testid="export-button" @click="exportRecords">
+          データをエクスポートする
+        </button>
       </p>
     </section>
 
@@ -72,8 +71,16 @@ const importRecords = async (e) => {
         保存した JSON
         ファイルをアップロードして記録を復元します。差分の記録だけを追加し、既存の記録は削除しません。
       </p>
-      <button class="primary-button" @click="selectFile">ファイルをアップロードして復元する</button>
-      <input ref="openfile" type="file" accept=".json" @change="importRecords" />
+      <button class="primary-button" data-testid="import-button" @click="selectFile">
+        ファイルをアップロードして復元する
+      </button>
+      <input
+        ref="openfile"
+        type="file"
+        data-testid="import-file"
+        accept=".json"
+        @change="importRecords"
+      />
     </section>
   </div>
 </template>
