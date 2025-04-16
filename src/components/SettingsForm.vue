@@ -14,12 +14,12 @@ const exportRecords = () => {
   const blob = new Blob([JSON.stringify(json)], { type: "application/json" })
   const url = URL.createObjectURL(blob)
   const dateString = new Date().toLocaleDateString("sv-SE")
-
-  const a = Object.assign(document.createElement("a"), {
-    href: url,
-    download: `records-${dateString}.json`,
-  })
+  const a = document.createElement("a")
+  a.href = url
+  a.download = `records-${dateString}.json`
+  document.body.appendChild(a)
   a.click()
+  document.body.removeChild(a)
   URL.revokeObjectURL(url)
 
   trigger("データをエクスポートしました", "success")

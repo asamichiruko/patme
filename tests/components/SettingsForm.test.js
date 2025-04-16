@@ -1,42 +1,8 @@
-import { render, screen, fireEvent, cleanup } from "@testing-library/vue"
-
-const trigger = vi.hoisted(() => vi.fn())
-
-vi.mock("@/composables/useNotification.js", () => {
-  return {
-    useNotification: () => ({
-      trigger: trigger,
-    }),
-  }
-})
-
+import { render, screen, fireEvent, cleanup, waitFor } from "@testing-library/vue"
 import SettingsForm from "@/components/SettingsForm.vue"
+import App from "@/App.vue"
 
 describe("SettingsForm.vue", () => {
-  const validJson = {
-    achievements: [
-      {
-        id: "c2e0439a-7cd0-4743-a9ef-b299699f09a6",
-        content: "テスト記録1",
-        date: new Date("2025-04-01 15:00:00"),
-      },
-      {
-        id: "8adcf1ba-89d8-475f-b651-b14df49853eb",
-        content: "テスト記録2",
-        date: new Date("2025-04-01 16:00:00"),
-      },
-    ],
-    stars: [
-      {
-        id: "13ac6ed5-e94e-4a56-8967-cc53d9c26eea",
-        achievementId: "8adcf1ba-89d8-475f-b651-b14df49853eb",
-        content: "スター1 (テスト記録2)",
-        date: new Date("2025-04-01 16:30"),
-      },
-    ],
-  }
-  const validJsonString = JSON.stringify(validJson)
-
   let mockRecordModel
   let mockFile
 
@@ -53,6 +19,29 @@ describe("SettingsForm.vue", () => {
     cleanup()
   })
 
+  test("データを正常にエクスポートすると success 通知が出る", async () => {
+    vi.stubGlobal("URL", { createObjectURL: vi.fn(), revokeObjectURL: vi.fn() })
+
+    render(App, {
+      props: {
+        recordModel: mockRecordModel,
+      },
+    })
+    await fireEvent.click(screen.getByRole("button", { name: "設定" }))
+
+    // window.location.href によるエラーを回避する
+    const anchor = document.createElement("a")
+    anchor.click = vi.fn()
+    vi.spyOn(document, "createElement").mockReturnValueOnce(anchor)
+
+    await fireEvent.click(screen.getByRole("button", { name: /エクスポート/i }))
+
+    expect(mockRecordModel.exportAsJson).toHaveBeenCalled()
+    await waitFor(() => {
+      expect(screen.getByText(/エクスポートしました/i)).toBeInTheDocument()
+    })
+  })
+
   test("ファイルを選択すると recordModel.importRecords が呼ばれる", async () => {
     render(SettingsForm, {
       props: {
@@ -62,10 +51,8 @@ describe("SettingsForm.vue", () => {
 
     const fileInput = screen.getByTestId("import-file", { hidden: true })
 
-    mockFile = new File([JSON.stringify(validJsonString)], "data.json", {
-      type: "application/json",
-    })
-    mockFile.text = vi.fn().mockResolvedValue(validJsonString)
+    mockFile = new File(["{}"], "data.json", { type: "application/json" })
+    mockFile.text = vi.fn().mockResolvedValue("{}")
 
     Object.defineProperty(fileInput, "files", {
       value: [mockFile],
@@ -77,19 +64,18 @@ describe("SettingsForm.vue", () => {
     expect(mockRecordModel.importFromJson).toHaveBeenCalled()
   })
 
-  test("json 形式でないファイルを選択した場合はエラー通知が出る", async () => {
-    render(SettingsForm, {
+  test("json 形式でないファイルを選択したときにエラー通知が出る", async () => {
+    render(App, {
       props: {
         recordModel: mockRecordModel,
       },
     })
+    await fireEvent.click(screen.getByRole("button", { name: "設定" }))
 
     const fileInput = screen.getByTestId("import-file", { hidden: true })
 
-    mockFile = new File([JSON.stringify(validJsonString)], "data.txt", {
-      type: "text/plain",
-    })
-    mockFile.text = vi.fn().mockResolvedValue(validJsonString)
+    mockFile = new File(["text file"], "data.txt", { type: "text/plain" })
+    mockFile.text = vi.fn().mockResolvedValue("text file")
 
     Object.defineProperty(fileInput, "files", {
       value: [mockFile],
@@ -98,22 +84,23 @@ describe("SettingsForm.vue", () => {
 
     await fireEvent.update(fileInput)
 
-    expect(trigger).toHaveBeenCalledWith(expect.any(String), "error")
+    await waitFor(() => {
+      expect(screen.getByText(/json 形式のファイルを選択してください/i)).toBeInTheDocument()
+    })
   })
 
-  test("ファイルを読み込めなかった場合はエラー通知が出る", async () => {
-    render(SettingsForm, {
+  test("ファイルの内容を読み込めなかったときにエラー通知が出る", async () => {
+    render(App, {
       props: {
         recordModel: mockRecordModel,
       },
     })
+    await fireEvent.click(screen.getByRole("button", { name: "設定" }))
 
     const fileInput = screen.getByTestId("import-file", { hidden: true })
 
-    mockFile = new File([JSON.stringify(validJsonString)], "data.txt", {
-      type: "text/plain",
-    })
-    mockFile.text = vi.fn().mockRejectedValue(new Error())
+    mockFile = new File(["{}"], "data.json", { type: "application/json" })
+    mockFile.text = vi.fn().mockRejectedValue()
 
     Object.defineProperty(fileInput, "files", {
       value: [mockFile],
@@ -122,6 +109,63 @@ describe("SettingsForm.vue", () => {
 
     await fireEvent.update(fileInput)
 
-    expect(trigger).toHaveBeenCalledWith(expect.any(String), "error")
+    await waitFor(() => {
+      expect(screen.getByText(/データの復元に失敗しました/i)).toBeInTheDocument()
+    })
+  })
+
+  test("ファイルのパースに失敗したときにエラー通知が出る", async () => {
+    render(App, {
+      props: {
+        recordModel: mockRecordModel,
+      },
+    })
+    await fireEvent.click(screen.getByRole("button", { name: "設定" }))
+
+    const fileInput = screen.getByTestId("import-file", { hidden: true })
+
+    mockFile = new File(["invalid json file"], "data.json", {
+      type: "application/json",
+    })
+    mockFile.text = vi.fn().mockResolvedValue("invalid json file")
+
+    Object.defineProperty(fileInput, "files", {
+      value: [mockFile],
+      writable: true,
+    })
+
+    await fireEvent.update(fileInput)
+
+    await waitFor(() => {
+      expect(screen.getByText(/データの復元に失敗しました/i)).toBeInTheDocument()
+    })
+  })
+
+  test("JSON ファイルが不正な型だったときにエラー通知が出る", async () => {
+    mockRecordModel.importFromJson.mockImplementation(() => {
+      throw new SyntaxError()
+    })
+    render(App, {
+      props: {
+        recordModel: mockRecordModel,
+      },
+    })
+    await fireEvent.click(screen.getByRole("button", { name: "設定" }))
+
+    const fileInput = screen.getByTestId("import-file", { hidden: true })
+
+    mockFile = new File(["{}"], "data.json", { type: "application/json" })
+    mockFile.text = vi.fn().mockResolvedValue("{}")
+
+    Object.defineProperty(fileInput, "files", {
+      value: [mockFile],
+      writable: true,
+    })
+
+    await fireEvent.update(fileInput)
+
+    await waitFor(() => {
+      expect(screen.getByText(/データの復元に失敗しました/i)).toBeInTheDocument()
+    })
   })
 })
