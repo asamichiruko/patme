@@ -41,10 +41,7 @@ describe("SettingsForm.vue", () => {
   let mockFile
 
   beforeEach(() => {
-    mockFile = new File([JSON.stringify(validJsonString)], "data.json", {
-      type: "application/json",
-    })
-    mockFile.text = vi.fn().mockResolvedValue(validJsonString)
+    vi.clearAllMocks()
 
     mockRecordModel = {
       exportAsJson: vi.fn(),
@@ -54,7 +51,6 @@ describe("SettingsForm.vue", () => {
 
   afterEach(() => {
     cleanup()
-    vi.restoreAllMocks()
   })
 
   test("ファイルを選択すると recordModel.importRecords が呼ばれる", async () => {
@@ -64,17 +60,68 @@ describe("SettingsForm.vue", () => {
       },
     })
 
-    const fileInput = screen.getByTestId("import-file")
+    const fileInput = screen.getByTestId("import-file", { hidden: true })
+
+    mockFile = new File([JSON.stringify(validJsonString)], "data.json", {
+      type: "application/json",
+    })
+    mockFile.text = vi.fn().mockResolvedValue(validJsonString)
 
     Object.defineProperty(fileInput, "files", {
       value: [mockFile],
       writable: true,
     })
 
-    await fireEvent.update(fileInput, {
-      target: { files: [mockFile] },
-    })
+    await fireEvent.update(fileInput)
 
     expect(mockRecordModel.importFromJson).toHaveBeenCalled()
+  })
+
+  test("json 形式でないファイルを選択した場合はエラー通知が出る", async () => {
+    render(SettingsForm, {
+      props: {
+        recordModel: mockRecordModel,
+      },
+    })
+
+    const fileInput = screen.getByTestId("import-file", { hidden: true })
+
+    mockFile = new File([JSON.stringify(validJsonString)], "data.txt", {
+      type: "text/plain",
+    })
+    mockFile.text = vi.fn().mockResolvedValue(validJsonString)
+
+    Object.defineProperty(fileInput, "files", {
+      value: [mockFile],
+      writable: true,
+    })
+
+    await fireEvent.update(fileInput)
+
+    expect(trigger).toHaveBeenCalledWith(expect.any(String), "error")
+  })
+
+  test("ファイルを読み込めなかった場合はエラー通知が出る", async () => {
+    render(SettingsForm, {
+      props: {
+        recordModel: mockRecordModel,
+      },
+    })
+
+    const fileInput = screen.getByTestId("import-file", { hidden: true })
+
+    mockFile = new File([JSON.stringify(validJsonString)], "data.txt", {
+      type: "text/plain",
+    })
+    mockFile.text = vi.fn().mockRejectedValue(new Error())
+
+    Object.defineProperty(fileInput, "files", {
+      value: [mockFile],
+      writable: true,
+    })
+
+    await fireEvent.update(fileInput)
+
+    expect(trigger).toHaveBeenCalledWith(expect.any(String), "error")
   })
 })
