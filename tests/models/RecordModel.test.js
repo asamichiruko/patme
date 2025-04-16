@@ -104,4 +104,16 @@ describe("RecordModel.js", () => {
     expect(achievements.length).toBe(validJson.achievements.length)
     expect(stars.length).toBe(validJson.stars.length)
   })
+
+  test("インポートしたデータを正常にエクスポートできる", () => {
+    model.importFromJson(validJson)
+
+    const exportData = model.exportAsJson()
+    expect(exportData).toEqual(validJson)
+  })
+
+  test("空のストレージから正常にエクスポートできる", () => {
+    const exportData = model.exportAsJson()
+    expect(exportData).toEqual({ achievements: [], stars: [] })
+  })
 })
