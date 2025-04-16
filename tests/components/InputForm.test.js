@@ -1,32 +1,34 @@
-import { render, screen, fireEvent, cleanup } from "@testing-library/vue"
-
-const trigger = vi.hoisted(() => vi.fn())
-
-vi.mock("@/composables/useNotification.js", () => {
-  return {
-    useNotification: () => ({
-      trigger: trigger,
-    }),
-  }
-})
-
+import { render, screen, fireEvent, cleanup, waitFor } from "@testing-library/vue"
 import InputForm from "@/components/InputForm.vue"
+import App from "@/App.vue"
 
 describe("InputForm.vue", () => {
   let recordModel
 
   beforeEach(() => {
     vi.clearAllMocks()
+    recordModel = {
+      addAchievement: vi.fn(() => true),
+    }
   })
 
   afterEach(() => {
     cleanup()
   })
 
-  test("テキストを記入して送信すると recordModel.addAchievement が呼ばれる", async () => {
-    recordModel = {
-      addAchievement: vi.fn().mockReturnValue(true),
-    }
+  test("レンダリングされると textarea がフォーカスされる", async () => {
+    render(InputForm, {
+      props: {
+        recordModel,
+      },
+    })
+
+    const textarea = screen.getByLabelText("達成内容")
+
+    expect(document.activeElement).toContain(textarea)
+  })
+
+  test("テキストを記入して記録ボタンを押すと達成内容を記録できる", async () => {
     render(InputForm, {
       props: {
         recordModel,
@@ -42,42 +44,42 @@ describe("InputForm.vue", () => {
     expect(recordModel.addAchievement).toHaveBeenCalledWith({ content: "テスト記録" })
   })
 
-  test("テキストを記入せずに送信すると recordModel.addAchievement が呼ばれない", async () => {
-    recordModel = {
-      addAchievement: vi.fn().mockReturnValue(true),
-    }
+  test("テキストを記入して Ctrl+Enter を入力すると達成内容を記録できる", async () => {
     render(InputForm, {
       props: {
         recordModel,
       },
     })
 
-    const button = screen.getByRole("button", { name: "記録する" })
-    await fireEvent.click(button)
+    const textarea = screen.getByLabelText("達成内容")
+    await fireEvent.update(textarea, "テスト記録")
 
-    expect(recordModel.addAchievement).not.toHaveBeenCalled()
+    await fireEvent.keyDown(textarea, {
+      key: "Enter",
+      code: "Enter",
+      ctrlKey: true,
+    })
+
+    expect(recordModel.addAchievement).toHaveBeenCalledWith({ content: "テスト記録" })
   })
 
-  test("テキストを記入せずに送信すると error 通知が出る", async () => {
-    recordModel = {
-      addAchievement: vi.fn().mockReturnValue(true),
-    }
+  test("記録に成功すると textarea がフォーカスされる", async () => {
     render(InputForm, {
       props: {
         recordModel,
       },
     })
 
+    const textarea = screen.getByLabelText("達成内容")
+    await fireEvent.update(textarea, "テスト記録")
+
     const button = screen.getByRole("button", { name: "記録する" })
     await fireEvent.click(button)
 
-    expect(trigger).toHaveBeenCalledWith(expect.any(String), "error")
+    expect(document.activeElement).toContain(textarea)
   })
 
   test("記録に成功すると textarea がクリアされる", async () => {
-    recordModel = {
-      addAchievement: vi.fn().mockReturnValue(true),
-    }
     render(InputForm, {
       props: {
         recordModel,
@@ -94,28 +96,55 @@ describe("InputForm.vue", () => {
   })
 
   test("記録に成功すると success 通知が出る", async () => {
-    recordModel = {
-      addAchievement: vi.fn().mockReturnValue(true),
-    }
-    render(InputForm, {
+    render(App, {
       props: {
-        recordModel,
+        recordModel: recordModel,
       },
     })
+    await fireEvent.click(screen.getByRole("button", { name: "入力" }))
 
     const textarea = screen.getByLabelText("達成内容")
     await fireEvent.update(textarea, "テスト記録")
 
-    const button = screen.getByRole("button", { name: "記録する" })
-    await fireEvent.click(button)
+    await fireEvent.click(screen.getByRole("button", { name: "記録する" }))
 
-    expect(trigger).toHaveBeenCalledWith(expect.any(String), "success")
+    await waitFor(() => {
+      expect(screen.getByText(/記録しました/i)).toBeInTheDocument()
+    })
   })
 
-  test("記録に失敗するとtextarea はクリアされない", async () => {
-    recordModel = {
-      addAchievement: vi.fn().mockReturnValue(false),
-    }
+  test("テキストを記入せずに送信した場合は達成内容を記録しない", async () => {
+    render(InputForm, {
+      props: {
+        recordModel,
+      },
+    })
+
+    const button = screen.getByRole("button", { name: "記録する" })
+    await fireEvent.click(button)
+
+    expect(recordModel.addAchievement).not.toHaveBeenCalled()
+  })
+
+  test("テキストを記入せずに送信すると error 通知が出る", async () => {
+    render(App, {
+      props: {
+        recordModel: recordModel,
+      },
+    })
+    await fireEvent.click(screen.getByRole("button", { name: "入力" }))
+
+    const button = screen.getByRole("button", { name: "記録する" })
+    await fireEvent.click(button)
+
+    await waitFor(() => {
+      expect(screen.getByText(/できたことを入力してください/i)).toBeInTheDocument()
+    })
+  })
+
+  test("記録に失敗すると textarea はクリアされない", async () => {
+    recordModel.addAchievement.mockReturnValue(false)
+
     render(InputForm, {
       props: {
         recordModel,
@@ -125,29 +154,28 @@ describe("InputForm.vue", () => {
     const textarea = screen.getByLabelText("達成内容")
     await fireEvent.update(textarea, "テスト記録")
 
-    const button = screen.getByRole("button", { name: "記録する" })
-    await fireEvent.click(button)
+    await fireEvent.click(screen.getByRole("button", { name: "記録する" }))
 
-    expect(recordModel.addAchievement).toHaveReturnedWith(false)
     expect(textarea.value).not.toBe("")
   })
 
   test("記録に失敗すると error 通知が出る", async () => {
-    recordModel = {
-      addAchievement: vi.fn().mockReturnValue(false),
-    }
-    render(InputForm, {
+    recordModel.addAchievement.mockReturnValue(false)
+
+    render(App, {
       props: {
-        recordModel,
+        recordModel: recordModel,
       },
     })
+    await fireEvent.click(screen.getByRole("button", { name: "入力" }))
 
     const textarea = screen.getByLabelText("達成内容")
     await fireEvent.update(textarea, "テスト記録")
 
-    const button = screen.getByRole("button", { name: "記録する" })
-    await fireEvent.click(button)
+    await fireEvent.click(screen.getByRole("button", { name: "記録する" }))
 
-    expect(trigger).toHaveBeenCalledWith(expect.any(String), "error")
+    await waitFor(() => {
+      expect(screen.getByText(/記録に失敗しました/i)).toBeInTheDocument()
+    })
   })
 })

@@ -8,13 +8,19 @@ import SettingsForm from "./components/SettingsForm.vue"
 import TabNavigation from "./components/TabNavigation.vue"
 import NotificationBar from "./components/NotificationBar.vue"
 
-const recordModel = new RecordModel(new LocalStorageAdapter())
+const props = defineProps({
+  recordModel: { type: Object, required: false },
+})
+
+const recordModel = props.recordModel ?? new RecordModel(new LocalStorageAdapter())
+
 const tabs = [
-  { key: "Input", label: "入力する", component: InputForm },
+  { key: "Input", label: "入力", component: InputForm },
   { key: "Records", label: "リスト", component: RecordList },
   { key: "Settings", label: "設定", component: SettingsForm },
 ]
 const currentTabKey = ref("Input")
+
 const currentTabContent = computed(() => {
   const activeTab = tabs.find((tab) => tab.key === currentTabKey.value)
   if (activeTab.component) {
