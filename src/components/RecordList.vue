@@ -1,7 +1,7 @@
 <script setup>
 import { onMounted, ref } from "vue"
 import PromptDialog from "@/components/PromptDialog.vue"
-import starImg from "@/assets/star.svg"
+import RecordListItem from "@/components/RecordListItem.vue"
 
 const props = defineProps({
   recordModel: Object,
@@ -36,22 +36,7 @@ onMounted(() => {
   </p>
   <ul class="records" v-else>
     <li class="record-item" v-for="record in records" :key="record.achievement.id">
-      <div class="achievement-container">
-        <div class="achievement-date">{{ record.achievement.date.toLocaleString() }}</div>
-        <div class="achievement-content">{{ record.achievement.content }}</div>
-        <div class="star-count" v-if="record.stars.length !== 0">
-          <img :src="starImg" alt="star" class="star-icon" />
-          <span class="star-count-text">{{ record.stars.length }}</span>
-        </div>
-      </div>
-      <div v-if="record.stars.length !== 0">
-        <ul class="stars" v-for="star in record.stars" :key="star.id">
-          <li class="star-container" v-if="star.content">
-            <span class="star-content">{{ star.content }}</span>
-            <span class="star-date">{{ star.date.toLocaleString() }}</span>
-          </li>
-        </ul>
-      </div>
+      <RecordListItem :achievement="record.achievement" :stars="record.stars" />
       <div class="record-actions">
         <button class="comment-button" :achievement-id="record.achievement.id" @click="openDialog">
           コメント
@@ -90,53 +75,8 @@ onMounted(() => {
   padding: 15px;
   border-radius: 4px;
 }
-.achievement-container {
-  margin-bottom: 10px;
-}
-.achievement-content {
-  font-size: 1.2em;
-  white-space: pre-wrap;
-}
-.achievement-date {
-  color: #7f8c8d;
-  font-size: 0.9em;
-  text-align: right;
-}
-.star-count {
-  font-family: "Franklin Gothic", "Arial Bold", Arial, sans-serif;
-  color: #2ecc71;
-  font-size: 1.2em;
-  display: inline-flex;
-  vertical-align: middle;
-  align-items: center;
-  gap: 0.2em;
-}
-.star-icon {
-  width: 1.1em;
-  height: 1.1em;
-  padding-bottom: 0.2em;
-  display: inline-block;
-}
-.star-count-text {
-  font-weight: bold;
-  display: inline-block;
-}
-.stars {
-  list-style-type: none;
-  padding: 0;
-  font-size: 14px;
-  color: #333;
-}
-.star-content {
-  white-space: pre-wrap;
-}
-.star-date {
-  color: #7f8c8d;
-  margin-left: 10px;
-  font-size: 14px;
-}
 .record-actions {
-  margin-top: 18px;
+  margin-top: 20px;
   display: flex;
   gap: 10px;
   align-items: center;
