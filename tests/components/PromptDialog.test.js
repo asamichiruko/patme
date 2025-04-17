@@ -45,8 +45,8 @@ describe("PromptDialog.vue", () => {
     expect(dialog).toBeInTheDocument()
     expect(screen.getByText("test message")).toBeInTheDocument()
     expect(screen.getByRole("button", { name: "submit" })).toBeInTheDocument()
-    expect(screen.getByRole("button", { name: "calcel" })).toBeInTheDocument()
-    expect(screen.getByRole("text")).toBeInTheDocument()
+    expect(screen.getByRole("button", { name: "cancel" })).toBeInTheDocument()
+    expect(screen.getByRole("textbox")).toBeInTheDocument()
   })
 
   test("ボタンを押して送信するとダイアログが閉じられる", async () => {
