@@ -89,6 +89,8 @@ label {
   width: -webkit-fill-available;
   width: -moz-available;
   width: stretch;
+  height: 2.6em;
+  line-height: 1.3em;
 }
 
 .actions {

@@ -60,5 +60,6 @@ textarea {
   height: 100px;
   font-size: 16px;
   margin-bottom: 1em;
+  line-height: 1.3em;
 }
 </style>
