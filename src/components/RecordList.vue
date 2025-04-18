@@ -1,24 +1,30 @@
 <script setup>
 import { onMounted, ref } from "vue"
 import PromptDialog from "@/components/PromptDialog.vue"
+import { useNotification } from "@/composables/useNotification.js"
 import RecordListItem from "@/components/RecordListItem.vue"
 
 const props = defineProps({
   recordModel: Object,
 })
 
+const { trigger } = useNotification()
 const records = ref([])
 const showPrompt = ref(false)
-const requestingDialog = ref(null)
+const selectedId = ref("")
 
-const openDialog = (e) => {
-  requestingDialog.value = e.target
+const inputComment = (e) => {
+  selectedId.value = e.target.getAttribute("achievement-id")
   showPrompt.value = true
 }
 
-const handleSubmit = (content) => {
-  const achievementId = requestingDialog.value?.getAttribute("achievement-id")
-  props.recordModel.addStar({ achievementId, content })
+const addStar = (content) => {
+  const result = props.recordModel.addStar({ achievementId: selectedId.value, content })
+  if (result) {
+    trigger("コメントを記録しました！", "success")
+  } else {
+    trigger("記録に失敗しました。時間をおいて再度お試しください", "error")
+  }
 }
 
 onMounted(() => {
@@ -38,7 +44,11 @@ onMounted(() => {
     <li class="record-item" v-for="record in records" :key="record.achievement.id">
       <RecordListItem :achievement="record.achievement" :stars="record.stars" />
       <div class="record-actions">
-        <button class="comment-button" :achievement-id="record.achievement.id" @click="openDialog">
+        <button
+          class="comment-button"
+          :achievement-id="record.achievement.id"
+          @click="inputComment"
+        >
           コメント
         </button>
       </div>
@@ -52,7 +62,7 @@ onMounted(() => {
     :submittext="'記録する'"
     :canceltext="'キャンセル'"
     :placeholder="'どんな点がよかったですか？'"
-    @submit="handleSubmit"
+    @submit="addStar"
   />
 </template>
 
