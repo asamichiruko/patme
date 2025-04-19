@@ -1,8 +1,8 @@
 import { render, screen, fireEvent, cleanup } from "@testing-library/vue"
-import RecordList from "@/components/RecordList.vue"
+import EntryList from "@/components/EntryList.vue"
 
-describe("RecordList.vue", () => {
-  const testRecords = [
+describe("EntryList.vue", () => {
+  const testEntries = [
     {
       achievement: {
         id: "c2e0439a-7cd0-4743-a9ef-b299699f09a6",
@@ -27,14 +27,14 @@ describe("RecordList.vue", () => {
       ],
     },
   ]
-  let recordModel
+  let entryModel
 
   beforeEach(() => {
     vi.clearAllMocks()
-    recordModel = {
+    entryModel = {
       subscribe: vi.fn(),
       addStar: vi.fn(() => true),
-      getRecords: vi.fn(() => testRecords),
+      getEntries: vi.fn(() => testEntries),
     }
   })
 
@@ -42,11 +42,11 @@ describe("RecordList.vue", () => {
     cleanup()
   })
 
-  test("records が 0 件のときその旨を示すメッセージが表示される", async () => {
-    recordModel.getRecords.mockReturnValueOnce([])
-    render(RecordList, {
+  test("entries が 0 件のときその旨を示すメッセージが表示される", async () => {
+    entryModel.getEntries.mockReturnValueOnce([])
+    render(EntryList, {
       props: {
-        recordModel,
+        entryModel: entryModel,
       },
     })
 
@@ -54,28 +54,28 @@ describe("RecordList.vue", () => {
     expect(text).toBeInTheDocument()
   })
 
-  test("records の数だけ RecordListItem がレンダリングされる", async () => {
-    render(RecordList, {
+  test("entries の数だけ EntryListItem がレンダリングされる", async () => {
+    render(EntryList, {
       props: {
-        recordModel,
+        entryModel: entryModel,
       },
       global: {
         stubs: {
-          RecordListItem: {
-            template: "<div data-testid='record-item'></div>",
+          EntryListItem: {
+            template: "<div data-testid='entry-item'></div>",
           },
         },
       },
     })
 
-    const items = await screen.findAllByTestId("record-item")
-    expect(items).toHaveLength(testRecords.length)
+    const items = await screen.findAllByTestId("entry-item")
+    expect(items).toHaveLength(testEntries.length)
   })
 
   test("コメントボタンを押してコメントを送信すると addStar が呼ばれる", async () => {
-    render(RecordList, {
+    render(EntryList, {
       props: {
-        recordModel,
+        entryModel: entryModel,
       },
       global: {
         stubs: {
@@ -93,7 +93,7 @@ describe("RecordList.vue", () => {
     const fakeDialog = await screen.findByRole("button", { name: /dummydialog/i })
     await fireEvent.click(fakeDialog)
 
-    expect(recordModel.addStar).toHaveBeenCalledWith({
+    expect(entryModel.addStar).toHaveBeenCalledWith({
       achievementId: achievementId,
       content: "test comment",
     })

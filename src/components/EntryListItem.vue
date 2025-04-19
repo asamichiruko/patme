@@ -9,7 +9,7 @@ const props = defineProps({
 </script>
 
 <template>
-  <div class="record-container">
+  <div class="entry-container">
     <div class="achievement-header">
       <div class="star-count">
         <template v-if="props.stars.length === 0">

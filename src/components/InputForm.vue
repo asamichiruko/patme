@@ -3,7 +3,7 @@ import { nextTick, ref, onActivated } from "vue"
 import { useNotification } from "@/composables/useNotification.js"
 
 const props = defineProps({
-  recordModel: Object,
+  entryModel: Object,
 })
 
 const { trigger } = useNotification()
@@ -16,7 +16,7 @@ const submit = () => {
     trigger("できたことを入力してください", "error")
     return
   }
-  const result = props.recordModel.addAchievement({ content })
+  const result = props.entryModel.addAchievement({ content })
   if (result) {
     text.value = ""
     trigger("できたことを記録しました！", "success")

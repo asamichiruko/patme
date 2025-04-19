@@ -1,7 +1,7 @@
-import { RecordModel } from "@/models/RecordModel.js"
+import { EntryModel } from "@/models/EntryModel.js"
 import { LocalStorageAdapter } from "@/models/LocalStorageAdapter.js"
 
-describe("RecordModel.js", () => {
+describe("EntryModel.js", () => {
   let model
   const validJson = {
     achievements: [
@@ -29,7 +29,7 @@ describe("RecordModel.js", () => {
   beforeEach(() => {
     localStorage.clear()
     const adapter = new LocalStorageAdapter()
-    model = new RecordModel(adapter)
+    model = new EntryModel(adapter)
   })
 
   test("正常なデータをインポートできる", () => {

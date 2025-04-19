@@ -3,20 +3,20 @@ import { useTemplateRef } from "vue"
 import { useNotification } from "@/composables/useNotification.js"
 
 const props = defineProps({
-  recordModel: Object,
+  entryModel: Object,
 })
 
 const { trigger } = useNotification()
 const fileInput = useTemplateRef("openfile")
 
-const exportRecords = () => {
-  const json = props.recordModel.exportAsJson()
+const exportEntries = () => {
+  const json = props.entryModel.exportAsJson()
   const blob = new Blob([JSON.stringify(json)], { type: "application/json" })
   const url = URL.createObjectURL(blob)
   const dateString = new Date().toLocaleDateString("sv-SE")
   const a = document.createElement("a")
   a.href = url
-  a.download = `records-${dateString}.json`
+  a.download = `entries-${dateString}.json`
   document.body.appendChild(a)
   a.click()
   document.body.removeChild(a)
@@ -25,7 +25,7 @@ const exportRecords = () => {
   trigger("データをエクスポートしました", "success")
 }
 
-const importRecords = async (e) => {
+const importEntries = async (e) => {
   const file = e.target.files[0]
   if (!file) {
     return
@@ -36,7 +36,7 @@ const importRecords = async (e) => {
   try {
     const jsonString = await file.text()
     const json = JSON.parse(jsonString)
-    props.recordModel.importFromJson(json)
+    props.entryModel.importFromJson(json)
 
     trigger("データを復元しました", "success")
   } catch {
@@ -61,7 +61,7 @@ const selectFile = () => {
         ファイルとしてエクスポートします。エクスポートファイルは記録の復元に利用できます。
       </p>
       <p>
-        <button class="primary-button" data-testid="export-button" @click="exportRecords">
+        <button class="primary-button" data-testid="export-button" @click="exportEntries">
           記録をエクスポートする
         </button>
       </p>
@@ -81,7 +81,7 @@ const selectFile = () => {
         type="file"
         data-testid="import-file"
         accept=".json"
-        @change="importRecords"
+        @change="importEntries"
       />
     </section>
   </div>

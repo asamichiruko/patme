@@ -1,16 +1,16 @@
 <script setup>
 import InputForm from "@/components/InputForm.vue"
-import RecordList from "@/components/RecordList.vue"
+import EntryList from "@/components/EntryList.vue"
 
 const props = defineProps({
-  recordModel: Object,
+  entryModel: Object,
 })
 </script>
 
 <template>
-  <InputForm :recordModel="props.recordModel" />
+  <InputForm :entryModel="props.entryModel" />
   <hr />
-  <RecordList :recordModel="props.recordModel" />
+  <EntryList :entryModel="props.entryModel" />
 </template>
 
 <style scoped>

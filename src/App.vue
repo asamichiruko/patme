@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed } from "vue"
-import { RecordModel } from "./models/RecordModel.js"
+import { EntryModel } from "./models/EntryModel.js"
 import { LocalStorageAdapter } from "./models/LocalStorageAdapter.js"
 import InputAndListView from "./components/InputAndListView.vue"
 import SettingsForm from "./components/SettingsForm.vue"
@@ -8,10 +8,10 @@ import TabNavigation from "./components/TabNavigation.vue"
 import NotificationBar from "./components/NotificationBar.vue"
 
 const props = defineProps({
-  recordModel: { type: Object, required: false },
+  entryModel: { type: Object, required: false },
 })
 
-const recordModel = props.recordModel ?? new RecordModel(new LocalStorageAdapter())
+const entryModel = props.entryModel ?? new EntryModel(new LocalStorageAdapter())
 
 const tabs = [
   { key: "Home", label: "ホーム", component: InputAndListView },
@@ -36,7 +36,7 @@ const currentTabContent = computed(() => {
   <div class="tab-content">
     <div class="container">
       <keep-alive>
-        <component :is="currentTabContent" :record-model="recordModel" />
+        <component :is="currentTabContent" :entryModel="entryModel" />
       </keep-alive>
     </div>
   </div>

@@ -1,4 +1,4 @@
-export class RecordModel {
+export class EntryModel {
   constructor(storage) {
     this.storage = storage
     this.listeners = []
@@ -9,8 +9,8 @@ export class RecordModel {
   }
 
   notify() {
-    const records = this.getRecords()
-    this.listeners.forEach((listener) => listener(records))
+    const entries = this.getEntries()
+    this.listeners.forEach((listener) => listener(entries))
   }
 
   generateId() {
@@ -45,21 +45,21 @@ export class RecordModel {
     return true
   }
 
-  getRecords() {
+  getEntries() {
     const achievements = this.storage.getAchievements()
     const stars = this.storage.getStars()
     const result = Map.groupBy(stars, (star) => {
       return star.achievementId
     })
-    const records = achievements.map((a) => {
+    const entries = achievements.map((a) => {
       return {
         achievement: a,
         stars: result.get(a.id) || [],
       }
     })
-    records.sort((a, b) => b.achievement.date - a.achievement.date)
+    entries.sort((a, b) => b.achievement.date - a.achievement.date)
 
-    return records
+    return entries
   }
 
   exportAsJson() {

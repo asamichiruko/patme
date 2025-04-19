@@ -3,13 +3,15 @@ import SettingsForm from "@/components/SettingsForm.vue"
 import App from "@/App.vue"
 
 describe("SettingsForm.vue", () => {
-  let mockRecordModel
+  let model
   let mockFile
 
   beforeEach(() => {
     vi.clearAllMocks()
 
-    mockRecordModel = {
+    model = {
+      subscribe: vi.fn(),
+      getEntries: vi.fn(),
       exportAsJson: vi.fn(),
       importFromJson: vi.fn(),
     }
@@ -24,7 +26,7 @@ describe("SettingsForm.vue", () => {
 
     render(App, {
       props: {
-        recordModel: mockRecordModel,
+        entryModel: model,
       },
     })
     await fireEvent.click(screen.getByRole("button", { name: "設定" }))
@@ -36,16 +38,16 @@ describe("SettingsForm.vue", () => {
 
     await fireEvent.click(screen.getByRole("button", { name: /エクスポート/i }))
 
-    expect(mockRecordModel.exportAsJson).toHaveBeenCalled()
+    expect(model.exportAsJson).toHaveBeenCalled()
     await waitFor(() => {
       expect(screen.getByText(/エクスポートしました/i)).toBeInTheDocument()
     })
   })
 
-  test("ファイルを選択すると recordModel.importRecords が呼ばれる", async () => {
+  test("ファイルを選択すると entryModel.importEntries が呼ばれる", async () => {
     render(SettingsForm, {
       props: {
-        recordModel: mockRecordModel,
+        entryModel: model,
       },
     })
 
@@ -61,13 +63,13 @@ describe("SettingsForm.vue", () => {
 
     await fireEvent.update(fileInput)
 
-    expect(mockRecordModel.importFromJson).toHaveBeenCalled()
+    expect(model.importFromJson).toHaveBeenCalled()
   })
 
   test("json 形式でないファイルを選択したときにエラー通知が出る", async () => {
     render(App, {
       props: {
-        recordModel: mockRecordModel,
+        entryModel: model,
       },
     })
     await fireEvent.click(screen.getByRole("button", { name: "設定" }))
@@ -92,7 +94,7 @@ describe("SettingsForm.vue", () => {
   test("ファイルの内容を読み込めなかったときにエラー通知が出る", async () => {
     render(App, {
       props: {
-        recordModel: mockRecordModel,
+        entryModel: model,
       },
     })
     await fireEvent.click(screen.getByRole("button", { name: "設定" }))
@@ -117,7 +119,7 @@ describe("SettingsForm.vue", () => {
   test("ファイルのパースに失敗したときにエラー通知が出る", async () => {
     render(App, {
       props: {
-        recordModel: mockRecordModel,
+        entryModel: model,
       },
     })
     await fireEvent.click(screen.getByRole("button", { name: "設定" }))
@@ -142,12 +144,12 @@ describe("SettingsForm.vue", () => {
   })
 
   test("JSON ファイルが不正な型だったときにエラー通知が出る", async () => {
-    mockRecordModel.importFromJson.mockImplementation(() => {
+    model.importFromJson.mockImplementation(() => {
       throw new SyntaxError()
     })
     render(App, {
       props: {
-        recordModel: mockRecordModel,
+        entryModel: model,
       },
     })
     await fireEvent.click(screen.getByRole("button", { name: "設定" }))
