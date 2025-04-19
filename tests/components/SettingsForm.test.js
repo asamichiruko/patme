@@ -10,8 +10,6 @@ describe("SettingsForm.vue", () => {
     vi.clearAllMocks()
 
     model = {
-      subscribe: vi.fn(),
-      getEntries: vi.fn(),
       exportAsJson: vi.fn(),
       importFromJson: vi.fn(),
     }
@@ -27,6 +25,16 @@ describe("SettingsForm.vue", () => {
     render(App, {
       props: {
         entryModel: model,
+      },
+      global: {
+        stubs: {
+          InputForm: {
+            template: "<div></div>",
+          },
+          EntryList: {
+            template: "<div></div>",
+          },
+        },
       },
     })
     await fireEvent.click(screen.getByRole("button", { name: "設定" }))
@@ -71,6 +79,16 @@ describe("SettingsForm.vue", () => {
       props: {
         entryModel: model,
       },
+      global: {
+        stubs: {
+          InputForm: {
+            template: "<div></div>",
+          },
+          EntryList: {
+            template: "<div></div>",
+          },
+        },
+      },
     })
     await fireEvent.click(screen.getByRole("button", { name: "設定" }))
 
@@ -96,6 +114,16 @@ describe("SettingsForm.vue", () => {
       props: {
         entryModel: model,
       },
+      global: {
+        stubs: {
+          InputForm: {
+            template: "<div></div>",
+          },
+          EntryList: {
+            template: "<div></div>",
+          },
+        },
+      },
     })
     await fireEvent.click(screen.getByRole("button", { name: "設定" }))
 
@@ -120,6 +148,16 @@ describe("SettingsForm.vue", () => {
     render(App, {
       props: {
         entryModel: model,
+      },
+      global: {
+        stubs: {
+          InputForm: {
+            template: "<div></div>",
+          },
+          EntryList: {
+            template: "<div></div>",
+          },
+        },
       },
     })
     await fireEvent.click(screen.getByRole("button", { name: "設定" }))
@@ -150,6 +188,16 @@ describe("SettingsForm.vue", () => {
     render(App, {
       props: {
         entryModel: model,
+      },
+      global: {
+        stubs: {
+          InputForm: {
+            template: "<div></div>",
+          },
+          EntryList: {
+            template: "<div></div>",
+          },
+        },
       },
     })
     await fireEvent.click(screen.getByRole("button", { name: "設定" }))

@@ -9,8 +9,6 @@ describe("InputForm.vue", () => {
     vi.clearAllMocks()
     entryModel = {
       addAchievement: vi.fn(() => true),
-      getEntries: vi.fn(),
-      subscribe: vi.fn(),
     }
   })
 
@@ -102,6 +100,13 @@ describe("InputForm.vue", () => {
       props: {
         entryModel: entryModel,
       },
+      global: {
+        stubs: {
+          EntryList: {
+            template: "<div></div>",
+          },
+        },
+      },
     })
     await fireEvent.click(screen.getByRole("button", { name: "ホーム" }))
 
@@ -133,10 +138,17 @@ describe("InputForm.vue", () => {
       props: {
         entryModel: entryModel,
       },
+      global: {
+        stubs: {
+          EntryList: {
+            template: "<div></div>",
+          },
+        },
+      },
     })
     await fireEvent.click(screen.getByRole("button", { name: "ホーム" }))
 
-    const button = screen.getByRole("button", { name: "記録する", hidden: false })
+    const button = screen.getByRole("button", { name: "記録する" })
     await fireEvent.click(button)
 
     await waitFor(() => {
@@ -169,13 +181,20 @@ describe("InputForm.vue", () => {
       props: {
         entryModel: entryModel,
       },
+      global: {
+        stubs: {
+          EntryList: {
+            template: "<div></div>",
+          },
+        },
+      },
     })
     await fireEvent.click(screen.getByRole("button", { name: "ホーム" }))
 
     const textarea = screen.getByLabelText("達成内容")
     await fireEvent.update(textarea, "テスト記録")
 
-    const button = screen.getByRole("button", { name: "記録する", hidden: false })
+    const button = screen.getByRole("button", { name: "記録する" })
     await fireEvent.click(button)
 
     await waitFor(() => {
