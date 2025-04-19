@@ -3,6 +3,7 @@ import { onMounted, ref } from "vue"
 import PromptDialog from "@/components/PromptDialog.vue"
 import { useNotification } from "@/composables/useNotification.js"
 import EntryListItem from "@/components/EntryListItem.vue"
+import TagSelectDialog from "./TagSelectDialog.vue"
 
 const props = defineProps({
   entryModel: Object,
@@ -11,11 +12,17 @@ const props = defineProps({
 const { trigger } = useNotification()
 const entries = ref([])
 const showPrompt = ref(false)
+const showTabSelect = ref(false)
 const selectedId = ref("")
 
 const inputComment = (e) => {
   selectedId.value = e.target.getAttribute("achievement-id")
   showPrompt.value = true
+}
+
+const editTabs = (e) => {
+  selectedId.value = e.target.getAttribute("achievement-id")
+  showTabSelect.value = true
 }
 
 const addStar = (content) => {
@@ -45,7 +52,10 @@ onMounted(() => {
       <EntryListItem :achievement="entry.achievement" :stars="entry.stars" />
       <div class="entry-actions">
         <button class="comment-button" :achievement-id="entry.achievement.id" @click="inputComment">
-          コメント
+          コメントする
+        </button>
+        <button class="tag-button" :achievement-id="entry.achievement.id" @click="editTabs">
+          タグを編集
         </button>
       </div>
     </li>
@@ -54,12 +64,14 @@ onMounted(() => {
   <PromptDialog
     :show="showPrompt"
     @update:show="showPrompt = $event"
-    :message="'コメント'"
+    :message="'振り返り'"
     :submittext="'記録する'"
     :canceltext="'キャンセル'"
     :placeholder="'どんな点がよかったですか？'"
     @submit="addStar"
   />
+
+  <TagSelectDialog :show="showTabSelect" @update:show="showTabSelect = $event" />
 </template>
 
 <style scoped>
@@ -68,6 +80,7 @@ onMounted(() => {
   padding: 40px 0;
   color: #7f8c8d;
 }
+
 .entries {
   list-style-type: none;
   padding: 0;
@@ -87,6 +100,7 @@ onMounted(() => {
   gap: 10px;
   align-items: center;
 }
+
 .comment-button {
   background-color: #2ecc71;
   color: white;
@@ -100,6 +114,24 @@ onMounted(() => {
   background-color: #27ae60;
 }
 .comment-button:focus-visible {
+  outline: 2px solid #27ae60;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.tag-button {
+  background-color: #2ecc71;
+  color: white;
+  font-size: 14px;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+}
+.tag-button:hover {
+  background-color: #27ae60;
+}
+.tag-button:focus-visible {
   outline: 2px solid #27ae60;
   outline-offset: 2px;
   border-radius: 4px;

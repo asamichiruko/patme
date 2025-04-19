@@ -1,7 +1,7 @@
 <template>
   <Teleport to="body">
     <dialog ref="dialogRef" @cancel="cancel">
-      <div v-if="show">
+      <template v-if="show">
         <form @submit.prevent="submit">
           <label for="dialog-textarea">{{ message }}</label>
           <textarea
@@ -18,7 +18,7 @@
             <button class="primary-button" type="button" @click="cancel">{{ canceltext }}</button>
           </div>
         </form>
-      </div>
+      </template>
     </dialog>
   </Teleport>
 </template>

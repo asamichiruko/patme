@@ -4,6 +4,7 @@ import blankStarImg from "@/assets/blank-star.svg"
 
 const props = defineProps({
   achievement: Object,
+  tags: Object,
   stars: Object,
 })
 </script>
@@ -23,14 +24,21 @@ const props = defineProps({
       <div class="achievement-date">{{ props.achievement.date.toLocaleString() }}</div>
     </div>
     <div class="achievement-content">{{ props.achievement.content }}</div>
-    <div v-if="props.stars.length !== 0">
+    <div class="tag-container">
+      <ul class="tags">
+        <li class="tag">タグ1</li>
+        <li class="tag">タグ2</li>
+        <li class="tag">長めのタグ1</li>
+      </ul>
+    </div>
+    <template v-if="props.stars.length !== 0">
       <ul class="stars" v-for="star in props.stars" :key="star.id">
         <li class="star-comment" v-if="star.content">
           <span class="star-content">{{ star.content }}</span>
           <span class="star-date">{{ star.date.toLocaleString() }}</span>
         </li>
       </ul>
-    </div>
+    </template>
   </div>
 </template>
 
@@ -68,6 +76,27 @@ const props = defineProps({
   white-space: pre-wrap;
   margin: 20px 0;
   padding: 0 20px;
+}
+
+.tags {
+  list-style-type: none;
+  padding: 0;
+  font-size: 14px;
+  color: #333;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.tag {
+  display: inline-block;
+  color: #53656d;
+  background-color: #e0e4e6;
+  border: 1px solid #76878d;
+  padding: 0 12px;
+  border-radius: 8px;
+  white-space: nowrap;
+  overflow: hidden;
 }
 
 .stars {
