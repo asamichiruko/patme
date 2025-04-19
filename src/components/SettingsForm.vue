@@ -55,24 +55,26 @@ const selectFile = () => {
 <template>
   <div class="settings-form">
     <section>
+      <h2>エクスポート</h2>
       <p>
         記録を JSON
         ファイルとしてエクスポートします。エクスポートファイルは記録の復元に利用できます。
       </p>
       <p>
         <button class="primary-button" data-testid="export-button" @click="exportRecords">
-          データをエクスポートする
+          記録をエクスポートする
         </button>
       </p>
     </section>
 
     <section>
+      <h2>インポート</h2>
       <p>
         保存した JSON
-        ファイルをアップロードして記録を復元します。差分の記録だけを追加し、既存の記録は削除しません。
+        ファイルをアップロードして記録をインポートします。差分の記録だけを追加し、既存の記録は上書きしません。
       </p>
       <button class="primary-button" data-testid="import-button" @click="selectFile">
-        ファイルをアップロードして復元する
+        記録をインポートする...
       </button>
       <input
         ref="openfile"
