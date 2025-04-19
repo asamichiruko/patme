@@ -2,8 +2,7 @@
 import { ref, computed } from "vue"
 import { RecordModel } from "./models/RecordModel.js"
 import { LocalStorageAdapter } from "./models/LocalStorageAdapter.js"
-import InputForm from "./components/InputForm.vue"
-import RecordList from "./components/RecordList.vue"
+import InputAndListView from "./components/InputAndListView.vue"
 import SettingsForm from "./components/SettingsForm.vue"
 import TabNavigation from "./components/TabNavigation.vue"
 import NotificationBar from "./components/NotificationBar.vue"
@@ -15,18 +14,17 @@ const props = defineProps({
 const recordModel = props.recordModel ?? new RecordModel(new LocalStorageAdapter())
 
 const tabs = [
-  { key: "Input", label: "入力", component: InputForm },
-  { key: "Records", label: "リスト", component: RecordList },
+  { key: "Home", label: "ホーム", component: InputAndListView },
   { key: "Settings", label: "設定", component: SettingsForm },
 ]
-const currentTabKey = ref("Input")
+const currentTabKey = ref("Home")
 
 const currentTabContent = computed(() => {
   const activeTab = tabs.find((tab) => tab.key === currentTabKey.value)
   if (activeTab.component) {
     return activeTab.component
   } else {
-    return InputForm
+    return tabs[0].component
   }
 })
 </script>
@@ -43,5 +41,3 @@ const currentTabContent = computed(() => {
     </div>
   </div>
 </template>
-
-<style scoped></style>
