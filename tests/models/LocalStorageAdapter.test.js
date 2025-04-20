@@ -22,6 +22,26 @@ describe("LocalStorageAdapter.js", () => {
         date: new Date("2025-04-01 16:30"),
       },
     ],
+    tags: [
+      {
+        id: "5ade7aff-2c3e-48ca-8ad2-5cd8fdae3e0c",
+        title: "テストタグ1",
+      },
+      {
+        id: "8ba3e7cf-cccd-435f-a97a-c1d60c685929",
+        title: "テストタグ2",
+      },
+    ],
+    taggings: [
+      {
+        achievementId: "8adcf1ba-89d8-475f-b651-b14df49853eb",
+        tagId: "5ade7aff-2c3e-48ca-8ad2-5cd8fdae3e0c",
+      },
+      {
+        achievementId: "8adcf1ba-89d8-475f-b651-b14df49853eb",
+        tagId: "8ba3e7cf-cccd-435f-a97a-c1d60c685929",
+      },
+    ],
   }
 
   let adapter
@@ -124,5 +144,60 @@ describe("LocalStorageAdapter.js", () => {
     adapter = new LocalStorageAdapter()
 
     expect(adapter.getStars()).toEqual([])
+  })
+
+  test("tag を保存できる", () => {
+    adapter = new LocalStorageAdapter()
+    adapter.addTag(validJson.tags[0])
+
+    const localStorageData = JSON.parse(localStorage.getItem("tags"))
+    expect(localStorageData).toEqual([validJson.tags[0]])
+  })
+
+  test("複数の tag を保存できる", () => {
+    adapter = new LocalStorageAdapter()
+    adapter.importTags(validJson.tags)
+
+    const localStorageData = JSON.parse(localStorage.getItem("tags"))
+    expect(localStorageData).toEqual(validJson.tags)
+  })
+
+  test("空のストレージから空の tags 配列を取得できる", () => {
+    adapter = new LocalStorageAdapter()
+    expect(adapter.getTags()).toEqual([])
+  })
+
+  test("保存した tags 配列を取得できる", () => {
+    adapter = new LocalStorageAdapter()
+    adapter.importTags(validJson.tags)
+
+    expect(adapter.getTags()).toEqual(validJson.tags)
+  })
+
+  test("複数の tagging を保存できる", () => {
+    adapter = new LocalStorageAdapter()
+    adapter.addTaggings(validJson.taggings)
+
+    const localStorageData = JSON.parse(localStorage.getItem("taggings"))
+    expect(localStorageData).toEqual(validJson.taggings)
+  })
+
+  test("保存した taggings 配列を取得できる", () => {
+    adapter = new LocalStorageAdapter()
+    adapter.importTaggings(validJson.taggings)
+
+    expect(adapter.getTaggings()).toEqual(validJson.taggings)
+  })
+
+  test("空のストレージから空の taggings 配列を取得できる", () => {
+    adapter = new LocalStorageAdapter()
+    expect(adapter.getTaggings()).toEqual([])
+  })
+
+  test("taggings を削除できる", () => {
+    adapter = new LocalStorageAdapter()
+    adapter.addTaggings(validJson.taggings)
+    adapter.removeTaggings([validJson.taggings[0]])
+    expect(adapter.getTaggings()).toEqual([validJson.taggings[1]])
   })
 })

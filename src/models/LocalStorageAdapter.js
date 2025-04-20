@@ -17,6 +17,22 @@ export class LocalStorageAdapter {
     localStorage.setItem("stars", JSON.stringify(stars))
   }
 
+  loadTags() {
+    return JSON.parse(localStorage.getItem("tags")) || []
+  }
+
+  saveTags(tags) {
+    localStorage.setItem("tags", JSON.stringify(tags))
+  }
+
+  loadTaggings() {
+    return JSON.parse(localStorage.getItem("taggings")) || []
+  }
+
+  saveTaggings(taggings) {
+    localStorage.setItem("taggings", JSON.stringify(taggings))
+  }
+
   addAchievement({ id, content, date }) {
     const achievements = this.loadAchievements()
     achievements.push({ id, content, date })
@@ -27,6 +43,27 @@ export class LocalStorageAdapter {
     const stars = this.loadStars()
     stars.push({ id, achievementId, content, date })
     this.saveStars(stars)
+  }
+
+  addTag({ id, title }) {
+    const tags = this.loadTags()
+    tags.push({ id, title })
+    this.saveTags(tags)
+  }
+
+  addTaggings(taggings) {
+    const storageTaggings = this.loadTaggings()
+    taggings.forEach((a) => {
+      storageTaggings.push(a)
+    })
+    this.saveTaggings(storageTaggings)
+  }
+
+  removeTaggings(taggings) {
+    const storageTaggings = this.loadTaggings().filter((t) => {
+      return !taggings.some((s) => t.achievementId === s.achievementId && t.tagId === s.tagId)
+    })
+    this.saveTaggings(storageTaggings)
   }
 
   getAchievements() {
@@ -47,6 +84,14 @@ export class LocalStorageAdapter {
     return stars
   }
 
+  getTags() {
+    return this.loadTags()
+  }
+
+  getTaggings() {
+    return this.loadTaggings()
+  }
+
   importAchievements(achievements) {
     const storageAchievements = this.loadAchievements()
     achievements.forEach((a) => {
@@ -61,5 +106,17 @@ export class LocalStorageAdapter {
       storageStars.push(a)
     })
     this.saveStars(storageStars)
+  }
+
+  importTags(tags) {
+    const storageTags = this.loadTags()
+    tags.forEach((a) => {
+      storageTags.push(a)
+    })
+    this.saveTags(storageTags)
+  }
+
+  importTaggings(taggings) {
+    this.saveTaggings(taggings)
   }
 }
