@@ -3,9 +3,7 @@ import starImg from "@/assets/star.svg"
 import blankStarImg from "@/assets/blank-star.svg"
 
 const props = defineProps({
-  achievement: Object,
-  tags: Object,
-  stars: Object,
+  entry: Object,
 })
 </script>
 
@@ -13,26 +11,24 @@ const props = defineProps({
   <div class="entry-container">
     <div class="achievement-header">
       <div class="star-count">
-        <template v-if="props.stars.length === 0">
+        <template v-if="props.entry.stars.length === 0">
           <img :src="blankStarImg" alt="blank-star" class="star-icon" />
         </template>
         <template v-else>
           <img :src="starImg" alt="star" class="star-icon" />
-          <span class="star-count-text">{{ props.stars.length }}</span>
+          <span class="star-count-text">{{ props.entry.stars.length }}</span>
         </template>
       </div>
-      <div class="achievement-date">{{ props.achievement.date.toLocaleString() }}</div>
+      <div class="achievement-date">{{ props.entry.achievement.date.toLocaleString() }}</div>
     </div>
-    <div class="achievement-content">{{ props.achievement.content }}</div>
-    <div class="tag-container">
-      <ul class="tags">
-        <li class="tag">タグ1</li>
-        <li class="tag">タグ2</li>
-        <li class="tag">長めのタグ1</li>
-      </ul>
+    <div class="achievement-content">
+      {{ props.entry.achievement.content }}
     </div>
-    <template v-if="props.stars.length !== 0">
-      <ul class="stars" v-for="star in props.stars" :key="star.id">
+    <ul class="tags" v-for="tag in props.entry.tags" :key="tag.id">
+      <li class="tag">{{ tag.title }}</li>
+    </ul>
+    <template v-if="props.entry.stars.length !== 0">
+      <ul class="stars" v-for="star in props.entry.stars" :key="star.id">
         <li class="star-comment" v-if="star.content">
           <span class="star-content">{{ star.content }}</span>
           <span class="star-date">{{ star.date.toLocaleString() }}</span>

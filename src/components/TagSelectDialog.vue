@@ -3,15 +3,19 @@ import { ref, watch } from "vue"
 
 const props = defineProps({
   show: Boolean,
+  initialTagIds: Array,
+  allTags: Array,
 })
 const emit = defineEmits(["update:show", "submit", "cancel"])
 
 const dialogRef = ref(null)
+const selectedTagIds = ref([])
 
 watch(
   () => props.show,
-  async (val) => {
+  (val) => {
     if (val) {
+      selectedTagIds.value = Array.from(props.initialTagIds)
       dialogRef.value?.showModal()
     } else {
       dialogRef.value?.close()
@@ -20,7 +24,7 @@ watch(
 )
 
 const submit = () => {
-  emit("submit")
+  emit("submit", Array.from(selectedTagIds.value))
   emit("update:show", false)
 }
 
@@ -28,18 +32,34 @@ const cancel = () => {
   emit("cancel")
   emit("update:show", false)
 }
+
+const toggleSelectedState = (id) => {
+  const idx = selectedTagIds.value.indexOf(id)
+  if (idx === -1) {
+    selectedTagIds.value.push(id)
+  } else {
+    selectedTagIds.value.splice(idx, 1)
+  }
+}
 </script>
 
 <template>
   <Teleport to="body">
     <dialog ref="dialogRef" @cancel="cancel">
       <template v-if="show">
+        <p class="message">割り当てるタグを選んでください</p>
         <form @submit.prevent="submit">
           <ul class="tag-list">
-            <li><button class="tag selected" type="button">タグ1</button></li>
-            <li><button class="tag selected" type="button">タグ2</button></li>
-            <li><button class="tag selected" type="button">長めのタグ1</button></li>
-            <li><button class="tag" type="button">長めのタグ2</button></li>
+            <li v-for="tag in props.allTags" :key="tag.id">
+              <button
+                :class="['tag', { selected: selectedTagIds.includes(tag.id) }]"
+                type="button"
+                @click="toggleSelectedState(tag.id)"
+                :tag-id="tag.id"
+              >
+                {{ tag.title }}
+              </button>
+            </li>
           </ul>
           <div class="actions">
             <button class="primary-button" type="submit">決定</button>

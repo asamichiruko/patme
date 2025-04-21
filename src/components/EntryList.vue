@@ -11,17 +11,21 @@ const props = defineProps({
 
 const { trigger } = useNotification()
 const entries = ref([])
+const allTags = ref(null)
+
 const showPrompt = ref(false)
 const showTabSelect = ref(false)
 const selectedId = ref("")
+const selectedTagIds = ref([])
 
-const inputComment = (e) => {
-  selectedId.value = e.target.getAttribute("achievement-id")
+const inputComment = (achievementId) => {
+  selectedId.value = achievementId
   showPrompt.value = true
 }
 
-const editTabs = (e) => {
-  selectedId.value = e.target.getAttribute("achievement-id")
+const editTags = (achievementId, tags) => {
+  selectedId.value = achievementId
+  selectedTagIds.value = tags.map((t) => t.id)
   showTabSelect.value = true
 }
 
@@ -34,11 +38,17 @@ const addStar = (content) => {
   }
 }
 
+const updateTags = (tagIds) => {
+  props.entryModel.setTagsForAchievement({ achievementId: selectedId.value, tagIds })
+}
+
 onMounted(() => {
   entries.value = props.entryModel.getEntries()
+  allTags.value = props.entryModel.getAllTags()
 
   props.entryModel.subscribe(() => {
     entries.value = props.entryModel.getEntries()
+    allTags.value = props.entryModel.getAllTags()
   })
 })
 </script>
@@ -49,12 +59,12 @@ onMounted(() => {
   </p>
   <ul class="entries" v-else>
     <li class="entry-item" v-for="entry in entries" :key="entry.achievement.id">
-      <EntryListItem :achievement="entry.achievement" :stars="entry.stars" />
+      <EntryListItem :entry="entry" />
       <div class="entry-actions">
-        <button class="comment-button" :achievement-id="entry.achievement.id" @click="inputComment">
+        <button class="comment-button" @click="inputComment(entry.achievement.id)">
           コメントする
         </button>
-        <button class="tag-button" :achievement-id="entry.achievement.id" @click="editTabs">
+        <button class="tag-button" @click="editTags(entry.achievement.id, entry.tags)">
           タグを編集
         </button>
       </div>
@@ -71,7 +81,13 @@ onMounted(() => {
     @submit="addStar"
   />
 
-  <TagSelectDialog :show="showTabSelect" @update:show="showTabSelect = $event" />
+  <TagSelectDialog
+    :show="showTabSelect"
+    @update:show="showTabSelect = $event"
+    :initialTagIds="selectedTagIds"
+    :allTags="allTags"
+    @submit="updateTags"
+  />
 </template>
 
 <style scoped>
