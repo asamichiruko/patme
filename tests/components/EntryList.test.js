@@ -86,7 +86,7 @@ describe("EntryList.vue", () => {
       },
     })
 
-    const commentButtons = await screen.findAllByRole("button", { name: "コメント" })
+    const commentButtons = await screen.findAllByRole("button", { name: /コメント/i })
     await fireEvent.click(commentButtons[0])
     const achievementId = commentButtons[0].getAttribute("achievement-id")
 
