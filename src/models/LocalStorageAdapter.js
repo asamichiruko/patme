@@ -60,9 +60,9 @@ export class LocalStorageAdapter {
   }
 
   removeTaggings(taggings) {
-    const storageTaggings = this.loadTaggings().filter((t) => {
-      return !taggings.some((s) => t.achievementId === s.achievementId && t.tagId === s.tagId)
-    })
+    const storageTaggings = this.loadTaggings().filter(
+      (t) => !taggings.some((s) => s.achievementId === t.achievementId && s.tagId === t.tagId),
+    )
     this.saveTaggings(storageTaggings)
   }
 
