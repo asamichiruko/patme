@@ -10,6 +10,13 @@ describe("EntryList.vue", () => {
         date: new Date("2025-04-01 15:00:00"),
       },
       stars: [],
+      tags: [
+        {
+          id: "5ade7aff-2c3e-48ca-8ad2-5cd8fdae3e0c",
+          achievementId: "8adcf1ba-89d8-475f-b651-b14df49853eb",
+          title: "テストタグ1",
+        },
+      ],
     },
     {
       achievement: {
@@ -25,6 +32,7 @@ describe("EntryList.vue", () => {
           date: new Date("2025-04-01 16:30:00"),
         },
       ],
+      tags: [],
     },
   ]
   let entryModel
@@ -34,6 +42,8 @@ describe("EntryList.vue", () => {
     entryModel = {
       subscribe: vi.fn(),
       addStar: vi.fn(() => true),
+      setTagsForAchievement: vi.fn(),
+      getAllTags: vi.fn(() => ["tag1", "tag2"]),
       getEntries: vi.fn(() => testEntries),
     }
   })
@@ -80,7 +90,7 @@ describe("EntryList.vue", () => {
       global: {
         stubs: {
           PromptDialog: {
-            template: `<button @click="$emit('submit', 'test comment')">dummydialog</button>`,
+            template: `<button @click="$emit('submit', 'test comment')">dummypromptdialog</button>`,
           },
         },
       },
@@ -88,14 +98,39 @@ describe("EntryList.vue", () => {
 
     const commentButtons = await screen.findAllByRole("button", { name: /コメント/i })
     await fireEvent.click(commentButtons[0])
-    const achievementId = commentButtons[0].getAttribute("achievement-id")
 
-    const fakeDialog = await screen.findByRole("button", { name: /dummydialog/i })
+    const fakeDialog = await screen.findByRole("button", { name: /dummypromptdialog/i })
     await fireEvent.click(fakeDialog)
 
     expect(entryModel.addStar).toHaveBeenCalledWith({
-      achievementId: achievementId,
+      achievementId: expect.any(String),
       content: "test comment",
+    })
+  })
+
+  test("タグ編集ボタンを押して決定すると setTagsForAchievement が呼ばれる", async () => {
+    render(EntryList, {
+      props: {
+        entryModel: entryModel,
+      },
+      global: {
+        stubs: {
+          TagSelectDialog: {
+            template: `<button @click="$emit('submit', ['id1', 'id2'])">dummytagselectdialog</button>`,
+          },
+        },
+      },
+    })
+
+    const tagButtons = await screen.findAllByRole("button", { name: /タグを編集/i })
+    await fireEvent.click(tagButtons[0])
+
+    const fakeDialog = await screen.findByRole("button", { name: /dummytagselectdialog/i })
+    await fireEvent.click(fakeDialog)
+
+    expect(entryModel.setTagsForAchievement).toHaveBeenCalledWith({
+      achievementId: expect.any(String),
+      tagIds: ["id1", "id2"],
     })
   })
 })

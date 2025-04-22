@@ -3,7 +3,7 @@ import { onMounted, ref } from "vue"
 import PromptDialog from "@/components/PromptDialog.vue"
 import { useNotification } from "@/composables/useNotification.js"
 import EntryListItem from "@/components/EntryListItem.vue"
-import TagSelectDialog from "./TagSelectDialog.vue"
+import TagEditorDialog from "@/components/TagEditorDialog.vue"
 
 const props = defineProps({
   entryModel: Object,
@@ -14,19 +14,13 @@ const entries = ref([])
 const allTags = ref(null)
 
 const showPrompt = ref(false)
-const showTabSelect = ref(false)
+const showTabEditor = ref(false)
 const selectedId = ref("")
 const selectedTagIds = ref([])
 
 const inputComment = (achievementId) => {
   selectedId.value = achievementId
   showPrompt.value = true
-}
-
-const editTags = (achievementId, tags) => {
-  selectedId.value = achievementId
-  selectedTagIds.value = tags.map((t) => t.id)
-  showTabSelect.value = true
 }
 
 const addStar = (content) => {
@@ -36,6 +30,12 @@ const addStar = (content) => {
   } else {
     trigger("記録に失敗しました。時間をおいて再度お試しください", "error")
   }
+}
+
+const editTags = (achievementId, tags) => {
+  selectedId.value = achievementId
+  selectedTagIds.value = tags.map((t) => t.id)
+  showTabEditor.value = true
 }
 
 const updateTags = (tagIds) => {
@@ -81,9 +81,9 @@ onMounted(() => {
     @submit="addStar"
   />
 
-  <TagSelectDialog
-    :show="showTabSelect"
-    @update:show="showTabSelect = $event"
+  <TagEditorDialog
+    :show="showTabEditor"
+    @update:show="showTabEditor = $event"
     :initialTagIds="selectedTagIds"
     :allTags="allTags"
     @submit="updateTags"

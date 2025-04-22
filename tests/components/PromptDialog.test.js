@@ -1,6 +1,5 @@
 import { render, screen, fireEvent, cleanup } from "@testing-library/vue"
 import PromptDialog from "@/components/PromptDialog.vue"
-import { expect } from "vitest"
 
 describe("PromptDialog.vue", () => {
   const showModal = vi.fn()

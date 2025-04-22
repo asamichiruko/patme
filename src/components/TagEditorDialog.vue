@@ -21,6 +21,7 @@ watch(
       dialogRef.value?.close()
     }
   },
+  { immediate: true },
 )
 
 const submit = () => {
@@ -53,6 +54,7 @@ const toggleSelectedState = (id) => {
             <li v-for="tag in props.allTags" :key="tag.id">
               <button
                 :class="['tag', { selected: selectedTagIds.includes(tag.id) }]"
+                :aria-pressed="selectedTagIds.includes(tag.id)"
                 type="button"
                 @click="toggleSelectedState(tag.id)"
                 :tag-id="tag.id"
