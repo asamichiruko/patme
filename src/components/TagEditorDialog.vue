@@ -1,27 +1,50 @@
 <script setup>
-import { ref, watch } from "vue"
+import { nextTick, ref, watch } from "vue"
 
 const props = defineProps({
   show: Boolean,
   initialTagIds: Array,
   allTags: Array,
+  addRequestedTagId: String,
 })
-const emit = defineEmits(["update:show", "submit", "cancel"])
+const emit = defineEmits(["update:show", "submit", "cancel", "add-tag"])
 
 const dialogRef = ref(null)
+const tagListRef = ref(null)
 const selectedTagIds = ref([])
+const newTagTitle = ref("")
 
 watch(
   () => props.show,
   (val) => {
     if (val) {
       selectedTagIds.value = Array.from(props.initialTagIds)
+      newTagTitle.value = ""
       dialogRef.value?.showModal()
     } else {
       dialogRef.value?.close()
     }
   },
   { immediate: true },
+)
+
+watch(
+  () => props.addRequestedTagId,
+  async (id) => {
+    if (id && !selectedTagIds.value.includes(id)) {
+      selectedTagIds.value.push(id)
+
+      await nextTick(() => {
+        const added = document.querySelector(`.tag[tag-id='${id}']`)
+        added?.scrollIntoView({
+          behavior: "smooth",
+          block: "nearest",
+        })
+        added?.classList.add("flash")
+        setTimeout(() => added?.classList.remove("flash"), 800)
+      })
+    }
+  },
 )
 
 const submit = () => {
@@ -32,6 +55,14 @@ const submit = () => {
 const cancel = () => {
   emit("cancel")
   emit("update:show", false)
+}
+
+const addTag = () => {
+  const title = newTagTitle.value.trim()
+  if (title) {
+    emit("add-tag", newTagTitle.value)
+    newTagTitle.value = ""
+  }
 }
 
 const toggleSelectedState = (id) => {
@@ -50,7 +81,7 @@ const toggleSelectedState = (id) => {
       <template v-if="show">
         <p class="message">割り当てるタグを選んでください</p>
         <form @submit.prevent="submit">
-          <ul class="tag-list">
+          <ul class="tag-list" ref="tagListRef">
             <li v-for="tag in props.allTags" :key="tag.id">
               <button
                 :class="['tag', { selected: selectedTagIds.includes(tag.id) }]"
@@ -66,9 +97,15 @@ const toggleSelectedState = (id) => {
           <div class="add-tag-form">
             <label>
               タグを追加
-              <input class="new-tag-title" type="text" placeholder="新しいタグ" />
+              <input
+                class="new-tag-title"
+                type="text"
+                v-model="newTagTitle"
+                @keydown.enter.prevent="addTag"
+                placeholder="新しいタグ"
+              />
             </label>
-            <button class="add-tag-button" type="button">追加</button>
+            <button class="add-tag-button" type="button" @click="addTag">追加</button>
           </div>
           <div class="actions">
             <button class="primary-button" type="submit">決定</button>
@@ -92,13 +129,13 @@ dialog {
 
 .tag-list {
   list-style-type: none;
-  padding: 0;
+  padding: 2px;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  flex-wrap: wrap;
   gap: 0.5em;
-}
-.tag-option {
-  display: inline-block;
+  max-height: 200px;
+  overflow-y: scroll;
 }
 
 .new-tag-title {
@@ -124,6 +161,18 @@ dialog {
   outline: 2px solid #4c9ffe;
   outline-offset: 2px;
   border-radius: 4px;
+}
+
+@keyframes flash {
+  0% {
+    background-color: #e0e4e6;
+  }
+  100% {
+    background-color: inherit;
+  }
+}
+.tag.flash {
+  animation: flash 0.8s ease-out;
 }
 
 .actions {

@@ -46,14 +46,20 @@ export class EntryModel {
   }
 
   setTagsForAchievement({ achievementId, tagIds }) {
+    if (!this.isValidId(achievementId)) {
+      return
+    }
     const existingTaggings = this.storage
       .getTaggings()
       .filter((tagging) => tagging.achievementId === achievementId)
     const existingTaggingIds = new Set(
       existingTaggings.map((tagging) => this.generateTaggingId(tagging)),
     )
+    const existingTagIds = new Set(this.storage.getTags().map((tag) => tag.id))
     const updateTaggingIds = new Set(
-      tagIds.map((tagId) => this.generateTaggingId({ achievementId, tagId })),
+      tagIds
+        .filter((tagId) => this.isValidId(tagId) && existingTagIds.has(tagId))
+        .map((tagId) => this.generateTaggingId({ achievementId, tagId })),
     )
 
     const toAdd = updateTaggingIds.difference(existingTaggingIds)
@@ -62,6 +68,20 @@ export class EntryModel {
     this.storage.addTaggings(Array.from(toAdd).map((id) => this.parseTaggingId(id)))
     this.storage.removeTaggings(Array.from(toRemove).map((id) => this.parseTaggingId(id)))
     this.notify()
+  }
+
+  addTag({ title }) {
+    title = title.trim()
+    if (!title) return null
+
+    const allTagTitles = this.storage.getTags().map((tag) => tag.title)
+    if (allTagTitles.includes(title)) {
+      return null
+    }
+    const newTag = { id: this.generateId(), title: title }
+    this.storage.addTag(newTag)
+    this.notify()
+    return newTag
   }
 
   getAllTags() {

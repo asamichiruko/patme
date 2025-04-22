@@ -10,13 +10,16 @@ const props = defineProps({
 })
 
 const { trigger } = useNotification()
+
 const entries = ref([])
-const allTags = ref(null)
+const selectedId = ref("")
 
 const showPrompt = ref(false)
+
 const showTabEditor = ref(false)
-const selectedId = ref("")
 const selectedTagIds = ref([])
+const allTags = ref(null)
+const addRequestedTagId = ref("")
 
 const inputComment = (achievementId) => {
   selectedId.value = achievementId
@@ -42,6 +45,21 @@ const updateTags = (tagIds) => {
   props.entryModel.setTagsForAchievement({ achievementId: selectedId.value, tagIds })
 }
 
+const addNewTag = (title) => {
+  const newTag = props.entryModel.addTag({ title })
+
+  if (newTag) {
+    allTags.value = props.entryModel.getAllTags()
+    addRequestedTagId.value = newTag.id
+    return
+  }
+
+  const found = allTags.value.find((tag) => tag.title === title)
+  if (found) {
+    addRequestedTagId.value = found.id
+  }
+}
+
 onMounted(() => {
   entries.value = props.entryModel.getEntries()
   allTags.value = props.entryModel.getAllTags()
@@ -64,7 +82,7 @@ onMounted(() => {
         <button class="comment-button" @click="inputComment(entry.achievement.id)">
           コメントする
         </button>
-        <button class="tag-button" @click="editTags(entry.achievement.id, entry.tags)">
+        <button class="tag-edit-button" @click="editTags(entry.achievement.id, entry.tags)">
           タグを編集
         </button>
       </div>
@@ -86,7 +104,9 @@ onMounted(() => {
     @update:show="showTabEditor = $event"
     :initialTagIds="selectedTagIds"
     :allTags="allTags"
+    :addRequestedTagId="addRequestedTagId"
     @submit="updateTags"
+    @add-tag="addNewTag"
   />
 </template>
 
@@ -135,7 +155,7 @@ onMounted(() => {
   border-radius: 4px;
 }
 
-.tag-button {
+.tag-edit-button {
   background-color: #2ecc71;
   color: white;
   font-size: 14px;
@@ -144,10 +164,10 @@ onMounted(() => {
   border-radius: 4px;
   transition: background-color 0.3s;
 }
-.tag-button:hover {
+.tag-edit-button:hover {
   background-color: #27ae60;
 }
-.tag-button:focus-visible {
+.tag-edit-button:focus-visible {
   outline: 2px solid #27ae60;
   outline-offset: 2px;
   border-radius: 4px;

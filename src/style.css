@@ -63,3 +63,7 @@ button {
   background-color: #e0e4e6;
   border: 1px solid #76878d;
 }
+.tag:focus-visible {
+  outline: 1px solid #53656d;
+  outline-offset: 1px;
+}

@@ -24,8 +24,8 @@ const props = defineProps({
     <div class="achievement-content">
       {{ props.entry.achievement.content }}
     </div>
-    <ul class="tags" v-for="tag in props.entry.tags" :key="tag.id">
-      <li class="tag selected">{{ tag.title }}</li>
+    <ul class="tags">
+      <li class="tag selected" v-for="tag in props.entry.tags" :key="tag.id">{{ tag.title }}</li>
     </ul>
     <template v-if="props.entry.stars.length !== 0">
       <ul class="stars" v-for="star in props.entry.stars" :key="star.id">
@@ -83,6 +83,9 @@ const props = defineProps({
   flex-wrap: wrap;
   gap: 10px;
   margin-bottom: 20px;
+}
+.tag {
+  display: inline-block;
 }
 
 .stars {
