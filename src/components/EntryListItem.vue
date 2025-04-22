@@ -25,7 +25,7 @@ const props = defineProps({
       {{ props.entry.achievement.content }}
     </div>
     <ul class="tags" v-for="tag in props.entry.tags" :key="tag.id">
-      <li class="tag">{{ tag.title }}</li>
+      <li class="tag selected">{{ tag.title }}</li>
     </ul>
     <template v-if="props.entry.stars.length !== 0">
       <ul class="stars" v-for="star in props.entry.stars" :key="star.id">
@@ -83,16 +83,6 @@ const props = defineProps({
   flex-wrap: wrap;
   gap: 10px;
   margin-bottom: 20px;
-}
-.tag {
-  display: inline-block;
-  color: #53656d;
-  background-color: #e0e4e6;
-  border: 1px solid #76878d;
-  padding: 0 12px;
-  border-radius: 8px;
-  white-space: nowrap;
-  overflow: hidden;
 }
 
 .stars {

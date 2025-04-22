@@ -46,3 +46,20 @@ button {
   outline-offset: 2px;
   border-radius: 4px;
 }
+
+.tag {
+  display: inline-block;
+  color: #53656d;
+  background-color: #fff;
+  border: 1px dashed #76878d;
+  padding: 4px 14px;
+  font-size: 14px;
+  border-radius: 8px;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.tag.selected {
+  color: #53656d;
+  background-color: #e0e4e6;
+  border: 1px solid #76878d;
+}

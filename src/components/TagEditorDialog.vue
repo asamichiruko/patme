@@ -63,6 +63,13 @@ const toggleSelectedState = (id) => {
               </button>
             </li>
           </ul>
+          <div class="add-tag-form">
+            <label>
+              タグを追加
+              <input class="new-tag-title" type="text" placeholder="新しいタグ" />
+            </label>
+            <button class="add-tag-button" type="button">追加</button>
+          </div>
           <div class="actions">
             <button class="primary-button" type="submit">決定</button>
             <button class="primary-button" type="button" @click="cancel">キャンセル</button>
@@ -79,7 +86,7 @@ dialog {
   border-radius: 8px;
   padding: 1em;
   max-width: 400px;
-  width: 90%;
+  width: 80%;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
@@ -92,27 +99,31 @@ dialog {
 }
 .tag-option {
   display: inline-block;
-  text-align: text-bottom;
 }
-.tag {
-  display: inline-block;
-  color: #53656d;
-  background-color: #fff;
-  border: 1px dashed #76878d;
-  padding: 0 12px;
-  border-radius: 8px;
-  white-space: nowrap;
-  overflow: hidden;
+
+.new-tag-title {
+  padding: 5px;
+  font-size: 14px;
+  margin: 0 10px;
+  width: 8em;
 }
-.tag.selected {
-  display: inline-block;
-  color: #53656d;
-  background-color: #e0e4e6;
-  border: 1px solid #76878d;
-  padding: 0 12px;
-  border-radius: 8px;
-  white-space: nowrap;
-  overflow: hidden;
+.add-tag-button {
+  background-color: #3498db;
+  color: white;
+  border: none;
+  font-size: 14px;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+.add-tag-button:hover {
+  background-color: #2980b9;
+}
+.add-tag-button:focus-visible {
+  outline: 2px solid #4c9ffe;
+  outline-offset: 2px;
+  border-radius: 4px;
 }
 
 .actions {

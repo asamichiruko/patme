@@ -70,7 +70,7 @@ dialog {
   border-radius: 8px;
   padding: 1em;
   max-width: 400px;
-  width: 90%;
+  width: 80%;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
