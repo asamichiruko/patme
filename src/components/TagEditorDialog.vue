@@ -31,19 +31,21 @@ watch(
 watch(
   () => props.addRequestedTagId,
   async (id) => {
-    if (id && !selectedTagIds.value.includes(id)) {
-      selectedTagIds.value.push(id)
-
-      await nextTick(() => {
-        const added = document.querySelector(`.tag[tag-id='${id}']`)
-        added?.scrollIntoView({
-          behavior: "smooth",
-          block: "nearest",
-        })
-        added?.classList.add("flash")
-        setTimeout(() => added?.classList.remove("flash"), 800)
-      })
+    if (!id) {
+      return
     }
+    if (!selectedTagIds.value.includes(id)) {
+      selectedTagIds.value.push(id)
+    }
+    await nextTick(() => {
+      const added = document.querySelector(`.tag[tag-id='${id}']`)
+      added?.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      })
+      added?.classList.add("pulse")
+      setTimeout(() => added?.classList.remove("pulse"), 300)
+    })
   },
 )
 
@@ -163,16 +165,19 @@ dialog {
   border-radius: 4px;
 }
 
-@keyframes flash {
+@keyframes pulse {
   0% {
-    background-color: #e0e4e6;
+    transform: scale(1);
+  }
+  30% {
+    transform: scale(1.06);
   }
   100% {
-    background-color: inherit;
+    transform: scale(1);
   }
 }
-.tag.flash {
-  animation: flash 0.8s ease-out;
+.tag.pulse {
+  animation: pulse 0.2s ease-out;
 }
 
 .actions {
