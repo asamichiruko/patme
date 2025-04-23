@@ -113,8 +113,8 @@ onMounted(() => {
 <style scoped>
 .empty-state {
   text-align: center;
-  padding: 40px 0;
-  color: #7f8c8d;
+  padding: 48px 0;
+  color: var(--color-subtext);
 }
 
 .entries {
@@ -122,53 +122,54 @@ onMounted(() => {
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 32px;
 }
 .entry-item {
-  background-color: #f8f9fa;
-  border-left: 4px solid #3498db;
-  padding: 15px;
+  background-color: var(--color-card);
+  border: 1px solid var(--color-card-border);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  padding: 16px;
   border-radius: 4px;
 }
 .entry-actions {
-  margin-top: 20px;
+  margin-top: 24px;
   display: flex;
-  gap: 10px;
+  gap: 16px;
   align-items: center;
 }
 
 .comment-button {
-  background-color: #2ecc71;
-  color: white;
+  background-color: var(--color-primary);
+  color: var(--color-primary-text);
   font-size: 14px;
-  padding: 5px 10px;
+  padding: 8px 16px;
   border: none;
   border-radius: 4px;
   transition: background-color 0.3s;
 }
 .comment-button:hover {
-  background-color: #27ae60;
+  background-color: var(--color-primary-hover);
 }
 .comment-button:focus-visible {
-  outline: 2px solid #27ae60;
+  outline: 2px solid var(--color-primary-focus);
   outline-offset: 2px;
   border-radius: 4px;
 }
 
 .tag-edit-button {
-  background-color: #2ecc71;
-  color: white;
+  background-color: var(--color-primary);
+  color: var(--color-primary-text);
   font-size: 14px;
-  padding: 5px 10px;
+  padding: 8px 16px;
   border: none;
   border-radius: 4px;
   transition: background-color 0.3s;
 }
 .tag-edit-button:hover {
-  background-color: #27ae60;
+  background-color: var(--color-primary-hover);
 }
 .tag-edit-button:focus-visible {
-  outline: 2px solid #27ae60;
+  outline: 2px solid var(--color-primary-focus);
   outline-offset: 2px;
   border-radius: 4px;
 }

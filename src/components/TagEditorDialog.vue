@@ -98,7 +98,7 @@ const toggleSelectedState = (id) => {
           </ul>
           <div class="add-tag-form">
             <label>
-              タグを追加
+              <span class="new-tag-label">タグを追加</span>
               <input
                 class="new-tag-title"
                 type="text"
@@ -111,7 +111,7 @@ const toggleSelectedState = (id) => {
           </div>
           <div class="actions">
             <button class="primary-button" type="submit">決定</button>
-            <button class="primary-button" type="button" @click="cancel">キャンセル</button>
+            <button class="cancel-button" type="button" @click="cancel">キャンセル</button>
           </div>
         </form>
       </template>
@@ -123,44 +123,47 @@ const toggleSelectedState = (id) => {
 dialog {
   border: none;
   border-radius: 8px;
-  padding: 1em;
+  padding: 16px;
   max-width: 400px;
   width: 80%;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .tag-list {
   list-style-type: none;
-  padding: 2px;
+  padding: 16px 0;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-  gap: 0.5em;
+  gap: 16px 8px;
   max-height: 200px;
   overflow-y: scroll;
 }
 
+.new-tag-label {
+  font-size: 15px;
+}
 .new-tag-title {
-  padding: 5px;
-  font-size: 14px;
-  margin: 0 10px;
-  width: 8em;
+  padding: 8px;
+  font-size: 15px;
+  margin: 0 8px;
+  width: 100px;
 }
 .add-tag-button {
-  background-color: #3498db;
-  color: white;
+  background-color: var(--color-primary);
+  color: var(--color-primary-text);
   border: none;
   font-size: 14px;
-  padding: 5px 10px;
+  padding: 8px 16px;
   border-radius: 4px;
   cursor: pointer;
   transition: background-color 0.3s;
 }
 .add-tag-button:hover {
-  background-color: #2980b9;
+  background-color: var(--color-primary-hover);
 }
 .add-tag-button:focus-visible {
-  outline: 2px solid #4c9ffe;
+  outline: 2px solid var(--color-primary-focus);
   outline-offset: 2px;
   border-radius: 4px;
 }
@@ -182,7 +185,7 @@ dialog {
 
 .actions {
   display: flex;
-  gap: 1em;
-  margin-top: 2em;
+  gap: 16px;
+  margin-top: 32px;
 }
 </style>

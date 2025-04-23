@@ -43,23 +43,23 @@ const props = defineProps({
   display: flex;
 }
 .achievement-date {
-  color: #7f8c8d;
-  font-size: 0.9em;
+  color: var(--color-subtext);
+  font-size: 15px;
   margin-left: auto;
 }
 .star-count {
   font-family: "Franklin Gothic", "Arial Bold", Arial, sans-serif;
-  color: #2ecc71;
-  font-size: 1.2em;
+  color: var(--color-primary);
+  font-size: 20px;
   display: inline-flex;
   vertical-align: middle;
   align-items: center;
-  gap: 0.2em;
+  gap: 8px;
 }
 .star-icon {
-  width: 1.1em;
-  height: 1.1em;
-  padding-bottom: 0.2em;
+  width: 20px;
+  height: 20px;
+  padding-bottom: 0.1em;
   display: inline-block;
 }
 .star-count-text {
@@ -68,41 +68,36 @@ const props = defineProps({
 }
 
 .achievement-content {
-  font-size: 1.1em;
+  font-size: 20px;
   white-space: pre-wrap;
-  margin: 20px 0;
-  padding: 0 20px;
+  margin: 32px 0;
+  padding: 0 32px;
 }
 
 .tags {
   list-style-type: none;
   padding: 0;
-  font-size: 14px;
-  color: #333;
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
-  margin-bottom: 20px;
-}
-.tag {
-  display: inline-block;
+  gap: 8px;
+  margin-bottom: 24px;
 }
 
 .stars {
   list-style-type: none;
   padding: 0;
-  font-size: 14px;
-  color: #333;
+  font-size: 15px;
+  color: var(--color-text);
 }
 .star-comment {
-  margin: 5px 0;
+  margin: 16px 0;
 }
 .star-content {
   white-space: pre-wrap;
 }
 .star-date {
-  color: #7f8c8d;
-  margin-left: 10px;
+  color: var(--color-subtext);
+  margin-left: 16px;
   font-size: 14px;
 }
 </style>

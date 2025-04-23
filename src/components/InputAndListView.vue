@@ -16,8 +16,8 @@ const props = defineProps({
 <style scoped>
 hr {
   border: none;
-  border-top: 2px solid #ddd;
-  color: #ddd;
-  margin: 30px 0;
+  border-top: 1px solid var(--color-border);
+  color: var(--color-border);
+  margin: 32px 0;
 }
 </style>

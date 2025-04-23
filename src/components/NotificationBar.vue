@@ -18,7 +18,7 @@ const { notification } = useNotification()
   top: 0;
   left: 0;
   right: 0;
-  padding: 0.5em;
+  padding: 8px;
   text-align: center;
   z-index: 1000;
 }
@@ -31,15 +31,15 @@ const { notification } = useNotification()
 }
 
 .notification.success {
-  background-color: #2ecc71;
-  color: white;
+  background-color: var(--color-success);
+  color: var(--color-note-text);
 }
 .notification.error {
-  background-color: #e74c3c;
-  color: white;
+  background-color: var(--color-error);
+  color: var(--color-note-text);
 }
 .notification.info {
-  background-color: #3498db;
-  color: white;
+  background-color: var(--color-info);
+  color: var(--color-note-text);
 }
 </style>

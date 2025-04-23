@@ -15,7 +15,7 @@
           ></textarea>
           <div class="actions">
             <button class="primary-button" type="submit">{{ submittext }}</button>
-            <button class="primary-button" type="button" @click="cancel">{{ canceltext }}</button>
+            <button class="cancel-button" type="button" @click="cancel">{{ canceltext }}</button>
           </div>
         </form>
       </template>
@@ -68,34 +68,34 @@ const cancel = () => {
 dialog {
   border: none;
   border-radius: 8px;
-  padding: 1em;
+  padding: 16px;
   max-width: 400px;
   width: 80%;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 label {
   display: block;
-  margin-bottom: 5px;
+  margin-bottom: 8px;
   font-weight: bold;
 }
 
 .text {
-  padding: 0.5em;
-  border: 1px solid #ddd;
+  padding: 16px;
+  border: 1px solid var(--color-border);
   border-radius: 4px;
   font-size: 16px;
   display: block;
   width: -webkit-fill-available;
   width: -moz-available;
   width: stretch;
-  height: 2.6em;
-  line-height: 1.3em;
+  height: 60px;
+  line-height: 1.6;
 }
 
 .actions {
   display: flex;
-  gap: 1em;
-  margin-top: 2em;
+  gap: 16px;
+  margin-top: 24px;
 }
 </style>

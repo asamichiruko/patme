@@ -47,19 +47,21 @@ onActivated(() => {
 <style scoped>
 label {
   display: block;
-  margin-bottom: 5px;
+  margin-top: 24px;
+  margin-bottom: 8px;
+  font-size: 18px;
   font-weight: bold;
 }
 textarea {
   width: -webkit-fill-available;
   width: -moz-available;
   width: stretch;
-  padding: 10px;
-  border: 1px solid #ddd;
+  padding: 16px;
+  border: 1px solid var(--color-border);
   border-radius: 4px;
   height: 100px;
   font-size: 16px;
-  margin-bottom: 1em;
-  line-height: 1.3em;
+  margin-bottom: 8px;
+  line-height: 1.6;
 }
 </style>

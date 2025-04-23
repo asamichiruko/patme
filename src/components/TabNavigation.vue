@@ -23,21 +23,21 @@ defineEmits(["update:currentTab"])
 <style scoped>
 .tab-container {
   display: flex;
-  gap: 5px;
+  gap: 8px;
 }
 .tab-button {
-  padding: 10px 20px;
-  background-color: #f1f1f1;
-  color: #333;
+  padding: 8px 16px;
+  background-color: var(--color-tab-muted);
+  color: var(--color-tab-muted-text);
   cursor: pointer;
   border-radius: 4px 4px 0 0;
 }
 .tab-button.active {
-  background-color: #3498db;
-  color: #fff;
+  background-color: var(--color-tab-active);
+  color: var(--color-tab-text);
 }
 .tab-button:focus-visible {
-  outline: 2px solid #4c9ffe;
+  outline: 2px solid var(--color-tab-focus);
   outline-offset: 2px;
   border-radius: 4px 4px 0 0;
 }
