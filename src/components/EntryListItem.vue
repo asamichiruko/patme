@@ -12,10 +12,10 @@ const props = defineProps({
     <div class="achievement-header">
       <div class="star-count">
         <template v-if="props.entry.stars.length === 0">
-          <img :src="blankStarImg" alt="blank-star" class="star-icon" />
+          <img :src="blankStarImg" alt="" class="star-icon" width="20px" height="20px" />
         </template>
         <template v-else>
-          <img :src="starImg" alt="star" class="star-icon" />
+          <img :src="starImg" alt="star" class="star-icon" width="20px" height="20px" />
           <span class="star-count-text">{{ props.entry.stars.length }}</span>
         </template>
       </div>
