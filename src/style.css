@@ -38,7 +38,9 @@
 }
 
 body {
-  font-family: "Helvetica Neue", Arial, sans-serif;
+  font-family:
+    "Helvetica Neue", "Arial", "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Noto Sans", "Meiryo",
+    sans-serif;
   font-size: 16px;
   line-height: 1.6;
   color: var(--color-text);
@@ -57,6 +59,14 @@ h2 {
   color: var(--color-header);
   margin-top: 24px;
 }
+
+input,
+select,
+button,
+textarea {
+  font-family: inherit;
+}
+
 .container {
   background-color: var(--color-surface);
   border-radius: 8px;
