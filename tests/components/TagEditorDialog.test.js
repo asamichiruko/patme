@@ -107,4 +107,26 @@ describe("TagEditorDialog.vue", () => {
 
     expect(tagButton1).toHaveAttribute("aria-pressed", "true")
   })
+
+  test("新しいタグの追加リクエストを送れる", async () => {
+    const { emitted } = render(TagEditorDialog, {
+      props: {
+        show: true,
+        allTags: [],
+        initialTagIds: [],
+      },
+    })
+
+    const dialog = await screen.findByRole("dialog", { hidden: true })
+    dialog.open = true
+
+    const newTagInput = await screen.findByRole("textbox", { name: /タグを追加/i })
+    await fireEvent.update(newTagInput, "TestTag")
+
+    const addTagButton = await screen.findByRole("button", { name: /追加/i })
+    await fireEvent.click(addTagButton)
+
+    expect(emitted()["add-tag"]).toBeTruthy()
+    expect(emitted()["add-tag"][0]).toEqual(["TestTag"])
+  })
 })

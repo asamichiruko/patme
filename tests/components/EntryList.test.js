@@ -43,7 +43,11 @@ describe("EntryList.vue", () => {
       subscribe: vi.fn(),
       addStar: vi.fn(() => true),
       setTagsForAchievement: vi.fn(),
-      getAllTags: vi.fn(() => ["tag1", "tag2"]),
+      addTag: vi.fn(),
+      getAllTags: vi.fn(() => [
+        { id: "id1", title: "tag1" },
+        { id: "id2", title: "tag2" },
+      ]),
       getEntries: vi.fn(() => testEntries),
     }
   })
@@ -115,8 +119,8 @@ describe("EntryList.vue", () => {
       },
       global: {
         stubs: {
-          TagSelectDialog: {
-            template: `<button @click="$emit('submit', ['id1', 'id2'])">dummytagselectdialog</button>`,
+          TagEditorDialog: {
+            template: `<button @click="$emit('submit', ['id1', 'id2'])">dummytageditordialog</button>`,
           },
         },
       },
@@ -125,12 +129,35 @@ describe("EntryList.vue", () => {
     const tagButtons = await screen.findAllByRole("button", { name: /タグを編集/i })
     await fireEvent.click(tagButtons[0])
 
-    const fakeDialog = await screen.findByRole("button", { name: /dummytagselectdialog/i })
+    const fakeDialog = await screen.findByRole("button", { name: /dummytageditordialog/i })
     await fireEvent.click(fakeDialog)
 
     expect(entryModel.setTagsForAchievement).toHaveBeenCalledWith({
       achievementId: expect.any(String),
       tagIds: ["id1", "id2"],
     })
+  })
+
+  test("新規タグを追加すると addTag が呼ばれる", async () => {
+    render(EntryList, {
+      props: {
+        entryModel: entryModel,
+      },
+      global: {
+        stubs: {
+          TagEditorDialog: {
+            template: `<button @click="$emit('add-tag', 'newTag')">タグを追加</button>`,
+          },
+        },
+      },
+    })
+
+    const tagButtons = await screen.findAllByRole("button", { name: /タグを編集/i })
+    await fireEvent.click(tagButtons[0])
+
+    const fakeDialog = await screen.findByRole("button", { name: /タグを追加/i })
+    await fireEvent.click(fakeDialog)
+
+    expect(entryModel.addTag).toHaveBeenCalledWith({ title: "newTag" })
   })
 })
