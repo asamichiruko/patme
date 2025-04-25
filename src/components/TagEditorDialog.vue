@@ -5,7 +5,6 @@ const props = defineProps({
   show: Boolean,
   initialTagIds: Array,
   allTags: Array,
-  addRequestedTagId: String,
 })
 const emit = defineEmits(["update:show", "submit", "cancel", "add-tag"])
 
@@ -28,26 +27,23 @@ watch(
   { immediate: true },
 )
 
-watch(
-  () => props.addRequestedTagId,
-  async (id) => {
-    if (!id) {
-      return
-    }
-    if (!selectedTagIds.value.includes(id)) {
-      selectedTagIds.value.push(id)
-    }
-    await nextTick(() => {
-      const added = document.querySelector(`.tag[tag-id='${id}']`)
-      added?.scrollIntoView({
-        behavior: "smooth",
-        block: "center",
-      })
-      added?.classList.add("pulse")
-      setTimeout(() => added?.classList.remove("pulse"), 300)
+const selectTagById = async (id) => {
+  if (!id) {
+    return
+  }
+  if (!selectedTagIds.value.includes(id)) {
+    selectedTagIds.value.push(id)
+  }
+  await nextTick(() => {
+    const added = document.querySelector(`.tag[tag-id='${id}']`)
+    added?.scrollIntoView({
+      behavior: "smooth",
+      block: "center",
     })
-  },
-)
+    added?.classList.add("pulse")
+    setTimeout(() => added?.classList.remove("pulse"), 300)
+  })
+}
 
 const submit = () => {
   emit("submit", Array.from(selectedTagIds.value))
@@ -75,6 +71,10 @@ const toggleSelectedState = (id) => {
     selectedTagIds.value.splice(idx, 1)
   }
 }
+
+defineExpose({
+  selectTagById,
+})
 </script>
 
 <template>

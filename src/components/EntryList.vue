@@ -12,14 +12,14 @@ const props = defineProps({
 const { trigger } = useNotification()
 
 const entries = ref([])
-const selectedId = ref("")
+const allTags = ref(null)
 
 const showPrompt = ref(false)
+const selectedId = ref("")
 
+const tagEditorRef = ref(null)
 const showTabEditor = ref(false)
 const selectedTagIds = ref([])
-const allTags = ref(null)
-const addRequestedTagId = ref("")
 
 const inputComment = (achievementId) => {
   selectedId.value = achievementId
@@ -45,18 +45,18 @@ const updateTags = (tagIds) => {
   props.entryModel.setTagsForAchievement({ achievementId: selectedId.value, tagIds })
 }
 
-const addNewTag = (title) => {
+const addNewTag = async (title) => {
   const newTag = props.entryModel.addTag({ title })
 
   if (newTag) {
     allTags.value = props.entryModel.getAllTags()
-    addRequestedTagId.value = newTag.id
+    await tagEditorRef.value?.selectTagById(newTag.id)
     return
   }
 
   const found = allTags.value.find((tag) => tag.title === title)
   if (found) {
-    addRequestedTagId.value = found.id
+    await tagEditorRef.value?.selectTagById(found.id)
   }
 }
 
@@ -100,11 +100,11 @@ onMounted(() => {
   />
 
   <TagEditorDialog
+    ref="tagEditorRef"
     :show="showTabEditor"
     @update:show="showTabEditor = $event"
-    :initialTagIds="selectedTagIds"
-    :allTags="allTags"
-    :addRequestedTagId="addRequestedTagId"
+    :initial-tag-ids="selectedTagIds"
+    :all-tags="allTags"
     @submit="updateTags"
     @add-tag="addNewTag"
   />
