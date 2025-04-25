@@ -1,6 +1,7 @@
 <script setup>
 import starImg from "@/assets/star.svg"
 import blankStarImg from "@/assets/blank-star.svg"
+import { formatRelativeDate } from "@/utils/formatDate"
 
 const props = defineProps({
   entry: Object,
@@ -19,7 +20,7 @@ const props = defineProps({
           <span class="star-count-text">{{ props.entry.stars.length }}</span>
         </template>
       </div>
-      <div class="achievement-date">{{ props.entry.achievement.date.toLocaleString() }}</div>
+      <div class="achievement-date">{{ formatRelativeDate(props.entry.achievement.date) }}</div>
     </div>
     <div class="achievement-content">
       {{ props.entry.achievement.content }}
@@ -31,7 +32,7 @@ const props = defineProps({
       <ul class="stars" v-for="star in props.entry.stars" :key="star.id">
         <li class="star-comment" v-if="star.content">
           <span class="star-content">{{ star.content }}</span>
-          <span class="star-date">{{ star.date.toLocaleString() }}</span>
+          <span class="star-date">{{ formatRelativeDate(star.date) }}</span>
         </li>
       </ul>
     </template>
