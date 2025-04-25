@@ -26,8 +26,10 @@
   --color-sub-text: hsl(0, 0%, 100%);
 
   --color-tag: hsl(157, 16%, 100%);
-  --color-tag-selected: hsl(157, 16%, 95%);
-  --color-tag-text: hsl(157, 16%, 35%);
+  --color-tag-hover: hsl(157, 16%, 97%);
+  --color-tag-selected: hsl(157, 16%, 93%);
+  --color-tag-selected-hover: hsl(157, 16%, 90%);
+  --color-tag-text: hsl(157, 16%, 30%);
   --color-tag-border: hsl(157, 16%, 65%);
   --color-tag-focus: hsl(157, 16%, 35%);
 

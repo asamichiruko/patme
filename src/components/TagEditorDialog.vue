@@ -140,6 +140,16 @@ dialog {
   overflow-y: scroll;
 }
 
+.tag {
+  transition: background-color 0.3s;
+}
+.tag:hover {
+  background-color: var(--color-tag-hover);
+}
+.tag.selected:hover {
+  background-color: var(--color-tag-selected-hover);
+}
+
 .new-tag-label {
   font-size: 15px;
 }
