@@ -1,3 +1,42 @@
+<script setup>
+import { ref, watch } from "vue"
+
+const props = defineProps({
+  show: Boolean,
+  message: String,
+  submittext: String,
+  canceltext: String,
+  placeholder: String,
+})
+const emit = defineEmits(["update:show", "submit", "cancel"])
+
+const dialogRef = ref(null)
+const textareaRef = ref(null)
+const text = ref("")
+
+watch(
+  () => props.show,
+  async (val) => {
+    if (val) {
+      text.value = ""
+      dialogRef.value?.showModal()
+    } else {
+      dialogRef.value?.close()
+    }
+  },
+)
+
+const submit = () => {
+  emit("submit", text.value)
+  emit("update:show", false)
+}
+
+const cancel = () => {
+  emit("cancel")
+  emit("update:show", false)
+}
+</script>
+
 <template>
   <Teleport to="body">
     <dialog ref="dialogRef" @cancel="cancel">
@@ -22,47 +61,6 @@
     </dialog>
   </Teleport>
 </template>
-
-<script setup>
-import { nextTick, ref, watch } from "vue"
-
-const props = defineProps({
-  show: Boolean,
-  message: String,
-  submittext: String,
-  canceltext: String,
-  placeholder: String,
-})
-const emit = defineEmits(["update:show", "submit", "cancel"])
-
-const dialogRef = ref(null)
-const textareaRef = ref(null)
-const text = ref("")
-
-watch(
-  () => props.show,
-  async (val) => {
-    if (val) {
-      text.value = ""
-      dialogRef.value?.showModal()
-      await nextTick()
-      textareaRef.value?.focus()
-    } else {
-      dialogRef.value?.close()
-    }
-  },
-)
-
-const submit = () => {
-  emit("submit", text.value)
-  emit("update:show", false)
-}
-
-const cancel = () => {
-  emit("cancel")
-  emit("update:show", false)
-}
-</script>
 
 <style scoped>
 dialog {

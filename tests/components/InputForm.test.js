@@ -63,22 +63,6 @@ describe("InputForm.vue", () => {
     expect(entryModel.addAchievement).toHaveBeenCalledWith({ content: "テスト記録" })
   })
 
-  test("記録に成功すると textarea がフォーカスされる", async () => {
-    render(InputForm, {
-      props: {
-        entryModel: entryModel,
-      },
-    })
-
-    const textarea = screen.getByLabelText("達成内容")
-    await fireEvent.update(textarea, "テスト記録")
-
-    const button = screen.getByRole("button", { name: "記録する" })
-    await fireEvent.click(button)
-
-    expect(document.activeElement).toContain(textarea)
-  })
-
   test("記録に成功すると textarea がクリアされる", async () => {
     render(InputForm, {
       props: {

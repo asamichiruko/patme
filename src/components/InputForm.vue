@@ -1,5 +1,5 @@
 <script setup>
-import { nextTick, ref, onActivated } from "vue"
+import { ref } from "vue"
 import { useNotification } from "@/composables/useNotification.js"
 
 const props = defineProps({
@@ -24,10 +24,6 @@ const submit = () => {
     trigger("記録に失敗しました。時間をおいて再度お試しください", "error")
   }
 }
-
-onActivated(() => {
-  nextTick(() => textareaRef.value?.focus())
-})
 </script>
 
 <template>
