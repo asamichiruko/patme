@@ -11,7 +11,6 @@ const props = defineProps({
 const emit = defineEmits(["update:show", "submit", "cancel"])
 
 const dialogRef = ref(null)
-const textareaRef = ref(null)
 const text = ref("")
 
 watch(
@@ -42,16 +41,16 @@ const cancel = () => {
     <dialog ref="dialogRef" @cancel="cancel">
       <template v-if="show">
         <form @submit.prevent="submit">
-          <label for="dialog-textarea">{{ message }}</label>
-          <textarea
-            v-model="text"
-            @keydown.ctrl.enter="submit"
-            ref="textareaRef"
-            :placeholder="placeholder"
-            class="text"
-            id="dialog-textarea"
-            required
-          ></textarea>
+          <label>
+            <span class="message">{{ message }}</span>
+            <textarea
+              v-model="text"
+              @keydown.ctrl.enter="submit"
+              :placeholder="placeholder"
+              class="text"
+              required
+            ></textarea>
+          </label>
           <div class="actions">
             <button class="primary-button" type="submit">{{ submittext }}</button>
             <button class="cancel-button" type="button" @click="cancel">{{ canceltext }}</button>
@@ -72,12 +71,11 @@ dialog {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-label {
+.message {
   display: block;
   margin-bottom: 8px;
   font-weight: bold;
 }
-
 .text {
   padding: 16px;
   border: 1px solid var(--color-border);
@@ -90,7 +88,6 @@ label {
   height: 60px;
   line-height: 1.6;
 }
-
 .actions {
   display: flex;
   gap: 16px;
