@@ -4,6 +4,8 @@ import PromptDialog from "@/components/PromptDialog.vue"
 import { useNotification } from "@/composables/useNotification.js"
 import EntryListItem from "@/components/EntryListItem.vue"
 import TagEditorDialog from "@/components/TagEditorDialog.vue"
+import commentImg from "@/assets/comment.svg"
+import tagImg from "@/assets/tag.svg"
 
 const props = defineProps({
   entryModel: Object,
@@ -80,10 +82,12 @@ onMounted(() => {
       <EntryListItem :entry="entry" />
       <div class="entry-actions">
         <button class="comment-button" @click="inputComment(entry.achievement.id)">
-          コメントする
+          <img :src="commentImg" alt="" class="comment-icon" width="20px" height="20px" />
+          <span class="comment-text">コメント</span>
         </button>
         <button class="tag-edit-button" @click="editTags(entry.achievement.id, entry.tags)">
-          タグを編集
+          <img :src="tagImg" alt="" class="tag-icon" width="20px" height="20px" />
+          <span class="tag-text">タグ</span>
         </button>
       </div>
     </li>
@@ -145,6 +149,8 @@ onMounted(() => {
   padding: 8px 16px;
   border: none;
   border-radius: 4px;
+  display: flex;
+  align-items: center;
   transition: background-color 0.3s;
 }
 .comment-button:hover {
@@ -155,6 +161,15 @@ onMounted(() => {
   outline-offset: 2px;
   border-radius: 4px;
 }
+.comment-icon {
+  width: 18px;
+  height: 18px;
+  padding-right: 4px;
+  display: inline-block;
+}
+.comment-text {
+  display: inline-block;
+}
 
 .tag-edit-button {
   background-color: var(--color-primary);
@@ -163,6 +178,8 @@ onMounted(() => {
   padding: 8px 16px;
   border: none;
   border-radius: 4px;
+  display: flex;
+  align-items: center;
   transition: background-color 0.3s;
 }
 .tag-edit-button:hover {
@@ -172,5 +189,14 @@ onMounted(() => {
   outline: 2px solid var(--color-primary-focus);
   outline-offset: 2px;
   border-radius: 4px;
+}
+.tag-icon {
+  width: 18px;
+  height: 18px;
+  padding-right: 4px;
+  display: inline-block;
+}
+.tag-text {
+  display: inline-block;
 }
 </style>

@@ -52,9 +52,8 @@ const submit = () => {
   font-weight: bold;
 }
 textarea {
-  width: -webkit-fill-available;
-  width: -moz-available;
-  width: stretch;
+  width: 100%;
+  box-sizing: border-box;
   padding: 16px;
   border: 1px solid var(--color-border);
   border-radius: 4px;
