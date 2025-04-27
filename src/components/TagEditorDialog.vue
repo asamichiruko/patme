@@ -110,8 +110,8 @@ defineExpose({
             <button class="add-tag-button" type="button" @click="addTag">追加</button>
           </div>
           <div class="actions">
-            <button class="primary-button" type="submit">決定</button>
             <button class="cancel-button" type="button" @click="cancel">キャンセル</button>
+            <button class="primary-button" type="submit">決定</button>
           </div>
         </form>
       </template>
@@ -195,6 +195,7 @@ dialog {
 
 .actions {
   display: flex;
+  justify-content: flex-end;
   gap: 16px;
   margin-top: 32px;
 }

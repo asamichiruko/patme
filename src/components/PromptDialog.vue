@@ -52,8 +52,8 @@ const cancel = () => {
             ></textarea>
           </label>
           <div class="actions">
-            <button class="primary-button" type="submit">{{ submittext }}</button>
             <button class="cancel-button" type="button" @click="cancel">{{ canceltext }}</button>
+            <button class="primary-button" type="submit">{{ submittext }}</button>
           </div>
         </form>
       </template>
@@ -90,6 +90,7 @@ dialog {
 }
 .actions {
   display: flex;
+  justify-content: flex-end;
   gap: 16px;
   margin-top: 24px;
 }

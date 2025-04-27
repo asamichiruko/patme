@@ -28,20 +28,23 @@ const submit = () => {
 
 <template>
   <form @submit.prevent="submit">
-    <label for="achievement-text">達成内容</label>
-    <textarea
-      ref="textareaRef"
-      v-model="text"
-      @keydown.ctrl.enter="submit"
-      id="achievement-text"
-      placeholder="できたことを教えてください"
-    ></textarea>
-    <button class="primary-button" type="submit">記録する</button>
+    <label
+      ><span class="message">達成内容</span>
+      <textarea
+        ref="textareaRef"
+        v-model="text"
+        @keydown.ctrl.enter="submit"
+        placeholder="できたことを教えてください"
+      ></textarea>
+    </label>
+    <div class="actions">
+      <button class="primary-button" type="submit">記録する</button>
+    </div>
   </form>
 </template>
 
 <style scoped>
-label {
+.message {
   display: block;
   margin-top: 24px;
   margin-bottom: 8px;
@@ -59,5 +62,9 @@ textarea {
   font-size: 16px;
   margin-bottom: 8px;
   line-height: 1.6;
+}
+.actions {
+  display: flex;
+  justify-content: flex-end;
 }
 </style>
