@@ -9,7 +9,7 @@
     "preview": "vite preview",
     "test": "vitest run",
     "prepare-deploy": "npm run build && touch dist/.nojekyll && rm -rf docs && mv dist docs",
-    "deploy": "npm run prepare-deploy && git add docs && dit commit -m 'deploy' && git push"
+    "deploy": "npm run prepare-deploy && git add docs && git commit -m 'deploy' && git push"
   },
   "dependencies": {
     "vue": "^3.5.13"
