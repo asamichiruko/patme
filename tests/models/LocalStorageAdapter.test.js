@@ -26,10 +26,12 @@ describe("LocalStorageAdapter.js", () => {
       {
         id: "5ade7aff-2c3e-48ca-8ad2-5cd8fdae3e0c",
         title: "テストタグ1",
+        order: 1,
       },
       {
         id: "8ba3e7cf-cccd-435f-a97a-c1d60c685929",
         title: "テストタグ2",
+        order: 2,
       },
     ],
     taggings: [

@@ -71,21 +71,32 @@ export class EntryModel {
   }
 
   addTag({ title }) {
-    title = title.trim()
+    title = title?.trim()
     if (!title) return null
 
-    const allTagTitles = this.storage.getTags().map((tag) => tag.title)
+    const allTags = this.storage.getTags()
+    const maxOrder = Math.max(0, ...allTags.map((tag) => tag.order || 0))
+    const allTagTitles = allTags.map((tag) => tag.title)
     if (allTagTitles.includes(title)) {
       return null
     }
-    const newTag = { id: this.generateId(), title: title }
+    const newTag = { id: this.generateId(), title: title, order: maxOrder + 1 }
     this.storage.addTag(newTag)
     this.notify()
     return newTag
   }
 
   getAllTags() {
-    return this.storage.getTags()
+    let tags = this.storage.getTags()
+    let maxOrder = Math.max(0, ...tags.map((tag) => tag.order || 0))
+    tags = this.storage.getTags().map((tag) => {
+      if (!tag.order) {
+        maxOrder += 1
+        tag.order = maxOrder
+      }
+      return tag
+    })
+    return tags
   }
 
   getEntries() {
@@ -108,11 +119,12 @@ export class EntryModel {
   }
 
   resolveTagTitles(tags, taggings) {
-    const tagMap = new Map(tags.map((t) => [t.id, t.title]))
+    const tagMap = new Map(tags.map((t) => [t.id, t]))
     const resolved = taggings.map((t) => ({
       achievementId: t.achievementId,
       id: t.tagId,
-      title: tagMap.get(t.tagId),
+      title: tagMap.get(t.tagId).title,
+      order: tagMap.get(t.tagId).order,
     }))
     return resolved
   }
@@ -154,10 +166,13 @@ export class EntryModel {
       existingAchievementIds,
     )
     const { validated: stars } = this.validateStars(json.stars, existingStarIds, allAchievementIds)
+
+    const maxOrder = Math.max(0, ...this.storage.getTags().map((a) => a.order || 0))
     const { validated: tags, idSet: allTagIds } = this.validateTags(
       json.tags,
       existingTagIds,
       existingTitles,
+      maxOrder,
     )
     const { validated: taggings } = this.validateTaggings(
       json.taggings,
@@ -216,13 +231,20 @@ export class EntryModel {
     return { validated }
   }
 
-  validateTags(jsonArray, existingIds = new Set(), existingTitles = new Set()) {
+  validateTags(jsonArray, existingIds = new Set(), existingTitles = new Set(), maxOrder = 0) {
     const validated = []
 
     for (const a of jsonArray) {
+      if (a.order) {
+        maxOrder = Math.max(a.order, maxOrder)
+      } else {
+        maxOrder += 1
+        a.order = maxOrder
+      }
       const tag = {
         id: a.id,
         title: a.title,
+        order: a.order,
       }
 
       if (existingIds.has(tag.id) || existingTitles.has(tag.title) || !this.isValidTag(tag)) {

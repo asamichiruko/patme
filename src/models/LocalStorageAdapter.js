@@ -45,9 +45,9 @@ export class LocalStorageAdapter {
     this.saveStars(stars)
   }
 
-  addTag({ id, title }) {
+  addTag({ id, title, order }) {
     const tags = this.loadTags()
-    tags.push({ id, title })
+    tags.push({ id, title, order })
     this.saveTags(tags)
   }
 

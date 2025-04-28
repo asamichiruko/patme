@@ -28,10 +28,12 @@ describe("EntryModel.js", () => {
       {
         id: "5ade7aff-2c3e-48ca-8ad2-5cd8fdae3e0c",
         title: "テストタグ1",
+        order: 1,
       },
       {
         id: "8ba3e7cf-cccd-435f-a97a-c1d60c685929",
         title: "テストタグ2",
+        order: 2,
       },
       {
         id: "f9bc95be-8869-4682-8ee8-462f4d37aee4",
@@ -49,6 +51,46 @@ describe("EntryModel.js", () => {
       },
     ],
   }
+  const expectedEntryList = [
+    {
+      achievement: {
+        id: "8adcf1ba-89d8-475f-b651-b14df49853eb",
+        content: "テスト記録2",
+        date: new Date("2025-04-01 16:00:00"),
+      },
+      stars: [
+        {
+          id: "13ac6ed5-e94e-4a56-8967-cc53d9c26eea",
+          achievementId: "8adcf1ba-89d8-475f-b651-b14df49853eb",
+          content: "スター1 (テスト記録2)",
+          date: new Date("2025-04-01 16:30"),
+        },
+      ],
+      tags: [
+        {
+          id: "5ade7aff-2c3e-48ca-8ad2-5cd8fdae3e0c",
+          achievementId: "8adcf1ba-89d8-475f-b651-b14df49853eb",
+          title: "テストタグ1",
+          order: 1,
+        },
+        {
+          id: "8ba3e7cf-cccd-435f-a97a-c1d60c685929",
+          achievementId: "8adcf1ba-89d8-475f-b651-b14df49853eb",
+          title: "テストタグ2",
+          order: 2,
+        },
+      ],
+    },
+    {
+      achievement: {
+        id: "c2e0439a-7cd0-4743-a9ef-b299699f09a6",
+        content: "テスト記録1",
+        date: new Date("2025-04-01 15:00:00"),
+      },
+      stars: [],
+      tags: [],
+    },
+  ]
 
   beforeEach(() => {
     localStorage.clear()
@@ -57,50 +99,11 @@ describe("EntryModel.js", () => {
   })
 
   test("必要なデータを achievement に結合した entry を取得できる", () => {
-    const expectedEntries = [
-      {
-        achievement: {
-          id: "c2e0439a-7cd0-4743-a9ef-b299699f09a6",
-          content: "テスト記録1",
-          date: new Date("2025-04-01 15:00:00"),
-        },
-        stars: [],
-        tags: [],
-      },
-      {
-        achievement: {
-          id: "8adcf1ba-89d8-475f-b651-b14df49853eb",
-          content: "テスト記録2",
-          date: new Date("2025-04-01 16:00:00"),
-        },
-        stars: [
-          {
-            id: "13ac6ed5-e94e-4a56-8967-cc53d9c26eea",
-            achievementId: "8adcf1ba-89d8-475f-b651-b14df49853eb",
-            content: "スター1 (テスト記録2)",
-            date: new Date("2025-04-01 16:30"),
-          },
-        ],
-        tags: [
-          {
-            id: "5ade7aff-2c3e-48ca-8ad2-5cd8fdae3e0c",
-            achievementId: "8adcf1ba-89d8-475f-b651-b14df49853eb",
-            title: "テストタグ1",
-          },
-          {
-            id: "8ba3e7cf-cccd-435f-a97a-c1d60c685929",
-            achievementId: "8adcf1ba-89d8-475f-b651-b14df49853eb",
-            title: "テストタグ2",
-          },
-        ],
-      },
-    ]
-    expectedEntries.sort((a, b) => b.achievement.date - a.achievement.date)
-
     model.importFromJson(validJson)
     const entries = model.getEntries()
 
-    expect(entries).toEqual(expectedEntries)
+    expect(entries).toHaveLength(expectedEntryList.length)
+    expect(entries).toEqual(expectedEntryList)
   })
 
   test("achievement にタグを追加できる", () => {
@@ -122,6 +125,7 @@ describe("EntryModel.js", () => {
           achievementId: "c2e0439a-7cd0-4743-a9ef-b299699f09a6",
           id: "f9bc95be-8869-4682-8ee8-462f4d37aee4",
           title: "テストタグ3",
+          order: 3,
         },
       ],
     })
@@ -164,6 +168,7 @@ describe("EntryModel.js", () => {
           id: "5ade7aff-2c3e-48ca-8ad2-5cd8fdae3e0c",
           achievementId: "8adcf1ba-89d8-475f-b651-b14df49853eb",
           title: "テストタグ1",
+          order: 1,
         },
       ],
     })
@@ -258,5 +263,16 @@ describe("EntryModel.js", () => {
   test("空のストレージから正常にエクスポートできる", () => {
     const exportData = model.exportAsJson()
     expect(exportData).toEqual({ achievements: [], stars: [], tags: [], taggings: [] })
+  })
+
+  test("order が補完されるとき、既存の order と重複しない", () => {
+    model.importFromJson(validJson)
+    const orders = model
+      .getAllTags()
+      .map((tag) => tag.order)
+      .filter((order) => order != null)
+    const uniqueOrders = new Set(orders)
+
+    expect(orders.length).toBe(uniqueOrders.size)
   })
 })
