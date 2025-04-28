@@ -126,7 +126,7 @@ describe("EntryList.vue", () => {
       },
     })
 
-    const tagButtons = await screen.findAllByRole("button", { name: /タグを編集/i })
+    const tagButtons = await screen.findAllByRole("button", { name: /タグ/i })
     await fireEvent.click(tagButtons[0])
 
     const fakeDialog = await screen.findByRole("button", { name: /dummytageditordialog/i })
@@ -152,10 +152,10 @@ describe("EntryList.vue", () => {
       },
     })
 
-    const tagButtons = await screen.findAllByRole("button", { name: /タグを編集/i })
+    const tagButtons = await screen.findAllByRole("button", { name: /タグ/i })
     await fireEvent.click(tagButtons[0])
 
-    const fakeDialog = await screen.findByRole("button", { name: /タグを追加/i })
+    const fakeDialog = await screen.findByRole("button", { name: /追加/i })
     await fireEvent.click(fakeDialog)
 
     expect(entryModel.addTag).toHaveBeenCalledWith({ title: "newTag" })
