@@ -92,31 +92,19 @@ export class LocalStorageAdapter {
     return this.loadTaggings()
   }
 
-  importAchievements(achievements) {
-    const storageAchievements = this.loadAchievements()
-    achievements.forEach((a) => {
-      storageAchievements.push(a)
-    })
-    this.saveAchievements(storageAchievements)
+  replaceAchievements(achievements) {
+    this.saveAchievements(achievements)
   }
 
-  importStars(stars) {
-    const storageStars = this.loadStars()
-    stars.forEach((a) => {
-      storageStars.push(a)
-    })
-    this.saveStars(storageStars)
+  replaceStars(stars) {
+    this.saveStars(stars)
   }
 
-  importTags(tags) {
-    const storageTags = this.loadTags()
-    tags.forEach((a) => {
-      storageTags.push(a)
-    })
-    this.saveTags(storageTags)
+  replaceTags(tags) {
+    this.saveTags(tags)
   }
 
-  importTaggings(taggings) {
+  replaceTaggings(taggings) {
     this.saveTaggings(taggings)
   }
 }

@@ -17,6 +17,11 @@ export class EntryModel {
     return crypto.randomUUID()
   }
 
+  isValidId(id) {
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
+    return id && uuidRegex.test(id)
+  }
+
   addAchievement({ content }) {
     const id = this.generateId()
     const date = new Date()
@@ -45,6 +50,24 @@ export class EntryModel {
     return true
   }
 
+  addTag({ title }) {
+    title = title?.trim()
+    if (!title) return null
+
+    const allTags = this.storage.getTags()
+    const allTagTitles = allTags.map((tag) => tag.title)
+    if (allTagTitles.includes(title)) {
+      return null
+    }
+
+    const maxOrder = Math.max(0, ...allTags.map((tag) => tag.order || 0))
+    const newTag = { id: this.generateId(), title: title, order: maxOrder + 1 }
+    this.storage.addTag(newTag)
+    this.notify()
+
+    return newTag
+  }
+
   setTagsForAchievement({ achievementId, tagIds }) {
     if (!this.isValidId(achievementId)) {
       return
@@ -70,20 +93,19 @@ export class EntryModel {
     this.notify()
   }
 
-  addTag({ title }) {
-    title = title?.trim()
-    if (!title) return null
+  updateTagOrders(updatedTags) {
+    const tags = this.storage.getTags()
+    const tagMap = new Map(tags.map((tag) => [tag.id, tag]))
 
-    const allTags = this.storage.getTags()
-    const maxOrder = Math.max(0, ...allTags.map((tag) => tag.order || 0))
-    const allTagTitles = allTags.map((tag) => tag.title)
-    if (allTagTitles.includes(title)) {
-      return null
+    for (const { id, order } of updatedTags) {
+      if (tagMap.has(id)) {
+        const tag = tagMap.get(id)
+        tag.order = order
+      }
     }
-    const newTag = { id: this.generateId(), title: title, order: maxOrder + 1 }
-    this.storage.addTag(newTag)
+
+    this.storage.importTags(Array.from(tagMap.values()))
     this.notify()
-    return newTag
   }
 
   getAllTags() {
@@ -96,13 +118,14 @@ export class EntryModel {
       }
       return tag
     })
+    tags.sort((a, b) => a.order - b.order)
     return tags
   }
 
   getEntries() {
     const achievements = this.storage.getAchievements()
     const stars = this.storage.getStars()
-    const tags = this.storage.getTags()
+    const tags = this.getAllTags()
     const taggings = this.storage.getTaggings()
 
     const groupedStars = Map.groupBy(stars, (star) => star.achievementId)
@@ -114,6 +137,9 @@ export class EntryModel {
       tags: groupedTags.get(a.id) || [],
     }))
     entries.sort((a, b) => b.achievement.date - a.achievement.date)
+    for (const entry of entries) {
+      entry.tags.sort((a, b) => a.order - b.order)
+    }
 
     return entries
   }
@@ -132,171 +158,40 @@ export class EntryModel {
   exportAsJson() {
     const achievements = this.storage.getAchievements()
     const stars = this.storage.getStars()
-    const tags = this.storage.getTags()
+    const tags = this.getAllTags()
     const taggings = this.storage.getTaggings()
     const exportObject = { achievements, stars, tags, taggings }
     return exportObject
   }
 
   importFromJson(json) {
-    const { achievements, stars, tags, taggings } = this.validateJson(json)
-
-    this.storage.importAchievements(achievements)
-    this.storage.importStars(stars)
-    this.storage.importTags(tags)
-    this.storage.addTaggings(taggings)
-    this.notify()
-  }
-
-  validateJson(json) {
+    // json データ形式の確認
     if (![json.achievements, json.stars, json.tags, json.taggings].every(Array.isArray)) {
       throw new SyntaxError("Invalid data format")
     }
 
-    const existingAchievementIds = new Set(this.storage.getAchievements().map((a) => a.id))
-    const existingStarIds = new Set(this.storage.getStars().map((a) => a.id))
-    const existingTagIds = new Set(this.storage.getTags().map((a) => a.id))
-    const existingTitles = new Set(this.storage.getTags().map((a) => a.title))
-    const existingTaggingIds = new Set(
-      this.storage.getTaggings().map((a) => this.generateTaggingId(a.achievementId, a.tagId)),
+    this.importAchievements(json.achievements)
+    this.importStars(json.stars)
+    this.importTags(json.tags)
+    this.importTaggings(json.taggings)
+
+    this.notify()
+  }
+
+  importAchievements(data) {
+    const filteredAchievements = this.filterAchievements(data)
+    const existingAchievements = this.storage.getAchievements()
+    const { merged: mergedAchievements } = this.mergeAchievements(
+      existingAchievements,
+      filteredAchievements,
     )
-
-    const { validated: achievements, idSet: allAchievementIds } = this.validateAchievements(
-      json.achievements,
-      existingAchievementIds,
-    )
-    const { validated: stars } = this.validateStars(json.stars, existingStarIds, allAchievementIds)
-
-    const maxOrder = Math.max(0, ...this.storage.getTags().map((a) => a.order || 0))
-    const { validated: tags, idSet: allTagIds } = this.validateTags(
-      json.tags,
-      existingTagIds,
-      existingTitles,
-      maxOrder,
-    )
-    const { validated: taggings } = this.validateTaggings(
-      json.taggings,
-      existingTaggingIds,
-      allAchievementIds,
-      allTagIds,
-    )
-
-    return { achievements, stars, tags, taggings }
+    this.storage.replaceAchievements(mergedAchievements)
   }
 
-  validateAchievements(jsonArray, existingIds = new Set()) {
-    const validated = []
-
-    for (const a of jsonArray) {
-      const achievement = {
-        id: a.id,
-        content: a.content,
-        date: new Date(a.date),
-      }
-
-      if (existingIds.has(achievement.id) || !this.isValidAchievement(achievement)) {
-        continue
-      }
-
-      validated.push(achievement)
-      existingIds.add(achievement.id)
-    }
-
-    return { validated, idSet: existingIds }
-  }
-
-  validateStars(jsonArray, existingIds = new Set(), validAchievementIds) {
-    const validated = []
-
-    for (const a of jsonArray) {
-      const star = {
-        id: a.id,
-        achievementId: a.achievementId,
-        content: a.content,
-        date: new Date(a.date),
-      }
-
-      if (
-        existingIds.has(star.id) ||
-        !validAchievementIds.has(star.achievementId) ||
-        !this.isValidStar(star)
-      ) {
-        continue
-      }
-
-      validated.push(star)
-      existingIds.add(star.id)
-    }
-
-    return { validated }
-  }
-
-  validateTags(jsonArray, existingIds = new Set(), existingTitles = new Set(), maxOrder = 0) {
-    const validated = []
-
-    for (const a of jsonArray) {
-      if (a.order) {
-        maxOrder = Math.max(a.order, maxOrder)
-      } else {
-        maxOrder += 1
-        a.order = maxOrder
-      }
-      const tag = {
-        id: a.id,
-        title: a.title,
-        order: a.order,
-      }
-
-      if (existingIds.has(tag.id) || existingTitles.has(tag.title) || !this.isValidTag(tag)) {
-        continue
-      }
-
-      validated.push(tag)
-      existingIds.add(tag.id)
-      existingTitles.add(tag.title)
-    }
-
-    return { validated, idSet: existingIds }
-  }
-
-  validateTaggings(jsonArray, existingIds = new Set(), validAchievementIds, validTagIds) {
-    const validated = []
-
-    for (const a of jsonArray) {
-      const tagging = {
-        achievementId: a.achievementId,
-        tagId: a.tagId,
-      }
-      const taggingId = this.generateTaggingId(tagging)
-
-      if (
-        !validAchievementIds.has(tagging.achievementId) ||
-        !validTagIds.has(tagging.tagId) ||
-        existingIds.has(taggingId) ||
-        !this.isValidTagging(tagging)
-      ) {
-        continue
-      }
-
-      validated.push(tagging)
-      existingIds.add(taggingId)
-    }
-
-    return { validated }
-  }
-
-  generateTaggingId(tagging) {
-    return [tagging.achievementId, tagging.tagId].join(",")
-  }
-
-  parseTaggingId(taggingId) {
-    const [achievementId, tagId] = taggingId.split(",")
-    return { achievementId, tagId }
-  }
-
-  isValidId(id) {
-    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
-    return id && uuidRegex.test(id)
+  filterAchievements(data) {
+    return data
+      .map((a) => ({ id: a.id, content: a.content, date: a.date }))
+      .filter((a) => this.isValidAchievement(a))
   }
 
   isValidAchievement({ id, content, date }) {
@@ -308,14 +203,87 @@ export class EntryModel {
     return isValid
   }
 
+  mergeAchievements(existingData, newerData) {
+    const newerMap = new Map(newerData.map((a) => [a.id, a]))
+
+    const merged = [...existingData]
+    const rejected = []
+    const existingIds = new Set(existingData.map((a) => a.id))
+
+    newerMap.forEach((dat, id) => {
+      if (existingIds.has(id)) {
+        rejected.push(dat)
+      } else {
+        merged.push(dat)
+        existingIds.add(id)
+      }
+    })
+    merged.sort((a, b) => a.date - b.date)
+
+    return {
+      merged: merged,
+      rejected: rejected,
+    }
+  }
+
+  importStars(data) {
+    const filteredStars = this.filterStars(data)
+    const existingStars = this.storage.getStars()
+    const { merged: mergedStars } = this.mergeStars(existingStars, filteredStars)
+    this.storage.replaceStars(mergedStars)
+  }
+
+  filterStars(data) {
+    const existingAchievementIds = new Set(this.storage.getAchievements().map((a) => a.id))
+    return data
+      .map((a) => ({ id: a.id, achievementId: a.achievementId, content: a.content, date: a.date }))
+      .filter((a) => this.isValidStar(a) && existingAchievementIds.has(a.achievementId))
+  }
+
   isValidStar({ id, achievementId, content, date }) {
     let isValid = true
     isValid = isValid && this.isValidId(id)
     isValid = isValid && this.isValidId(achievementId)
-    isValid = isValid && typeof content == "string"
+    isValid = isValid && content && content !== ""
     isValid = isValid && new Date(date).toString() !== "Invalid Date"
 
     return isValid
+  }
+
+  mergeStars(existingData, newerData) {
+    const newerMap = new Map(newerData.map((a) => [a.id, a]))
+
+    const merged = [...existingData]
+    const rejected = []
+    const existingIds = new Set(existingData.map((a) => a.id))
+
+    newerMap.forEach((dat, id) => {
+      if (existingIds.has(id)) {
+        rejected.push(dat)
+      } else {
+        existingIds.add(dat.id)
+        merged.push(dat)
+      }
+    })
+    merged.sort((a, b) => a.date - b.date)
+
+    return {
+      merged: merged,
+      rejected: rejected,
+    }
+  }
+
+  importTags(data) {
+    const filteredTags = this.filterTags(data)
+    const existingTags = this.storage.getTags()
+    const { merged: mergedTags } = this.mergeTags(existingTags, filteredTags)
+    this.storage.replaceTags(mergedTags)
+  }
+
+  filterTags(data) {
+    return data
+      .map((a) => ({ id: a.id, title: a.title, order: a.order }))
+      .filter((a) => this.isValidTag(a))
   }
 
   isValidTag({ id, title }) {
@@ -326,11 +294,110 @@ export class EntryModel {
     return isValid
   }
 
+  mergeTags(existingData, newerData) {
+    const ordered = []
+
+    // まず order を一意に振る
+    let maxOrder = Math.max(0, ...existingData.map((a) => a.order || 0))
+
+    for (const dat of existingData) {
+      if (!dat.order) {
+        maxOrder += 1
+        dat.order = maxOrder
+      }
+      ordered.push(dat)
+    }
+    for (const dat of newerData) {
+      maxOrder += 1
+      dat.order = maxOrder
+      ordered.push(dat)
+    }
+
+    ordered.sort((a, b) => a.order - b.order)
+
+    const merged = []
+    const rejected = []
+
+    // id または title が重複するものを除去する
+    const existingId = new Set()
+    const existingTitle = new Set()
+
+    for (const dat of ordered) {
+      if (existingId.has(dat.id) || existingTitle.has(dat.title)) {
+        rejected.push(dat)
+      } else {
+        existingId.add(dat.id)
+        existingTitle.add(dat.title)
+        merged.push(dat)
+      }
+    }
+
+    return {
+      merged: merged,
+      rejected: rejected,
+    }
+  }
+
+  importTaggings(data) {
+    const filteredTaggings = this.filterTaggings(data)
+    const existingTaggings = this.storage.getTaggings()
+    const { merged: mergedTaggings } = this.mergeTaggings(existingTaggings, filteredTaggings)
+    this.storage.replaceTaggings(mergedTaggings)
+  }
+
+  filterTaggings(data) {
+    const existingAchievementIds = new Set(this.storage.getAchievements().map((a) => a.id))
+    const existingTagIds = new Set(this.storage.getTags().map((a) => a.id))
+    return data
+      .map((a) => ({ achievementId: a.achievementId, tagId: a.tagId }))
+      .filter(
+        (a) =>
+          this.isValidTagging(a) &&
+          existingAchievementIds.has(a.achievementId) &&
+          existingTagIds.has(a.tagId),
+      )
+  }
+
   isValidTagging({ achievementId, tagId }) {
     let isValid = true
     isValid = isValid && this.isValidId(achievementId)
     isValid = isValid && this.isValidId(tagId)
 
     return isValid
+  }
+
+  mergeTaggings(existingData, newerData) {
+    const existingIds = new Set(
+      existingData.map((a) =>
+        this.generateTaggingId({ achievementId: a.achievementId, tagId: a.tagId }),
+      ),
+    )
+    const merged = [...existingData]
+    const rejected = []
+
+    for (const dat of newerData) {
+      const newTaggingId = this.generateTaggingId({
+        achievementId: dat.achievementId,
+        tagId: dat.tagId,
+      })
+
+      if (existingIds.has(newTaggingId)) {
+        rejected.push(this.parseTaggingId(newTaggingId))
+      } else {
+        existingIds.add(newTaggingId)
+        merged.push(this.parseTaggingId(newTaggingId))
+      }
+    }
+
+    return { merged: merged, rejected: rejected }
+  }
+
+  generateTaggingId(tagging) {
+    return [tagging.achievementId, tagging.tagId].join(",")
+  }
+
+  parseTaggingId(taggingId) {
+    const [achievementId, tagId] = taggingId.split(",")
+    return { achievementId, tagId }
   }
 }

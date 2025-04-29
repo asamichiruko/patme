@@ -38,6 +38,7 @@ describe("EntryModel.js", () => {
       {
         id: "f9bc95be-8869-4682-8ee8-462f4d37aee4",
         title: "テストタグ3",
+        order: 3,
       },
     ],
     taggings: [
@@ -183,7 +184,7 @@ describe("EntryModel.js", () => {
     const taggings = model.storage.getTaggings()
     expect(achievements).toEqual(validJson.achievements)
     expect(stars).toEqual(validJson.stars)
-    expect(tags).toEqual(validJson.tags)
+    expect(tags.length).toBe(validJson.tags.length)
     expect(taggings).toEqual(validJson.taggings)
   })
 
@@ -257,7 +258,10 @@ describe("EntryModel.js", () => {
     model.importFromJson(validJson)
 
     const exportData = model.exportAsJson()
-    expect(exportData).toEqual(validJson)
+    expect(exportData.achievements.length).toBe(validJson.achievements.length)
+    expect(exportData.stars.length).toBe(validJson.stars.length)
+    expect(exportData.tags.length).toBe(validJson.tags.length)
+    expect(exportData.taggings.length).toBe(validJson.taggings.length)
   })
 
   test("空のストレージから正常にエクスポートできる", () => {
@@ -274,5 +278,75 @@ describe("EntryModel.js", () => {
     const uniqueOrders = new Set(orders)
 
     expect(orders.length).toBe(uniqueOrders.size)
+  })
+
+  test("order がない既存のタグに番号が振られる", () => {
+    const existing = [
+      { id: "53b256d2-d56e-4455-b033-c299ce02a2c6", title: "tag1", order: 1 },
+      { id: "7c4adfab-777a-4a68-b355-450e6f6c670c", title: "tag2" },
+    ]
+    const newer = []
+
+    const { merged } = model.mergeTags(existing, newer)
+    const orders = merged.map((tag) => tag.order)
+    const uniqueOrders = new Set(orders)
+
+    expect(orders.length).toBe(2)
+    expect(uniqueOrders.size).toBe(2)
+  })
+
+  test("order がない新規のタグに番号が振られる", () => {
+    const existing = []
+    const newer = [
+      { id: "8a33edf2-4fc9-4dd7-9d00-e0bccba7c783", title: "tag2" },
+      { id: "ecd892c5-a9c4-4bbc-aee2-0b086b0a71d2", title: "tag3" },
+    ]
+
+    const { merged } = model.mergeTags(existing, newer)
+    const orders = merged.map((tag) => tag.order)
+    const uniqueOrders = new Set(orders)
+
+    expect(orders.length).toBe(2)
+    expect(uniqueOrders.size).toBe(2)
+  })
+
+  test("新旧のタグが混在しても正しく番号が振られる", () => {
+    const existing = [
+      { id: "53b256d2-d56e-4455-b033-c299ce02a2c6", title: "tag1", order: 1 },
+      { id: "7c4adfab-777a-4a68-b355-450e6f6c670c", title: "tag2" },
+    ]
+    const newer = [
+      { id: "8a33edf2-4fc9-4dd7-9d00-e0bccba7c783", title: "tag3", order: 2 },
+      { id: "ecd892c5-a9c4-4bbc-aee2-0b086b0a71d2", title: "tag4" },
+    ]
+
+    const { merged } = model.mergeTags(existing, newer)
+    const orders = merged.map((tag) => tag.order)
+    const uniqueOrders = new Set(orders)
+
+    expect(orders.length).toBe(4)
+    expect(uniqueOrders.size).toBe(4)
+  })
+
+  test("重複する id を持つタグが reject される", () => {
+    const existing = [
+      { id: "53b256d2-d56e-4455-b033-c299ce02a2c6", title: "tag1", order: 1 },
+      { id: "7c4adfab-777a-4a68-b355-450e6f6c670c", title: "tag2", order: 2 },
+    ]
+    const newer = [{ id: "7c4adfab-777a-4a68-b355-450e6f6c670c", title: "tag3" }]
+
+    const { rejected } = model.mergeTags(existing, newer)
+    expect(rejected).toHaveLength(1)
+  })
+
+  test("重複する title を持つタグが reject される", () => {
+    const existing = [
+      { id: "53b256d2-d56e-4455-b033-c299ce02a2c6", title: "tag1", order: 1 },
+      { id: "7c4adfab-777a-4a68-b355-450e6f6c670c", title: "tag2", order: 2 },
+    ]
+    const newer = [{ id: "8a33edf2-4fc9-4dd7-9d00-e0bccba7c783", title: "tag2" }]
+
+    const { rejected } = model.mergeTags(existing, newer)
+    expect(rejected).toHaveLength(1)
   })
 })

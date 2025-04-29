@@ -81,7 +81,7 @@ describe("LocalStorageAdapter.js", () => {
 
   test("複数の achievement を保存できる", () => {
     adapter = new LocalStorageAdapter()
-    adapter.importAchievements(validJson.achievements)
+    adapter.replaceAchievements(validJson.achievements)
 
     const localStorageData = JSON.parse(localStorage.getItem("achievements")).map((a) => {
       return { id: a.id, content: a.content, date: new Date(a.date) }
@@ -91,7 +91,7 @@ describe("LocalStorageAdapter.js", () => {
 
   test("空の achievements 配列を保存できる", () => {
     adapter = new LocalStorageAdapter()
-    adapter.importAchievements([])
+    adapter.replaceAchievements([])
 
     const localStorageData = JSON.parse(localStorage.getItem("achievements"))
     expect(localStorageData).toEqual([])
@@ -99,7 +99,7 @@ describe("LocalStorageAdapter.js", () => {
 
   test("保存した複数の achievements を取得できる", () => {
     adapter = new LocalStorageAdapter()
-    adapter.importAchievements(validJson.achievements)
+    adapter.replaceAchievements(validJson.achievements)
 
     expect(adapter.getAchievements()).toEqual(validJson.achievements)
   })
@@ -111,8 +111,8 @@ describe("LocalStorageAdapter.js", () => {
 
   test("複数の star を保存できる", () => {
     adapter = new LocalStorageAdapter()
-    adapter.importAchievements(validJson.achievements)
-    adapter.importStars(validJson.stars)
+    adapter.replaceAchievements(validJson.achievements)
+    adapter.replaceStars(validJson.stars)
 
     const localStorageData = JSON.parse(localStorage.getItem("stars")).map((a) => {
       return {
@@ -127,8 +127,8 @@ describe("LocalStorageAdapter.js", () => {
 
   test("空の stars 配列を保存できる", () => {
     adapter = new LocalStorageAdapter()
-    adapter.importAchievements([])
-    adapter.importStars([])
+    adapter.replaceAchievements([])
+    adapter.replaceStars([])
 
     const localStorageData = JSON.parse(localStorage.getItem("stars"))
     expect(localStorageData).toEqual([])
@@ -136,8 +136,8 @@ describe("LocalStorageAdapter.js", () => {
 
   test("保存した stars 配列を取得できる", () => {
     adapter = new LocalStorageAdapter()
-    adapter.importAchievements(validJson.achievements)
-    adapter.importStars(validJson.stars)
+    adapter.replaceAchievements(validJson.achievements)
+    adapter.replaceStars(validJson.stars)
 
     expect(adapter.getStars()).toEqual(validJson.stars)
   })
@@ -158,7 +158,7 @@ describe("LocalStorageAdapter.js", () => {
 
   test("複数の tag を保存できる", () => {
     adapter = new LocalStorageAdapter()
-    adapter.importTags(validJson.tags)
+    adapter.replaceTags(validJson.tags)
 
     const localStorageData = JSON.parse(localStorage.getItem("tags"))
     expect(localStorageData).toEqual(validJson.tags)
@@ -171,7 +171,7 @@ describe("LocalStorageAdapter.js", () => {
 
   test("保存した tags 配列を取得できる", () => {
     adapter = new LocalStorageAdapter()
-    adapter.importTags(validJson.tags)
+    adapter.replaceTags(validJson.tags)
 
     expect(adapter.getTags()).toEqual(validJson.tags)
   })
@@ -186,7 +186,7 @@ describe("LocalStorageAdapter.js", () => {
 
   test("保存した taggings 配列を取得できる", () => {
     adapter = new LocalStorageAdapter()
-    adapter.importTaggings(validJson.taggings)
+    adapter.replaceTaggings(validJson.taggings)
 
     expect(adapter.getTaggings()).toEqual(validJson.taggings)
   })
