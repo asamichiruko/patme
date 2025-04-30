@@ -1,13 +1,17 @@
 <script setup>
 import { ref, onActivated } from "vue"
+import draggable from "vuedraggable"
 import handleImg from "@/assets/handle.svg"
 
 const props = defineProps({
-  allTags: Object,
+  allTags: Array,
 })
+// const emit = defineEmits(["save"])
 
 const reorderedTags = ref([])
 const saveEdits = () => {
+  reorderedTags.value.forEach((tag, idx) => (tag.order = idx + 1))
+
   console.log("saved")
 }
 const resetEdits = () => {
@@ -22,10 +26,14 @@ onActivated(() => {
 <template>
   <form class="tag-manager" @submit.prevent="saveEdits">
     <ul class="tag-list">
-      <li class="tag-list-item" v-for="tag in reorderedTags" :key="tag.id">
-        <img class="drag-handle" :src="handleImg" alt="" width="20px" height="20px" />
-        <span class="tag-title">{{ tag.title }}</span>
-      </li>
+      <draggable v-model="reorderedTags" item-key="id" handle=".drag-handle" tag="li">
+        <template #item="{ element }">
+          <li class="tag-list-item">
+            <img class="drag-handle" :src="handleImg" alt="" width="20px" height="20px" />
+            <span class="tag-title">{{ element.title }} / {{ element.order }}</span>
+          </li>
+        </template>
+      </draggable>
     </ul>
     <div class="tag-edit-actions">
       <button type="button" class="cancel-button" @click="resetEdits">キャンセル</button>
