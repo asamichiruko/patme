@@ -1,5 +1,5 @@
 <script setup>
-import { useTemplateRef } from "vue"
+import { useTemplateRef, ref, onMounted } from "vue"
 import { useNotification } from "@/composables/useNotification.js"
 import TagManager from "@/components/TagManager.vue"
 
@@ -51,13 +51,24 @@ const importEntries = async (e) => {
 const selectFile = () => {
   fileInput.value?.click()
 }
+
+const allTags = ref([])
+
+const updateTags = (updated) => {
+  props.entryModel.updateTags(updated)
+  allTags.value = props.entryModel.getAllTags()
+}
+
+onMounted(() => {
+  allTags.value = props.entryModel.getAllTags()
+})
 </script>
 
 <template>
   <div class="settings-form">
     <section>
       <h2>タグの編集</h2>
-      <TagManager :all-tags="props.entryModel.getAllTags()" />
+      <TagManager :all-tags="allTags" @submit="updateTags" />
     </section>
 
     <section>

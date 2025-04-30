@@ -1,26 +1,36 @@
 <script setup>
-import { ref, onActivated } from "vue"
+import { ref, watch } from "vue"
 import draggable from "vuedraggable"
 import handleImg from "@/assets/handle.svg"
+import { useNotification } from "@/composables/useNotification.js"
+
+const { trigger } = useNotification()
 
 const props = defineProps({
   allTags: Array,
 })
-// const emit = defineEmits(["save"])
+const emit = defineEmits(["submit"])
 
 const reorderedTags = ref([])
 const saveEdits = () => {
   reorderedTags.value.forEach((tag, idx) => (tag.order = idx + 1))
-
-  console.log("saved")
+  emit("submit", [...reorderedTags.value])
+  trigger("タグの編集内容を保存しました", "success")
 }
 const resetEdits = () => {
   reorderedTags.value = [...props.allTags]
+  reorderedTags.value.sort((a, b) => a.order - b.order)
+  trigger("タグの編集内容を破棄しました", "info")
 }
 
-onActivated(() => {
-  resetEdits()
-})
+watch(
+  () => props.allTags,
+  (updated) => {
+    reorderedTags.value = [...updated]
+    reorderedTags.value.sort((a, b) => a.order - b.order)
+  },
+  { immediate: true },
+)
 </script>
 
 <template>

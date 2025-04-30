@@ -93,18 +93,8 @@ export class EntryModel {
     this.notify()
   }
 
-  updateTagOrders(updatedTags) {
-    const tags = this.storage.getTags()
-    const tagMap = new Map(tags.map((tag) => [tag.id, tag]))
-
-    for (const { id, order } of updatedTags) {
-      if (tagMap.has(id)) {
-        const tag = tagMap.get(id)
-        tag.order = order
-      }
-    }
-
-    this.storage.importTags(Array.from(tagMap.values()))
+  updateTags(updated) {
+    this.storage.replaceTags(updated)
     this.notify()
   }
 
