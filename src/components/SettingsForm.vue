@@ -1,6 +1,7 @@
 <script setup>
 import { useTemplateRef } from "vue"
 import { useNotification } from "@/composables/useNotification.js"
+import TagManager from "@/components/TagManager.vue"
 
 const props = defineProps({
   entryModel: Object,
@@ -54,6 +55,11 @@ const selectFile = () => {
 
 <template>
   <div class="settings-form">
+    <section>
+      <h2>タグの編集</h2>
+      <TagManager :all-tags="props.entryModel.getAllTags()" />
+    </section>
+
     <section>
       <h2>エクスポート</h2>
       <p>

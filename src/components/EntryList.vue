@@ -3,7 +3,7 @@ import { onMounted, ref } from "vue"
 import PromptDialog from "@/components/PromptDialog.vue"
 import { useNotification } from "@/composables/useNotification.js"
 import EntryListItem from "@/components/EntryListItem.vue"
-import TagEditorDialog from "@/components/TagEditorDialog.vue"
+import TaggingDialog from "@/components/TaggingDialog.vue"
 import commentImg from "@/assets/comment.svg"
 import tagImg from "@/assets/tag.svg"
 
@@ -103,7 +103,7 @@ onMounted(() => {
     @submit="addStar"
   />
 
-  <TagEditorDialog
+  <TaggingDialog
     ref="tagEditorRef"
     :show="showTabEditor"
     @update:show="showTabEditor = $event"

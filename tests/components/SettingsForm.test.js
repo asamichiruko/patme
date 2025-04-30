@@ -10,6 +10,7 @@ describe("SettingsForm.vue", () => {
     vi.clearAllMocks()
 
     model = {
+      getAllTags: vi.fn(),
       exportAsJson: vi.fn(),
       importFromJson: vi.fn(),
     }
@@ -28,10 +29,10 @@ describe("SettingsForm.vue", () => {
       },
       global: {
         stubs: {
-          InputForm: {
+          InputAndListView: {
             template: "<div></div>",
           },
-          EntryList: {
+          TagManager: {
             template: "<div></div>",
           },
         },
@@ -81,10 +82,10 @@ describe("SettingsForm.vue", () => {
       },
       global: {
         stubs: {
-          InputForm: {
+          InputAndListView: {
             template: "<div></div>",
           },
-          EntryList: {
+          TagManager: {
             template: "<div></div>",
           },
         },
@@ -116,10 +117,10 @@ describe("SettingsForm.vue", () => {
       },
       global: {
         stubs: {
-          InputForm: {
+          InputAndListView: {
             template: "<div></div>",
           },
-          EntryList: {
+          TagManager: {
             template: "<div></div>",
           },
         },
@@ -151,10 +152,10 @@ describe("SettingsForm.vue", () => {
       },
       global: {
         stubs: {
-          InputForm: {
+          InputAndListView: {
             template: "<div></div>",
           },
-          EntryList: {
+          TagManager: {
             template: "<div></div>",
           },
         },
@@ -191,10 +192,10 @@ describe("SettingsForm.vue", () => {
       },
       global: {
         stubs: {
-          InputForm: {
+          InputAndListView: {
             template: "<div></div>",
           },
-          EntryList: {
+          TagManager: {
             template: "<div></div>",
           },
         },

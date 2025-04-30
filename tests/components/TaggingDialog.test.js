@@ -1,5 +1,5 @@
 import { render, screen, fireEvent, cleanup } from "@testing-library/vue"
-import TagEditorDialog from "@/components/TagEditorDialog.vue"
+import TaggingDialog from "@/components/TaggingDialog.vue"
 
 describe("TagEditorDialog.vue", () => {
   const showModal = vi.fn()
@@ -20,7 +20,7 @@ describe("TagEditorDialog.vue", () => {
   test("ダイアログが正常に表示される", async () => {
     const mockSubmit = vi.fn()
 
-    const { rerender } = render(TagEditorDialog, {
+    const { rerender } = render(TaggingDialog, {
       props: {
         show: false,
         allTags: [],
@@ -48,7 +48,7 @@ describe("TagEditorDialog.vue", () => {
     const mockCancel = vi.fn()
     const mockOnUpdateShow = vi.fn()
 
-    render(TagEditorDialog, {
+    render(TaggingDialog, {
       props: {
         show: true,
         allTags: [],
@@ -69,7 +69,7 @@ describe("TagEditorDialog.vue", () => {
   })
 
   test("initialTagIds を与えて選択状態を初期化できる", async () => {
-    render(TagEditorDialog, {
+    render(TaggingDialog, {
       props: {
         show: true,
         allTags: [
@@ -91,7 +91,7 @@ describe("TagEditorDialog.vue", () => {
   })
 
   test("タグボタンを押して選択状態をトグルできる", async () => {
-    render(TagEditorDialog, {
+    render(TaggingDialog, {
       props: {
         show: true,
         allTags: [{ id: "id1", title: "tag1" }],
@@ -109,7 +109,7 @@ describe("TagEditorDialog.vue", () => {
   })
 
   test("新しいタグの追加リクエストを送れる", async () => {
-    const { emitted } = render(TagEditorDialog, {
+    const { emitted } = render(TaggingDialog, {
       props: {
         show: true,
         allTags: [],

@@ -119,8 +119,8 @@ describe("EntryList.vue", () => {
       },
       global: {
         stubs: {
-          TagEditorDialog: {
-            template: `<button @click="$emit('submit', ['id1', 'id2'])">dummytageditordialog</button>`,
+          TaggingDialog: {
+            template: `<button @click="$emit('submit', ['id1', 'id2'])">DummyTaggingDialog</button>`,
           },
         },
       },
@@ -129,7 +129,7 @@ describe("EntryList.vue", () => {
     const tagButtons = await screen.findAllByRole("button", { name: /タグ/i })
     await fireEvent.click(tagButtons[0])
 
-    const fakeDialog = await screen.findByRole("button", { name: /dummytageditordialog/i })
+    const fakeDialog = await screen.findByRole("button", { name: /DummyTaggingDialog/i })
     await fireEvent.click(fakeDialog)
 
     expect(entryModel.setTagsForAchievement).toHaveBeenCalledWith({
@@ -145,8 +145,8 @@ describe("EntryList.vue", () => {
       },
       global: {
         stubs: {
-          TagEditorDialog: {
-            template: `<button @click="$emit('add-tag', 'newTag')">タグを追加</button>`,
+          TaggingDialog: {
+            template: `<button @click="$emit('add-tag', 'newTag')">追加</button>`,
           },
         },
       },
