@@ -51,6 +51,22 @@ watch(
         </li>
       </template>
     </draggable>
+    <draggable
+      v-model="reorderedTags"
+      item-key="id"
+      handle=".drag-handle"
+      tag="ul"
+      animation="200"
+      ghost-class="ghost"
+      class="tag-list"
+    >
+      <template #item="{ element }">
+        <li class="tag-list-item">
+          <img class="drag-handle" :src="handleImg" alt="" width="20px" height="20px" />
+          <span class="tag-title">{{ element.title }}</span>
+        </li>
+      </template>
+    </draggable>
     <div class="tag-edit-actions">
       <button type="button" class="cancel-button" @click="resetEdits">キャンセル</button>
       <button type="submit" class="primary-button">保存</button>
@@ -61,9 +77,11 @@ watch(
 <style scoped>
 .tag-manager {
   max-width: 600px;
+  max-width: 600px;
 }
 
 .tag-list {
+  background-color: var(--color-tag-list-bg);
   background-color: var(--color-tag-list-bg);
   list-style-type: none;
   padding: 16px;
@@ -73,6 +91,7 @@ watch(
   display: flex;
   flex-direction: column;
   margin-bottom: 32px;
+  border: 1px solid var(--color-tag-list-border);
   border: 1px solid var(--color-tag-list-border);
   border-radius: 8px;
 }
@@ -93,7 +112,11 @@ watch(
 .tag-title {
   display: inline-block;
   color: var(--color-tag-list-text);
+  color: var(--color-tag-list-text);
   height: 24px;
+}
+.ghost {
+  background-color: var(--color-tag-list-focus);
 }
 .ghost {
   background-color: var(--color-tag-list-focus);
