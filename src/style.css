@@ -33,6 +33,11 @@
   --color-tag-border: hsl(157, 16%, 65%);
   --color-tag-focus: hsl(157, 16%, 35%);
 
+  --color-tag-list-bg: hsl(157, 16%, 99%);
+  --color-tag-list-text: hsl(0, 0%, 20%);
+  --color-tag-list-border: hsl(0, 0%, 85%);
+  --color-tag-list-focus: hsl(157, 16%, 95%);
+
   --color-success: #2ecc71;
   --color-info: #3498db;
   --color-error: #e74c3c;
