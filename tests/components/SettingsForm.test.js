@@ -58,6 +58,13 @@ describe("SettingsForm.vue", () => {
       props: {
         entryModel: model,
       },
+      global: {
+        stubs: {
+          TagManager: {
+            template: "<div></div>",
+          },
+        },
+      },
     })
 
     const fileInput = screen.getByTestId("import-file", { hidden: true })
