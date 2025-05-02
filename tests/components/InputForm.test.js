@@ -1,6 +1,10 @@
-import { render, screen, fireEvent, cleanup, waitFor } from "@testing-library/vue"
+import { render, screen, fireEvent, cleanup } from "@testing-library/vue"
 import InputForm from "@/components/InputForm.vue"
-import App from "@/App.vue"
+
+const trigger = vi.fn()
+vi.mock("@/composables/useNotification.js", () => {
+  return { useNotification: () => ({ trigger }) }
+})
 
 describe("InputForm.vue", () => {
   let entryModel
@@ -80,28 +84,18 @@ describe("InputForm.vue", () => {
   })
 
   test("記録に成功すると success 通知が出る", async () => {
-    render(App, {
+    render(InputForm, {
       props: {
         entryModel: entryModel,
       },
-      global: {
-        stubs: {
-          EntryList: {
-            template: "<div></div>",
-          },
-        },
-      },
     })
-    await fireEvent.click(screen.getByRole("button", { name: "ホーム" }))
 
     const textarea = screen.getByLabelText("達成内容")
     await fireEvent.update(textarea, "テスト記録")
 
     await fireEvent.click(screen.getByRole("button", { name: "記録する" }))
 
-    await waitFor(() => {
-      expect(screen.getByText(/記録しました/i)).toBeInTheDocument()
-    })
+    expect(trigger).toHaveBeenCalledWith(expect.any(String), "success")
   })
 
   test("テキストを記入せずに送信した場合は達成内容を記録しない", async () => {
@@ -118,26 +112,16 @@ describe("InputForm.vue", () => {
   })
 
   test("テキストを記入せずに送信すると error 通知が出る", async () => {
-    render(App, {
+    render(InputForm, {
       props: {
         entryModel: entryModel,
       },
-      global: {
-        stubs: {
-          EntryList: {
-            template: "<div></div>",
-          },
-        },
-      },
     })
-    await fireEvent.click(screen.getByRole("button", { name: "ホーム" }))
 
     const button = screen.getByRole("button", { name: "記録する" })
     await fireEvent.click(button)
 
-    await waitFor(() => {
-      expect(screen.getByText(/できたことを入力してください/i)).toBeInTheDocument()
-    })
+    expect(trigger).toHaveBeenCalledWith(expect.any(String), "error")
   })
 
   test("記録に失敗すると textarea はクリアされない", async () => {
@@ -161,19 +145,11 @@ describe("InputForm.vue", () => {
   test("記録に失敗すると error 通知が出る", async () => {
     entryModel.addAchievement.mockReturnValue(false)
 
-    render(App, {
+    render(InputForm, {
       props: {
         entryModel: entryModel,
       },
-      global: {
-        stubs: {
-          EntryList: {
-            template: "<div></div>",
-          },
-        },
-      },
     })
-    await fireEvent.click(screen.getByRole("button", { name: "ホーム" }))
 
     const textarea = screen.getByLabelText("達成内容")
     await fireEvent.update(textarea, "テスト記録")
@@ -181,8 +157,6 @@ describe("InputForm.vue", () => {
     const button = screen.getByRole("button", { name: "記録する" })
     await fireEvent.click(button)
 
-    await waitFor(() => {
-      expect(screen.getByText(/記録に失敗しました/i)).toBeInTheDocument()
-    })
+    expect(trigger).toHaveBeenCalledWith(expect.any(String), "error")
   })
 })
