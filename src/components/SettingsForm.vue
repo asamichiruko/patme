@@ -68,7 +68,7 @@ onMounted(() => {
   <div class="settings-form">
     <section>
       <h2>タグの編集</h2>
-      <TagManager :all-tags="allTags" @submit="updateTags" />
+      <TagManager :all-tags="allTags" @save="updateTags" />
     </section>
 
     <section>
