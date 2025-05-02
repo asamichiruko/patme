@@ -44,15 +44,15 @@ describe("TagEditorDialog.vue", () => {
     try {
       wrapper.vm.reorderedTags = [tags[1], tags[0]]
 
-      wrapper.vm.saveEdits()
+      wrapper.vm.confirmReorder()
 
-      const emits = wrapper.emitted("submit")
+      const emits = wrapper.emitted("save")
       expect(emits).toHaveLength(1)
-      const submittedTags = emits[0][0]
-      expect(submittedTags[0].id).toBe("id2")
-      expect(submittedTags[1].id).toBe("id1")
-      expect(submittedTags[0].order).toBe(1)
-      expect(submittedTags[1].order).toBe(2)
+      const reorderedTags = emits[0][0]
+      expect(reorderedTags[0].id).toBe("id2")
+      expect(reorderedTags[1].id).toBe("id1")
+      expect(reorderedTags[0].order).toBe(1)
+      expect(reorderedTags[1].order).toBe(2)
     } finally {
       wrapper.unmount()
     }
@@ -73,7 +73,7 @@ describe("TagEditorDialog.vue", () => {
     try {
       wrapper.vm.reorderedTags = [tags[1], tags[0]]
 
-      wrapper.vm.resetEdits()
+      wrapper.vm.discardReorder()
 
       const resetedTags = wrapper.vm.reorderedTags
       expect(resetedTags[0].id).toBe("id1")
