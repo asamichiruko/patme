@@ -1,3 +1,5 @@
+import { generateId, isValidId, generateTaggingId, parseTaggingId } from "@/utils/idUtils.js"
+
 export class EntryModel {
   constructor(storage) {
     this.storage = storage
@@ -13,17 +15,8 @@ export class EntryModel {
     this.listeners.forEach((listener) => listener(entries))
   }
 
-  generateId() {
-    return crypto.randomUUID()
-  }
-
-  isValidId(id) {
-    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i
-    return id && uuidRegex.test(id)
-  }
-
   addAchievement({ content }) {
-    const id = this.generateId()
+    const id = generateId()
     const date = new Date()
     const achievement = { id, content, date }
 
@@ -37,7 +30,7 @@ export class EntryModel {
   }
 
   addStar({ achievementId, content }) {
-    const id = this.generateId()
+    const id = generateId()
     const date = new Date()
     const star = { id, achievementId, content, date }
 
@@ -61,7 +54,7 @@ export class EntryModel {
     }
 
     const maxOrder = Math.max(0, ...allTags.map((tag) => tag.order || 0))
-    const newTag = { id: this.generateId(), title: title, order: maxOrder + 1 }
+    const newTag = { id: generateId(), title: title, order: maxOrder + 1 }
     this.storage.addTag(newTag)
     this.notify()
 
@@ -69,27 +62,27 @@ export class EntryModel {
   }
 
   setTagsForAchievement({ achievementId, tagIds }) {
-    if (!this.isValidId(achievementId)) {
+    if (!isValidId(achievementId)) {
       return
     }
     const existingTaggings = this.storage
       .getTaggings()
       .filter((tagging) => tagging.achievementId === achievementId)
     const existingTaggingIds = new Set(
-      existingTaggings.map((tagging) => this.generateTaggingId(tagging)),
+      existingTaggings.map((tagging) => generateTaggingId(tagging)),
     )
     const existingTagIds = new Set(this.storage.getTags().map((tag) => tag.id))
     const updateTaggingIds = new Set(
       tagIds
-        .filter((tagId) => this.isValidId(tagId) && existingTagIds.has(tagId))
-        .map((tagId) => this.generateTaggingId({ achievementId, tagId })),
+        .filter((tagId) => isValidId(tagId) && existingTagIds.has(tagId))
+        .map((tagId) => generateTaggingId({ achievementId, tagId })),
     )
 
     const toAdd = updateTaggingIds.difference(existingTaggingIds)
     const toRemove = existingTaggingIds.difference(updateTaggingIds)
 
-    this.storage.addTaggings(Array.from(toAdd).map((id) => this.parseTaggingId(id)))
-    this.storage.removeTaggings(Array.from(toRemove).map((id) => this.parseTaggingId(id)))
+    this.storage.addTaggings(Array.from(toAdd).map((id) => parseTaggingId(id)))
+    this.storage.removeTaggings(Array.from(toRemove).map((id) => parseTaggingId(id)))
     this.notify()
   }
 
@@ -186,7 +179,7 @@ export class EntryModel {
 
   isValidAchievement({ id, content, date }) {
     let isValid = true
-    isValid = isValid && this.isValidId(id)
+    isValid = isValid && isValidId(id)
     isValid = isValid && content && content !== ""
     isValid = isValid && new Date(date).toString() !== "Invalid Date"
 
@@ -232,8 +225,8 @@ export class EntryModel {
 
   isValidStar({ id, achievementId, content, date }) {
     let isValid = true
-    isValid = isValid && this.isValidId(id)
-    isValid = isValid && this.isValidId(achievementId)
+    isValid = isValid && isValidId(id)
+    isValid = isValid && isValidId(achievementId)
     isValid = isValid && content && content !== ""
     isValid = isValid && new Date(date).toString() !== "Invalid Date"
 
@@ -278,7 +271,7 @@ export class EntryModel {
 
   isValidTag({ id, title }) {
     let isValid = true
-    isValid = isValid && this.isValidId(id)
+    isValid = isValid && isValidId(id)
     isValid = isValid && typeof title == "string"
 
     return isValid
@@ -350,8 +343,8 @@ export class EntryModel {
 
   isValidTagging({ achievementId, tagId }) {
     let isValid = true
-    isValid = isValid && this.isValidId(achievementId)
-    isValid = isValid && this.isValidId(tagId)
+    isValid = isValid && isValidId(achievementId)
+    isValid = isValid && isValidId(tagId)
 
     return isValid
   }
@@ -359,35 +352,26 @@ export class EntryModel {
   mergeTaggings(existingData, newerData) {
     const existingIds = new Set(
       existingData.map((a) =>
-        this.generateTaggingId({ achievementId: a.achievementId, tagId: a.tagId }),
+        generateTaggingId({ achievementId: a.achievementId, tagId: a.tagId }),
       ),
     )
     const merged = [...existingData]
     const rejected = []
 
     for (const dat of newerData) {
-      const newTaggingId = this.generateTaggingId({
+      const newTaggingId = generateTaggingId({
         achievementId: dat.achievementId,
         tagId: dat.tagId,
       })
 
       if (existingIds.has(newTaggingId)) {
-        rejected.push(this.parseTaggingId(newTaggingId))
+        rejected.push(parseTaggingId(newTaggingId))
       } else {
         existingIds.add(newTaggingId)
-        merged.push(this.parseTaggingId(newTaggingId))
+        merged.push(parseTaggingId(newTaggingId))
       }
     }
 
     return { merged: merged, rejected: rejected }
-  }
-
-  generateTaggingId(tagging) {
-    return [tagging.achievementId, tagging.tagId].join(",")
-  }
-
-  parseTaggingId(taggingId) {
-    const [achievementId, tagId] = taggingId.split(",")
-    return { achievementId, tagId }
   }
 }
