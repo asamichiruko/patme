@@ -1,11 +1,11 @@
 <script setup>
 import { ref, computed } from "vue"
-import { EntryModel } from "./models/EntryModel.js"
-import { LocalStorageAdapter } from "./models/LocalStorageAdapter.js"
-import InputAndListView from "./components/InputAndListView.vue"
-import SettingsForm from "./components/SettingsForm.vue"
-import TabNavigation from "./components/TabNavigation.vue"
-import NotificationBar from "./components/NotificationBar.vue"
+import { EntryModel } from "@/models/EntryModel.js"
+import { LocalStorageAdapter } from "@/models/LocalStorageAdapter.js"
+import InputAndListView from "@/components/InputAndListView.vue"
+import SettingsForm from "@/components/SettingsView.vue"
+import TabNavigation from "@/components/TabNavigation.vue"
+import NotificationBar from "@/components/NotificationBar.vue"
 
 const props = defineProps({
   entryModel: { type: Object, required: false },

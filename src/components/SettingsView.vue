@@ -48,9 +48,6 @@ onMounted(() => {
 </template>
 
 <style scoped>
-input[type="file"] {
-  display: none;
-}
 .settings-form {
   display: flex;
   flex-direction: column;
