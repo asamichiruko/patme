@@ -1,4 +1,10 @@
 import { generateId, isValidId, generateTaggingId, parseTaggingId } from "@/utils/idUtils.js"
+import {
+  isValidAchievement,
+  isValidStar,
+  isValidTag,
+  isValidTagging,
+} from "@/utils/entryValidator.js"
 import { notify } from "@/utils/storageNotifier"
 
 export class EntryModel {
@@ -11,7 +17,7 @@ export class EntryModel {
     const date = new Date()
     const achievement = { id, content, date }
 
-    if (!this.isValidAchievement(achievement)) {
+    if (!isValidAchievement(achievement)) {
       return false
     }
 
@@ -25,7 +31,7 @@ export class EntryModel {
     const date = new Date()
     const star = { id, achievementId, content, date }
 
-    if (!this.isValidAchievement(star)) {
+    if (!isValidAchievement(star)) {
       return false
     }
 
@@ -165,16 +171,7 @@ export class EntryModel {
   filterAchievements(data) {
     return data
       .map((a) => ({ id: a.id, content: a.content, date: a.date }))
-      .filter((a) => this.isValidAchievement(a))
-  }
-
-  isValidAchievement({ id, content, date }) {
-    let isValid = true
-    isValid = isValid && isValidId(id)
-    isValid = isValid && content && content !== ""
-    isValid = isValid && new Date(date).toString() !== "Invalid Date"
-
-    return isValid
+      .filter((a) => isValidAchievement(a))
   }
 
   mergeAchievements(existingData, newerData) {
@@ -211,17 +208,7 @@ export class EntryModel {
     const existingAchievementIds = new Set(this.storage.getAchievements().map((a) => a.id))
     return data
       .map((a) => ({ id: a.id, achievementId: a.achievementId, content: a.content, date: a.date }))
-      .filter((a) => this.isValidStar(a) && existingAchievementIds.has(a.achievementId))
-  }
-
-  isValidStar({ id, achievementId, content, date }) {
-    let isValid = true
-    isValid = isValid && isValidId(id)
-    isValid = isValid && isValidId(achievementId)
-    isValid = isValid && content && content !== ""
-    isValid = isValid && new Date(date).toString() !== "Invalid Date"
-
-    return isValid
+      .filter((a) => isValidStar(a) && existingAchievementIds.has(a.achievementId))
   }
 
   mergeStars(existingData, newerData) {
@@ -257,15 +244,7 @@ export class EntryModel {
   filterTags(data) {
     return data
       .map((a) => ({ id: a.id, title: a.title, order: a.order }))
-      .filter((a) => this.isValidTag(a))
-  }
-
-  isValidTag({ id, title }) {
-    let isValid = true
-    isValid = isValid && isValidId(id)
-    isValid = isValid && typeof title == "string"
-
-    return isValid
+      .filter((a) => isValidTag(a))
   }
 
   mergeTags(existingData, newerData) {
@@ -326,18 +305,10 @@ export class EntryModel {
       .map((a) => ({ achievementId: a.achievementId, tagId: a.tagId }))
       .filter(
         (a) =>
-          this.isValidTagging(a) &&
+          isValidTagging(a) &&
           existingAchievementIds.has(a.achievementId) &&
           existingTagIds.has(a.tagId),
       )
-  }
-
-  isValidTagging({ achievementId, tagId }) {
-    let isValid = true
-    isValid = isValid && isValidId(achievementId)
-    isValid = isValid && isValidId(tagId)
-
-    return isValid
   }
 
   mergeTaggings(existingData, newerData) {
