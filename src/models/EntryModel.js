@@ -1,18 +1,9 @@
 import { generateId, isValidId, generateTaggingId, parseTaggingId } from "@/utils/idUtils.js"
+import { notify } from "@/utils/storageNotifier"
 
 export class EntryModel {
   constructor(storage) {
     this.storage = storage
-    this.listeners = []
-  }
-
-  subscribe(listener) {
-    this.listeners.push(listener)
-  }
-
-  notify() {
-    const entries = this.getEntries()
-    this.listeners.forEach((listener) => listener(entries))
   }
 
   addAchievement({ content }) {
@@ -25,7 +16,7 @@ export class EntryModel {
     }
 
     this.storage.addAchievement({ id, content, date })
-    this.notify()
+    notify()
     return true
   }
 
@@ -39,7 +30,7 @@ export class EntryModel {
     }
 
     this.storage.addStar(star)
-    this.notify()
+    notify()
     return true
   }
 
@@ -56,7 +47,7 @@ export class EntryModel {
     const maxOrder = Math.max(0, ...allTags.map((tag) => tag.order || 0))
     const newTag = { id: generateId(), title: title, order: maxOrder + 1 }
     this.storage.addTag(newTag)
-    this.notify()
+    notify()
 
     return newTag
   }
@@ -83,12 +74,12 @@ export class EntryModel {
 
     this.storage.addTaggings(Array.from(toAdd).map((id) => parseTaggingId(id)))
     this.storage.removeTaggings(Array.from(toRemove).map((id) => parseTaggingId(id)))
-    this.notify()
+    notify()
   }
 
   updateTags(updated) {
     this.storage.replaceTags(updated)
-    this.notify()
+    notify()
   }
 
   getAllTags() {
@@ -158,7 +149,7 @@ export class EntryModel {
     this.importTags(json.tags)
     this.importTaggings(json.taggings)
 
-    this.notify()
+    notify()
   }
 
   importAchievements(data) {

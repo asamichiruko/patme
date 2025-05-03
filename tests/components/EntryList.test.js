@@ -40,7 +40,6 @@ describe("EntryList.vue", () => {
   beforeEach(() => {
     vi.clearAllMocks()
     entryModel = {
-      subscribe: vi.fn(),
       addStar: vi.fn(() => true),
       setTagsForAchievement: vi.fn(),
       addTag: vi.fn(),

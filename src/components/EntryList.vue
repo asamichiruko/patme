@@ -2,6 +2,7 @@
 import { onMounted, ref } from "vue"
 import PromptDialog from "@/components/PromptDialog.vue"
 import { useNotification } from "@/composables/useNotification.js"
+import { subscribe } from "@/utils/storageNotifier"
 import EntryListItem from "@/components/EntryListItem.vue"
 import TaggingDialog from "@/components/TaggingDialog.vue"
 import commentImg from "@/assets/comment.svg"
@@ -66,7 +67,7 @@ onMounted(() => {
   entries.value = props.entryModel.getEntries()
   allTags.value = props.entryModel.getAllTags()
 
-  props.entryModel.subscribe(() => {
+  subscribe(() => {
     entries.value = props.entryModel.getEntries()
     allTags.value = props.entryModel.getAllTags()
   })
