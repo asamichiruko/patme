@@ -2,7 +2,7 @@
 import { onMounted, ref } from "vue"
 import PromptDialog from "@/components/PromptDialog.vue"
 import { useNotification } from "@/composables/useNotification.js"
-import { subscribe } from "@/utils/storageNotifier"
+import { subscribe } from "@/utils/storageNotifier.js"
 import EntryListItem from "@/components/EntryListItem.vue"
 import TaggingDialog from "@/components/TaggingDialog.vue"
 import commentImg from "@/assets/comment.svg"
@@ -10,6 +10,7 @@ import tagImg from "@/assets/tag.svg"
 
 const props = defineProps({
   entryModel: Object,
+  tagModel: Object,
 })
 
 const { trigger } = useNotification()
@@ -49,10 +50,10 @@ const updateTags = (tagIds) => {
 }
 
 const addNewTag = async (title) => {
-  const newTag = props.entryModel.addTag({ title })
+  const newTag = props.tagModel.addTag({ title })
 
   if (newTag) {
-    allTags.value = props.entryModel.getAllTags()
+    allTags.value = props.tagModel.getAllTags()
     await tagEditorRef.value?.selectTagById(newTag.id)
     return
   }
@@ -65,11 +66,11 @@ const addNewTag = async (title) => {
 
 onMounted(() => {
   entries.value = props.entryModel.getEntries()
-  allTags.value = props.entryModel.getAllTags()
+  allTags.value = props.tagModel.getAllTags()
 
   subscribe(() => {
     entries.value = props.entryModel.getEntries()
-    allTags.value = props.entryModel.getAllTags()
+    allTags.value = props.tagModel.getAllTags()
   })
 })
 </script>

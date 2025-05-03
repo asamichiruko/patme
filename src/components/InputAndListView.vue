@@ -4,13 +4,14 @@ import EntryList from "@/components/EntryList.vue"
 
 const props = defineProps({
   entryModel: Object,
+  tagModel: Object,
 })
 </script>
 
 <template>
-  <InputForm :entryModel="props.entryModel" />
+  <InputForm :entry-model="props.entryModel" />
   <hr />
-  <EntryList :entryModel="props.entryModel" />
+  <EntryList :entry-model="props.entryModel" :tag-model="props.tagModel" />
 </template>
 
 <style scoped>

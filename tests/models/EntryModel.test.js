@@ -1,8 +1,10 @@
 import { EntryModel } from "@/models/EntryModel.js"
+import { TagModel } from "@/models/TagModel.js"
 import { LocalStorageAdapter } from "@/models/LocalStorageAdapter.js"
 
 describe("EntryModel.js", () => {
   let model
+  let tagModel
   const validJson = {
     achievements: [
       {
@@ -97,6 +99,7 @@ describe("EntryModel.js", () => {
     localStorage.clear()
     const adapter = new LocalStorageAdapter()
     model = new EntryModel(adapter)
+    tagModel = new TagModel(adapter)
   })
 
   test("必要なデータを achievement に結合した entry を取得できる", () => {
@@ -271,7 +274,7 @@ describe("EntryModel.js", () => {
 
   test("order が補完されるとき、既存の order と重複しない", () => {
     model.importFromJson(validJson)
-    const orders = model
+    const orders = tagModel
       .getAllTags()
       .map((tag) => tag.order)
       .filter((order) => order != null)

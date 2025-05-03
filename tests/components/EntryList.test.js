@@ -36,18 +36,21 @@ describe("EntryList.vue", () => {
     },
   ]
   let entryModel
+  let tagModel
 
   beforeEach(() => {
     vi.clearAllMocks()
     entryModel = {
       addStar: vi.fn(() => true),
       setTagsForAchievement: vi.fn(),
+      getEntries: vi.fn(() => testEntries),
+    }
+    tagModel = {
       addTag: vi.fn(),
       getAllTags: vi.fn(() => [
         { id: "id1", title: "tag1" },
         { id: "id2", title: "tag2" },
       ]),
-      getEntries: vi.fn(() => testEntries),
     }
   })
 
@@ -60,6 +63,7 @@ describe("EntryList.vue", () => {
     render(EntryList, {
       props: {
         entryModel: entryModel,
+        tagModel: tagModel,
       },
     })
 
@@ -71,6 +75,7 @@ describe("EntryList.vue", () => {
     render(EntryList, {
       props: {
         entryModel: entryModel,
+        tagModel: tagModel,
       },
       global: {
         stubs: {
@@ -89,6 +94,7 @@ describe("EntryList.vue", () => {
     render(EntryList, {
       props: {
         entryModel: entryModel,
+        tagModel: tagModel,
       },
       global: {
         stubs: {
@@ -115,6 +121,7 @@ describe("EntryList.vue", () => {
     render(EntryList, {
       props: {
         entryModel: entryModel,
+        tagModel: tagModel,
       },
       global: {
         stubs: {
@@ -141,6 +148,7 @@ describe("EntryList.vue", () => {
     render(EntryList, {
       props: {
         entryModel: entryModel,
+        tagModel: tagModel,
       },
       global: {
         stubs: {
@@ -157,6 +165,6 @@ describe("EntryList.vue", () => {
     const fakeDialog = await screen.findByRole("button", { name: /追加/i })
     await fireEvent.click(fakeDialog)
 
-    expect(entryModel.addTag).toHaveBeenCalledWith({ title: "newTag" })
+    expect(tagModel.addTag).toHaveBeenCalledWith({ title: "newTag" })
   })
 })

@@ -6,17 +6,18 @@ import ExportButton from "@/components/ExportButton.vue"
 
 const props = defineProps({
   entryModel: Object,
+  tagModel: Object,
 })
 
 const allTags = ref([])
 
 const updateTags = (updated) => {
-  props.entryModel.updateTags(updated)
-  allTags.value = props.entryModel.getAllTags()
+  props.tagModel.updateTags(updated)
+  allTags.value = props.tagModel.getAllTags()
 }
 
 onMounted(() => {
-  allTags.value = props.entryModel.getAllTags()
+  allTags.value = props.tagModel.getAllTags()
 })
 </script>
 

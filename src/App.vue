@@ -1,42 +1,41 @@
 <script setup>
 import { ref, computed } from "vue"
 import { EntryModel } from "@/models/EntryModel.js"
+import { TagModel } from "@/models/TagModel.js"
 import { LocalStorageAdapter } from "@/models/LocalStorageAdapter.js"
 import InputAndListView from "@/components/InputAndListView.vue"
 import SettingsForm from "@/components/SettingsView.vue"
 import TabNavigation from "@/components/TabNavigation.vue"
 import NotificationBar from "@/components/NotificationBar.vue"
 
-const props = defineProps({
-  entryModel: { type: Object, required: false },
-})
-
-const entryModel = props.entryModel ?? new EntryModel(new LocalStorageAdapter())
+const storage = new LocalStorageAdapter()
+const entryModel = new EntryModel(storage)
+const tagModel = new TagModel(storage)
 
 const tabs = [
-  { key: "Home", label: "ホーム", component: InputAndListView },
-  { key: "Settings", label: "設定", component: SettingsForm },
+  { key: "Home", label: "ホーム", component: InputAndListView, props: { entryModel, tagModel } },
+  { key: "Settings", label: "設定", component: SettingsForm, props: { entryModel, tagModel } },
 ]
 const currentTabKey = ref("Home")
 
-const currentTabContent = computed(() => {
+const currentTab = computed(() => {
   const activeTab = tabs.find((tab) => tab.key === currentTabKey.value)
-  if (activeTab.component) {
-    return activeTab.component
+  if (activeTab) {
+    return activeTab
   } else {
-    return tabs[0].component
+    return tabs[0]
   }
 })
 </script>
 
 <template>
   <NotificationBar />
-  <TabNavigation :tabs="tabs" v-model:currentTab="currentTabKey" />
+  <TabNavigation :tabs="tabs" v-model:current-tab="currentTabKey" />
 
   <div class="tab-content">
     <div class="container">
       <keep-alive>
-        <component :is="currentTabContent" :entryModel="entryModel" />
+        <component :is="currentTab.component" v-bind="currentTab.props" />
       </keep-alive>
     </div>
   </div>

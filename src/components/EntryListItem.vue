@@ -1,7 +1,7 @@
 <script setup>
 import starImg from "@/assets/star.svg"
 import blankStarImg from "@/assets/blank-star.svg"
-import { formatRelativeDate } from "@/utils/formatDate"
+import { formatRelativeDate } from "@/utils/formatDate.js"
 
 const props = defineProps({
   entry: Object,
