@@ -1,5 +1,5 @@
 <script setup>
-import { useTemplateRef } from "vue"
+import { ref } from "vue"
 import { useNotification } from "@/composables/useNotification.js"
 
 const props = defineProps({
@@ -7,7 +7,7 @@ const props = defineProps({
 })
 
 const { trigger } = useNotification()
-const fileInput = useTemplateRef("openfile")
+const fileInput = ref(null)
 
 const importEntries = async (e) => {
   const file = e.target.files[0]
@@ -40,7 +40,7 @@ const selectFile = () => {
   <form @submit.prevent="selectFile">
     <button type="submit" class="primary-button">記録をインポートする...</button>
     <input
-      ref="openfile"
+      ref="fileInput"
       type="file"
       data-testid="import-file"
       accept=".json"
