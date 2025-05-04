@@ -1,73 +1,49 @@
 export class LocalStorageAdapter {
   constructor() {}
 
-  loadAchievements() {
-    return JSON.parse(localStorage.getItem("achievements")) || []
+  load(key) {
+    return JSON.parse(localStorage.getItem(key)) || []
   }
 
-  saveAchievements(achievements) {
-    localStorage.setItem("achievements", JSON.stringify(achievements))
-  }
-
-  loadStars() {
-    return JSON.parse(localStorage.getItem("stars")) || []
-  }
-
-  saveStars(stars) {
-    localStorage.setItem("stars", JSON.stringify(stars))
-  }
-
-  loadTags() {
-    return JSON.parse(localStorage.getItem("tags")) || []
-  }
-
-  saveTags(tags) {
-    localStorage.setItem("tags", JSON.stringify(tags))
-  }
-
-  loadTaggings() {
-    return JSON.parse(localStorage.getItem("taggings")) || []
-  }
-
-  saveTaggings(taggings) {
-    localStorage.setItem("taggings", JSON.stringify(taggings))
+  save(key, values) {
+    localStorage.setItem(key, JSON.stringify(values))
   }
 
   addAchievement({ id, content, date }) {
-    const achievements = this.loadAchievements()
+    const achievements = this.load("achievements")
     achievements.push({ id, content, date })
-    this.saveAchievements(achievements)
+    this.save("achievements", achievements)
   }
 
   addStar({ id, achievementId, content, date }) {
-    const stars = this.loadStars()
+    const stars = this.load("stars")
     stars.push({ id, achievementId, content, date })
-    this.saveStars(stars)
+    this.save("stars", stars)
   }
 
   addTag({ id, title, order }) {
-    const tags = this.loadTags()
+    const tags = this.load("tags")
     tags.push({ id, title, order })
-    this.saveTags(tags)
+    this.save("tags", tags)
   }
 
   addTaggings(taggings) {
-    const storageTaggings = this.loadTaggings()
+    const storageTaggings = this.load("taggings")
     taggings.forEach((a) => {
       storageTaggings.push(a)
     })
-    this.saveTaggings(storageTaggings)
+    this.save("taggings", storageTaggings)
   }
 
   removeTaggings(taggings) {
-    const storageTaggings = this.loadTaggings().filter(
+    const storageTaggings = this.load("taggings").filter(
       (t) => !taggings.some((s) => s.achievementId === t.achievementId && s.tagId === t.tagId),
     )
-    this.saveTaggings(storageTaggings)
+    this.save("taggings", storageTaggings)
   }
 
   getAchievements() {
-    let achievements = this.loadAchievements()
+    let achievements = this.load("achievements")
     achievements = achievements.map((a) => {
       a.date = new Date(a.date)
       return a
@@ -76,7 +52,7 @@ export class LocalStorageAdapter {
   }
 
   getStars() {
-    let stars = this.loadStars()
+    let stars = this.load("stars")
     stars = stars.map((a) => {
       a.date = new Date(a.date)
       return a
@@ -85,26 +61,26 @@ export class LocalStorageAdapter {
   }
 
   getTags() {
-    return this.loadTags()
+    return this.load("tags")
   }
 
   getTaggings() {
-    return this.loadTaggings()
+    return this.load("taggings")
   }
 
   replaceAchievements(achievements) {
-    this.saveAchievements(achievements)
+    this.save("achievements", achievements)
   }
 
   replaceStars(stars) {
-    this.saveStars(stars)
+    this.save("stars", stars)
   }
 
   replaceTags(tags) {
-    this.saveTags(tags)
+    this.save("tags", tags)
   }
 
   replaceTaggings(taggings) {
-    this.saveTaggings(taggings)
+    this.save("taggings", taggings)
   }
 }
