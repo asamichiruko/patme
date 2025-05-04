@@ -12,12 +12,12 @@ const props = defineProps({
 const allTags = ref([])
 
 const updateTags = (updated) => {
-  props.tagModel.updateTags(updated)
-  allTags.value = props.tagModel.getAllTags()
+  props.tagModel.updateTags(updated.map((t) => t.id))
+  allTags.value = props.tagModel.getTagsOrdered()
 }
 
 onMounted(() => {
-  allTags.value = props.tagModel.getAllTags()
+  allTags.value = props.tagModel.getTagsOrdered()
 })
 </script>
 

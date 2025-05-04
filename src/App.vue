@@ -1,18 +1,32 @@
 <script setup>
 import { ref, computed } from "vue"
-import { EntryModel } from "@/models/EntryModel.js"
-import { TagModel } from "@/models/TagModel.js"
-import { TaggingModel } from "@/models/TaggingModel.js"
+
 import { LocalStorageAdapter } from "@/models/LocalStorageAdapter.js"
+
+import { TagRepository } from "@/repositories/TagRepository.js"
+import { TaggingRepository } from "@/repositories/TaggingRepository.js"
+
+import { TagService } from "@/services/TagService.js"
+
+import { TaggingModel } from "@/models/TaggingModel.js"
+import { TagModel } from "@/models/TagModel.js"
+import { EntryModel } from "@/models/EntryModel.js"
+
 import InputAndListView from "@/components/InputAndListView.vue"
-import SettingsForm from "@/components/SettingsView.vue"
+import SettingsView from "@/components/SettingsView.vue"
 import TabNavigation from "@/components/TabNavigation.vue"
 import NotificationBar from "@/components/NotificationBar.vue"
 
 const storage = new LocalStorageAdapter()
-const entryModel = new EntryModel(storage)
-const tagModel = new TagModel(storage)
-const taggingModel = new TaggingModel(storage)
+
+const tagRepos = new TagRepository(storage)
+const taggingRepos = new TaggingRepository(storage)
+
+const tagService = new TagService(tagRepos, taggingRepos)
+
+const taggingModel = new TaggingModel(taggingRepos, tagRepos)
+const tagModel = new TagModel(tagService)
+const entryModel = new EntryModel(storage, tagService)
 
 const tabs = [
   {
@@ -21,7 +35,7 @@ const tabs = [
     component: InputAndListView,
     props: { entryModel, tagModel, taggingModel },
   },
-  { key: "Settings", label: "設定", component: SettingsForm, props: { entryModel, tagModel } },
+  { key: "Settings", label: "設定", component: SettingsView, props: { entryModel, tagModel } },
 ]
 const currentTabKey = ref("Home")
 

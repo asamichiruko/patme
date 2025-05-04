@@ -51,10 +51,10 @@ const updateTags = (tagIds) => {
 }
 
 const addNewTag = async (title) => {
-  const newTag = props.tagModel.addTag({ title })
+  const newTag = props.tagModel.addTag(title)
 
   if (newTag) {
-    allTags.value = props.tagModel.getAllTags()
+    allTags.value = props.tagModel.getTagsOrdered()
     await tagEditorRef.value?.selectTagById(newTag.id)
     return
   }
@@ -67,11 +67,11 @@ const addNewTag = async (title) => {
 
 onMounted(() => {
   entries.value = props.entryModel.getEntries()
-  allTags.value = props.tagModel.getAllTags()
+  allTags.value = props.tagModel.getTagsOrdered()
 
   subscribe(() => {
     entries.value = props.entryModel.getEntries()
-    allTags.value = props.tagModel.getAllTags()
+    allTags.value = props.tagModel.getTagsOrdered()
   })
 })
 </script>

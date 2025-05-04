@@ -6,13 +6,12 @@ import {
   isValidTagging,
 } from "@/utils/entryValidator.js"
 import { notify } from "@/utils/storageNotifier.js"
-import { TagModel } from "@/models/TagModel.js"
 import { TaggingModel } from "@/models/TaggingModel.js"
 
 export class EntryModel {
-  constructor(storage) {
+  constructor(storage, tagService) {
     this.storage = storage
-    this.tagModel = new TagModel(storage)
+    this.tagService = tagService
     this.taggingModel = new TaggingModel(storage)
   }
 
@@ -47,7 +46,7 @@ export class EntryModel {
   getEntries() {
     const achievements = this.storage.getAchievements()
     const stars = this.storage.getStars()
-    const tags = this.tagModel.getAllTags()
+    const tags = this.tagService.getTagsOrdered()
     const taggings = this.storage.getTaggings()
 
     const groupedStars = Map.groupBy(stars, (star) => star.achievementId)
@@ -72,7 +71,7 @@ export class EntryModel {
   exportAsJson() {
     const achievements = this.storage.getAchievements()
     const stars = this.storage.getStars()
-    const tags = this.tagModel.getAllTags()
+    const tags = this.tagService.getTagsOrdered()
     const taggings = this.storage.getTaggings()
     const exportObject = { achievements, stars, tags, taggings }
     return exportObject

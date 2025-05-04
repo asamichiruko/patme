@@ -2,8 +2,9 @@ import { isValidId } from "@/utils/idUtils.js"
 import { notify } from "@/utils/storageNotifier"
 
 export class TaggingModel {
-  constructor(storage) {
-    this.storage = storage
+  constructor(taggingRepos, tagRepos) {
+    this.taggingRepos = taggingRepos
+    this.tagRepos = tagRepos
   }
 
   generateTaggingId(tagging) {
@@ -19,13 +20,15 @@ export class TaggingModel {
     if (!isValidId(achievementId)) {
       return
     }
-    const existingTaggings = this.storage
-      .getTaggings()
+    const existingTaggings = this.taggingRepos
+      .getAll()
       .filter((tagging) => tagging.achievementId === achievementId)
+
     const existingTaggingIds = new Set(
       existingTaggings.map((tagging) => this.generateTaggingId(tagging)),
     )
-    const existingTagIds = new Set(this.storage.getTags().map((tag) => tag.id))
+
+    const existingTagIds = new Set(this.tagRepos.getAll().map((tag) => tag.id))
     const updateTaggingIds = new Set(
       tagIds
         .filter((tagId) => isValidId(tagId) && existingTagIds.has(tagId))
@@ -35,8 +38,15 @@ export class TaggingModel {
     const toAdd = updateTaggingIds.difference(existingTaggingIds)
     const toRemove = existingTaggingIds.difference(updateTaggingIds)
 
-    this.storage.addTaggings(Array.from(toAdd).map((id) => this.parseTaggingId(id)))
-    this.storage.removeTaggings(Array.from(toRemove).map((id) => this.parseTaggingId(id)))
+    toAdd.values().forEach((taggingId) => {
+      const tagging = this.parseTaggingId(taggingId)
+      this.taggingRepos.add(tagging)
+    })
+    toRemove.values().forEach((taggingId) => {
+      const tagging = this.parseTaggingId(taggingId)
+      this.taggingRepos.remove(tagging)
+    })
+
     notify()
   }
 

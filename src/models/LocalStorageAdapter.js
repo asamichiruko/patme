@@ -21,12 +21,6 @@ export class LocalStorageAdapter {
     this.save("stars", stars)
   }
 
-  addTag({ id, title, order }) {
-    const tags = this.load("tags")
-    tags.push({ id, title, order })
-    this.save("tags", tags)
-  }
-
   addTaggings(taggings) {
     const storageTaggings = this.load("taggings")
     taggings.forEach((a) => {

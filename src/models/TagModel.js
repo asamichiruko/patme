@@ -1,45 +1,21 @@
-import { notify } from "@/utils/storageNotifier"
-import { generateId } from "@/utils/idUtils"
+import { notify } from "@/utils/storageNotifier.js"
 
 export class TagModel {
-  constructor(storage) {
-    this.storage = storage
+  constructor(tagService) {
+    this.tagService = tagService
   }
 
-  addTag({ title }) {
-    title = title?.trim()
-    if (!title) return null
-
-    const allTags = this.storage.getTags()
-    const allTagTitles = allTags.map((tag) => tag.title)
-    if (allTagTitles.includes(title)) {
-      return null
-    }
-
-    const maxOrder = Math.max(0, ...allTags.map((tag) => tag.order || 0))
-    const newTag = { id: generateId(), title: title, order: maxOrder + 1 }
-    this.storage.addTag(newTag)
-    notify()
-
-    return newTag
-  }
-
-  updateTags(updated) {
-    this.storage.replaceTags(updated)
+  addTag(title) {
+    this.tagService.addTag(title)
     notify()
   }
 
-  getAllTags() {
-    let tags = this.storage.getTags()
-    let maxOrder = Math.max(0, ...tags.map((tag) => tag.order || 0))
-    tags = this.storage.getTags().map((tag) => {
-      if (!tag.order) {
-        maxOrder += 1
-        tag.order = maxOrder
-      }
-      return tag
-    })
-    tags.sort((a, b) => a.order - b.order)
-    return tags
+  getTagsOrdered() {
+    return this.tagService.getTagsOrdered()
+  }
+
+  updateTags(idsInNewOrder) {
+    this.tagService.updateTags(idsInNewOrder)
+    notify()
   }
 }
