@@ -23,11 +23,12 @@ const importEntries = async (e) => {
     props.entryModel.importFromJson(json)
 
     trigger("データを復元しました", "success")
-  } catch {
+  } catch (err) {
     trigger(
       `データの復元に失敗しました。選択したデータの内容を確認し、時間をおいて再度お試しください`,
       "error",
     )
+    console.error(err)
   }
 }
 

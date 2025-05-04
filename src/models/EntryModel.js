@@ -169,7 +169,7 @@ export class EntryModel {
 
   importTags(data) {
     const filteredTags = this.filterTags(data)
-    const existingTags = this.storage.getTags()
+    const existingTags = this.tagService.getTagsOrdered()
     const { merged: mergedTags } = this.mergeTags(existingTags, filteredTags)
     this.storage.replaceTags(mergedTags)
   }

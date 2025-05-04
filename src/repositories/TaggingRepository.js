@@ -22,8 +22,20 @@ export class TaggingRepository {
     return this._load()
   }
 
-  updateAll(tagging) {
-    this._save(tagging)
+  has({ achievementId, tagId }) {
+    return this._load().some((t) => t.achievementId === achievementId && t.tagId === tagId)
+  }
+
+  findByAchievementId(achievementId) {
+    return this._load().filter((t) => t.achievementId === achievementId)
+  }
+
+  findByTagId(tagId) {
+    return this._load().filter((t) => t.tagId === tagId)
+  }
+
+  updateAll(taggings) {
+    this._save(taggings)
   }
 
   remove({ achievementId, tagId }) {

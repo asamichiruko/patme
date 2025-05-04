@@ -119,7 +119,7 @@ describe("EntryModel.js", () => {
 
     const achievementId = validJson.achievements[0].id
     const tagIds = [validJson.tags[2].id]
-    taggingModel.setTagsForAchievement({ achievementId, tagIds })
+    taggingModel.updateTaggings(achievementId, tagIds)
 
     expect(model.getEntries()).toContainEqual({
       achievement: {
@@ -145,7 +145,7 @@ describe("EntryModel.js", () => {
 
     const achievementId = validJson.achievements[1].id
     const tagIds = [validJson.tags[0].id, validJson.tags[1].id]
-    taggingModel.setTagsForAchievement({ achievementId, tagIds })
+    taggingModel.updateTaggings(achievementId, tagIds)
 
     expect(model.getEntries()).toEqual(beforeAdd)
   })
@@ -155,7 +155,7 @@ describe("EntryModel.js", () => {
 
     const achievementId = validJson.achievements[1].id
     const tagIds = [validJson.tags[0].id]
-    taggingModel.setTagsForAchievement({ achievementId, tagIds })
+    taggingModel.updateTaggings(achievementId, tagIds)
 
     expect(model.getEntries()).toContainEqual({
       achievement: {

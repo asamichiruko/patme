@@ -12,14 +12,14 @@ export class TagRepository {
     this.storage.save(this.key, taggings)
   }
 
-  getAll() {
-    return this._load()
-  }
-
   add(tag) {
     const tags = this._load()
     tags.push(tag)
     this._save(tags)
+  }
+
+  getAll() {
+    return this._load()
   }
 
   updateAll(tag) {

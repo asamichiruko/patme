@@ -48,13 +48,13 @@ describe("EntryList.vue", () => {
     }
     tagModel = {
       addTag: vi.fn(),
-      getAllTags: vi.fn(() => [
-        { id: "id1", title: "tag1" },
-        { id: "id2", title: "tag2" },
+      getTagsOrdered: vi.fn(() => [
+        { id: "id1", title: "tag1", order: 1 },
+        { id: "id2", title: "tag2", order: 2 },
       ]),
     }
     taggingModel = {
-      setTagsForAchievement: vi.fn(),
+      updateTaggings: vi.fn(),
     }
   })
 
@@ -124,7 +124,7 @@ describe("EntryList.vue", () => {
     })
   })
 
-  test("タグ編集ボタンを押して決定すると setTagsForAchievement が呼ばれる", async () => {
+  test("タグ編集ボタンを押して決定すると updateTaggings が呼ばれる", async () => {
     render(EntryList, {
       props: {
         entryModel: entryModel,
@@ -146,7 +146,7 @@ describe("EntryList.vue", () => {
     const fakeDialog = await screen.findByRole("button", { name: /DummyTaggingDialog/i })
     await fireEvent.click(fakeDialog)
 
-    expect(taggingModel.setTagsForAchievement).toHaveBeenCalledWith({
+    expect(taggingModel.updateTaggings).toHaveBeenCalledWith({
       achievementId: expect.any(String),
       tagIds: ["id1", "id2"],
     })

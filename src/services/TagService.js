@@ -1,7 +1,7 @@
 import { generateId } from "@/utils/idUtils.js"
 
 export class TagService {
-  constructor(tagRepository, taggingRepository) {
+  constructor({ tagRepository, taggingRepository }) {
     this.tagRepos = tagRepository
     this.taggingRepos = taggingRepository
   }

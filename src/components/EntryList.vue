@@ -47,11 +47,11 @@ const editTags = (achievementId, tags) => {
 }
 
 const updateTags = (tagIds) => {
-  props.taggingModel.setTagsForAchievement({ achievementId: selectedId.value, tagIds })
+  props.taggingModel.updateTaggings({ achievementId: selectedId.value, tagIds: tagIds })
 }
 
 const addNewTag = async (title) => {
-  const newTag = props.tagModel.addTag(title)
+  const newTag = props.tagModel.addTag({ title })
 
   if (newTag) {
     allTags.value = props.tagModel.getTagsOrdered()

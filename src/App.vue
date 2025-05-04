@@ -7,6 +7,7 @@ import { TagRepository } from "@/repositories/TagRepository.js"
 import { TaggingRepository } from "@/repositories/TaggingRepository.js"
 
 import { TagService } from "@/services/TagService.js"
+import { TaggingService } from "@/services/TaggingService.js"
 
 import { TaggingModel } from "@/models/TaggingModel.js"
 import { TagModel } from "@/models/TagModel.js"
@@ -19,12 +20,13 @@ import NotificationBar from "@/components/NotificationBar.vue"
 
 const storage = new LocalStorageAdapter()
 
-const tagRepos = new TagRepository(storage)
-const taggingRepos = new TaggingRepository(storage)
+const tagRepository = new TagRepository(storage)
+const taggingRepository = new TaggingRepository(storage)
 
-const tagService = new TagService(tagRepos, taggingRepos)
+const tagService = new TagService({ tagRepository, taggingRepository })
+const taggingService = new TaggingService({ taggingRepository, tagRepository })
 
-const taggingModel = new TaggingModel(taggingRepos, tagRepos)
+const taggingModel = new TaggingModel({ taggingService, tagService })
 const tagModel = new TagModel(tagService)
 const entryModel = new EntryModel(storage, tagService)
 

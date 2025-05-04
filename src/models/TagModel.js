@@ -5,7 +5,7 @@ export class TagModel {
     this.tagService = tagService
   }
 
-  addTag(title) {
+  addTag({ title }) {
     this.tagService.addTag(title)
     notify()
   }
