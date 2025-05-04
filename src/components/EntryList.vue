@@ -11,6 +11,7 @@ import tagImg from "@/assets/tag.svg"
 const props = defineProps({
   entryModel: Object,
   tagModel: Object,
+  taggingModel: Object,
 })
 
 const { trigger } = useNotification()
@@ -46,7 +47,7 @@ const editTags = (achievementId, tags) => {
 }
 
 const updateTags = (tagIds) => {
-  props.entryModel.setTagsForAchievement({ achievementId: selectedId.value, tagIds })
+  props.taggingModel.setTagsForAchievement({ achievementId: selectedId.value, tagIds })
 }
 
 const addNewTag = async (title) => {

@@ -2,6 +2,7 @@
 import { ref, computed } from "vue"
 import { EntryModel } from "@/models/EntryModel.js"
 import { TagModel } from "@/models/TagModel.js"
+import { TaggingModel } from "@/models/TaggingModel.js"
 import { LocalStorageAdapter } from "@/models/LocalStorageAdapter.js"
 import InputAndListView from "@/components/InputAndListView.vue"
 import SettingsForm from "@/components/SettingsView.vue"
@@ -11,9 +12,15 @@ import NotificationBar from "@/components/NotificationBar.vue"
 const storage = new LocalStorageAdapter()
 const entryModel = new EntryModel(storage)
 const tagModel = new TagModel(storage)
+const taggingModel = new TaggingModel(storage)
 
 const tabs = [
-  { key: "Home", label: "ホーム", component: InputAndListView, props: { entryModel, tagModel } },
+  {
+    key: "Home",
+    label: "ホーム",
+    component: InputAndListView,
+    props: { entryModel, tagModel, taggingModel },
+  },
   { key: "Settings", label: "設定", component: SettingsForm, props: { entryModel, tagModel } },
 ]
 const currentTabKey = ref("Home")

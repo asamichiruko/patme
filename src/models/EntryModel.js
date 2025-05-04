@@ -1,4 +1,4 @@
-import { generateId, isValidId, generateTaggingId, parseTaggingId } from "@/utils/idUtils.js"
+import { generateId } from "@/utils/idUtils.js"
 import {
   isValidAchievement,
   isValidStar,
@@ -7,11 +7,13 @@ import {
 } from "@/utils/entryValidator.js"
 import { notify } from "@/utils/storageNotifier.js"
 import { TagModel } from "@/models/TagModel.js"
+import { TaggingModel } from "@/models/TaggingModel.js"
 
 export class EntryModel {
   constructor(storage) {
     this.storage = storage
     this.tagModel = new TagModel(storage)
+    this.taggingModel = new TaggingModel(storage)
   }
 
   addAchievement({ content }) {
@@ -42,31 +44,6 @@ export class EntryModel {
     return true
   }
 
-  setTagsForAchievement({ achievementId, tagIds }) {
-    if (!isValidId(achievementId)) {
-      return
-    }
-    const existingTaggings = this.storage
-      .getTaggings()
-      .filter((tagging) => tagging.achievementId === achievementId)
-    const existingTaggingIds = new Set(
-      existingTaggings.map((tagging) => generateTaggingId(tagging)),
-    )
-    const existingTagIds = new Set(this.storage.getTags().map((tag) => tag.id))
-    const updateTaggingIds = new Set(
-      tagIds
-        .filter((tagId) => isValidId(tagId) && existingTagIds.has(tagId))
-        .map((tagId) => generateTaggingId({ achievementId, tagId })),
-    )
-
-    const toAdd = updateTaggingIds.difference(existingTaggingIds)
-    const toRemove = existingTaggingIds.difference(updateTaggingIds)
-
-    this.storage.addTaggings(Array.from(toAdd).map((id) => parseTaggingId(id)))
-    this.storage.removeTaggings(Array.from(toRemove).map((id) => parseTaggingId(id)))
-    notify()
-  }
-
   getEntries() {
     const achievements = this.storage.getAchievements()
     const stars = this.storage.getStars()
@@ -75,7 +52,7 @@ export class EntryModel {
 
     const groupedStars = Map.groupBy(stars, (star) => star.achievementId)
     const groupedTags = Map.groupBy(
-      this.tagModel.resolveTagTitles(taggings, tags),
+      this.taggingModel.resolveTagTitles({ taggings, tags }),
       (t) => t.achievementId,
     )
 
@@ -271,23 +248,23 @@ export class EntryModel {
   mergeTaggings(existingData, newerData) {
     const existingIds = new Set(
       existingData.map((a) =>
-        generateTaggingId({ achievementId: a.achievementId, tagId: a.tagId }),
+        this.taggingModel.generateTaggingId({ achievementId: a.achievementId, tagId: a.tagId }),
       ),
     )
     const merged = [...existingData]
     const rejected = []
 
     for (const dat of newerData) {
-      const newTaggingId = generateTaggingId({
+      const newTaggingId = this.taggingModel.generateTaggingId({
         achievementId: dat.achievementId,
         tagId: dat.tagId,
       })
 
       if (existingIds.has(newTaggingId)) {
-        rejected.push(parseTaggingId(newTaggingId))
+        rejected.push(this.taggingModel.parseTaggingId(newTaggingId))
       } else {
         existingIds.add(newTaggingId)
-        merged.push(parseTaggingId(newTaggingId))
+        merged.push(this.taggingModel.parseTaggingId(newTaggingId))
       }
     }
 

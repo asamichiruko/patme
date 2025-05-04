@@ -35,14 +35,15 @@ describe("EntryList.vue", () => {
       tags: [],
     },
   ]
+
   let entryModel
   let tagModel
+  let taggingModel
 
   beforeEach(() => {
     vi.clearAllMocks()
     entryModel = {
       addStar: vi.fn(() => true),
-      setTagsForAchievement: vi.fn(),
       getEntries: vi.fn(() => testEntries),
     }
     tagModel = {
@@ -51,6 +52,9 @@ describe("EntryList.vue", () => {
         { id: "id1", title: "tag1" },
         { id: "id2", title: "tag2" },
       ]),
+    }
+    taggingModel = {
+      setTagsForAchievement: vi.fn(),
     }
   })
 
@@ -64,6 +68,7 @@ describe("EntryList.vue", () => {
       props: {
         entryModel: entryModel,
         tagModel: tagModel,
+        taggingModel: taggingModel,
       },
     })
 
@@ -76,6 +81,7 @@ describe("EntryList.vue", () => {
       props: {
         entryModel: entryModel,
         tagModel: tagModel,
+        taggingModel: taggingModel,
       },
       global: {
         stubs: {
@@ -95,6 +101,7 @@ describe("EntryList.vue", () => {
       props: {
         entryModel: entryModel,
         tagModel: tagModel,
+        taggingModel: taggingModel,
       },
       global: {
         stubs: {
@@ -122,6 +129,7 @@ describe("EntryList.vue", () => {
       props: {
         entryModel: entryModel,
         tagModel: tagModel,
+        taggingModel: taggingModel,
       },
       global: {
         stubs: {
@@ -138,7 +146,7 @@ describe("EntryList.vue", () => {
     const fakeDialog = await screen.findByRole("button", { name: /DummyTaggingDialog/i })
     await fireEvent.click(fakeDialog)
 
-    expect(entryModel.setTagsForAchievement).toHaveBeenCalledWith({
+    expect(taggingModel.setTagsForAchievement).toHaveBeenCalledWith({
       achievementId: expect.any(String),
       tagIds: ["id1", "id2"],
     })
@@ -149,6 +157,7 @@ describe("EntryList.vue", () => {
       props: {
         entryModel: entryModel,
         tagModel: tagModel,
+        taggingModel: taggingModel,
       },
       global: {
         stubs: {

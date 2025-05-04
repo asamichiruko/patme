@@ -1,10 +1,13 @@
 import { EntryModel } from "@/models/EntryModel.js"
 import { TagModel } from "@/models/TagModel.js"
+import { TaggingModel } from "@/models/TaggingModel.js"
 import { LocalStorageAdapter } from "@/models/LocalStorageAdapter.js"
 
 describe("EntryModel.js", () => {
   let model
   let tagModel
+  let taggingModel
+
   const validJson = {
     achievements: [
       {
@@ -100,6 +103,7 @@ describe("EntryModel.js", () => {
     const adapter = new LocalStorageAdapter()
     model = new EntryModel(adapter)
     tagModel = new TagModel(adapter)
+    taggingModel = new TaggingModel(adapter)
   })
 
   test("必要なデータを achievement に結合した entry を取得できる", () => {
@@ -115,7 +119,7 @@ describe("EntryModel.js", () => {
 
     const achievementId = validJson.achievements[0].id
     const tagIds = [validJson.tags[2].id]
-    model.setTagsForAchievement({ achievementId, tagIds })
+    taggingModel.setTagsForAchievement({ achievementId, tagIds })
 
     expect(model.getEntries()).toContainEqual({
       achievement: {
@@ -141,7 +145,7 @@ describe("EntryModel.js", () => {
 
     const achievementId = validJson.achievements[1].id
     const tagIds = [validJson.tags[0].id, validJson.tags[1].id]
-    model.setTagsForAchievement({ achievementId, tagIds })
+    taggingModel.setTagsForAchievement({ achievementId, tagIds })
 
     expect(model.getEntries()).toEqual(beforeAdd)
   })
@@ -151,7 +155,7 @@ describe("EntryModel.js", () => {
 
     const achievementId = validJson.achievements[1].id
     const tagIds = [validJson.tags[0].id]
-    model.setTagsForAchievement({ achievementId, tagIds })
+    taggingModel.setTagsForAchievement({ achievementId, tagIds })
 
     expect(model.getEntries()).toContainEqual({
       achievement: {

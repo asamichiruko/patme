@@ -42,18 +42,4 @@ export class TagModel {
     tags.sort((a, b) => a.order - b.order)
     return tags
   }
-
-  resolveTagTitles(taggings, tags = null) {
-    if (tags === null) {
-      tags = this.getAllTags()
-    }
-    const tagMap = new Map(tags.map((t) => [t.id, t]))
-    const resolved = taggings.map((t) => ({
-      achievementId: t.achievementId,
-      id: t.tagId,
-      title: tagMap.get(t.tagId).title,
-      order: tagMap.get(t.tagId).order,
-    }))
-    return resolved
-  }
 }
