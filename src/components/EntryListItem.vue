@@ -20,10 +20,10 @@ const props = defineProps({
           <span class="star-count-text">{{ props.entry.stars.length }}</span>
         </template>
       </div>
-      <div class="achievement-date">{{ formatRelativeDate(props.entry.achievement.date) }}</div>
+      <div class="achievement-date">{{ formatRelativeDate(props.entry.date) }}</div>
     </div>
     <div class="achievement-content">
-      {{ props.entry.achievement.content }}
+      {{ props.entry.content }}
     </div>
     <ul class="tags">
       <li class="tag selected" v-for="tag in props.entry.tags" :key="tag.id">{{ tag.title }}</li>

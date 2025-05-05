@@ -26,6 +26,10 @@ export class EntryRepository {
     this.storage.save(this.starKey, { id, achievementId, content, date })
   }
 
+  hasAchievement(achievementId) {
+    return this.storage.load(this.achievementKey).some((a) => a.id === achievementId)
+  }
+
   getAll() {
     const achievements = this.storage.load(this.achievementKey)
     const stars = this.storage.load(this.starKey)

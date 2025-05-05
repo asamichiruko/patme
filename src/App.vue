@@ -1,17 +1,19 @@
 <script setup>
 import { ref, computed } from "vue"
 
-import { LocalStorageAdapter } from "@/models/LocalStorageAdapter.js"
+import { LocalStorageAdapter } from "@/adapters/LocalStorageAdapter.js"
 
+import { EntryRepository } from "@/repositories/EntryRepository.js"
 import { TagRepository } from "@/repositories/TagRepository.js"
 import { TaggingRepository } from "@/repositories/TaggingRepository.js"
 
+import { EntryService } from "@/services/EntryService.js"
 import { TagService } from "@/services/TagService.js"
 import { TaggingService } from "@/services/TaggingService.js"
 
+import { EntryModel } from "@/models/EntryModel.js"
 import { TaggingModel } from "@/models/TaggingModel.js"
 import { TagModel } from "@/models/TagModel.js"
-import { EntryModel } from "@/models/EntryModel.js"
 
 import InputAndListView from "@/components/InputAndListView.vue"
 import SettingsView from "@/components/SettingsView.vue"
@@ -20,15 +22,17 @@ import NotificationBar from "@/components/NotificationBar.vue"
 
 const storage = new LocalStorageAdapter()
 
+const entryRepository = new EntryRepository(storage)
 const tagRepository = new TagRepository(storage)
 const taggingRepository = new TaggingRepository(storage)
 
+const entryService = new EntryService({ entryRepository, tagRepository, taggingRepository })
 const tagService = new TagService({ tagRepository, taggingRepository })
 const taggingService = new TaggingService({ taggingRepository, tagRepository })
 
 const taggingModel = new TaggingModel({ taggingService, tagService })
 const tagModel = new TagModel(tagService)
-const entryModel = new EntryModel(storage, tagService)
+const entryModel = new EntryModel(entryService)
 
 const tabs = [
   {

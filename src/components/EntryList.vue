@@ -66,13 +66,15 @@ const addNewTag = async (title) => {
 }
 
 onMounted(() => {
-  entries.value = props.entryModel.getEntries()
-  allTags.value = props.tagModel.getTagsOrdered()
-
-  subscribe(() => {
-    entries.value = props.entryModel.getEntries()
+  const reload = () => {
+    entries.value = props.entryModel.getEntriesWithTags({
+      sortFn: (a, b) => new Date(b.date) - new Date(a.date),
+    })
     allTags.value = props.tagModel.getTagsOrdered()
-  })
+  }
+
+  subscribe(reload)
+  reload()
 })
 </script>
 
@@ -81,14 +83,14 @@ onMounted(() => {
     できたことを記録してみましょう！
   </p>
   <ul class="entries" v-else>
-    <li class="entry-item" v-for="entry in entries" :key="entry.achievement.id">
+    <li class="entry-item" v-for="entry in entries" :key="entry.id">
       <EntryListItem :entry="entry" />
       <div class="entry-actions">
-        <button class="comment-button" @click="inputComment(entry.achievement.id)">
+        <button class="comment-button" @click="inputComment(entry.id)">
           <img :src="commentImg" alt="" class="comment-icon" width="20px" height="20px" />
           <span class="comment-text">コメント</span>
         </button>
-        <button class="tag-edit-button" @click="editTags(entry.achievement.id, entry.tags)">
+        <button class="tag-edit-button" @click="editTags(entry.id, entry.tags)">
           <img :src="tagImg" alt="" class="tag-icon" width="20px" height="20px" />
           <span class="tag-text">タグ</span>
         </button>
