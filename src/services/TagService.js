@@ -6,15 +6,16 @@ export class TagService {
     this.taggingRepos = taggingRepository
   }
 
-  addTag(title) {
+  addTag({ id = null, title }) {
     if (!title || this.tagRepos.findByTitle(title)) {
       return null
     }
 
+    const tagId = id || generateId()
     const tags = this.tagRepos.getAll()
     const maxOrder = tags.reduce((max, tag) => Math.max(max, tag.order), 0)
     const newTag = {
-      id: generateId(),
+      id: tagId,
       title: title,
       order: maxOrder + 1,
     }

@@ -1,7 +1,7 @@
 import { EntryModel } from "@/models/EntryModel.js"
 import { TagModel } from "@/models/TagModel.js"
 import { TaggingModel } from "@/models/TaggingModel.js"
-import { LocalStorageAdapter } from "@/models/LocalStorageAdapter.js"
+import { LocalStorageAdapter } from "@/adapter/LocalStorageAdapter.js"
 
 describe("EntryModel.js", () => {
   let model

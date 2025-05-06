@@ -7,25 +7,42 @@ export class EntryService {
     this.tagRepos = tagRepository
   }
 
-  addEntry({ content, date, stars }) {
-    const achievement = {
-      id: generateId(),
-      content,
-      date,
-      stars: stars.map((s) => ({
-        id: generateId(),
+  addEntry({ id = null, content, date, stars = [] }) {
+    const achievementId = id || generateId()
+    if (this.entryRepos.hasAchievement(achievementId)) {
+      return null
+    }
+
+    const starIdSet = new Set(this.entryRepos.getStars())
+    const filteredStars = stars
+      .map((s) => ({
+        id: s.id || generateId(),
         content: s.content,
         date: s.date,
-      })),
+      }))
+      .filter((s) => {
+        if (!starIdSet.has(s.id)) {
+          starIdSet.add(s.id)
+          return true
+        } else {
+          return false
+        }
+      })
+
+    const achievement = {
+      id: achievementId,
+      content,
+      date,
+      stars: filteredStars,
     }
 
     this.entryRepos.add(achievement)
     return achievement
   }
 
-  addAchievement({ content, date }) {
+  addAchievement({ id = null, content, date }) {
     const achievement = {
-      id: generateId(),
+      id: id || generateId(),
       content,
       date,
     }
@@ -34,8 +51,11 @@ export class EntryService {
     return achievement
   }
 
-  addStar({ achievementId, content, date }) {
+  addStar({ id = null, achievementId, content, date }) {
     if (!this.entryRepos.hasAchievement(achievementId)) {
+      return null
+    }
+    if (this.entryRepos.hasStar(id)) {
       return null
     }
 
@@ -48,6 +68,14 @@ export class EntryService {
 
     this.entryRepos.addStar(star)
     return star
+  }
+
+  getAchievements() {
+    return this.entryRepos.getAchievements()
+  }
+
+  getStars() {
+    return this.entryRepos.getStars()
   }
 
   getEntriesWithTags({ sortFn = null } = {}) {

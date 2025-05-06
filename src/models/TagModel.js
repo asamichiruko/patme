@@ -6,7 +6,7 @@ export class TagModel {
   }
 
   addTag({ title }) {
-    this.tagService.addTag(title)
+    this.tagService.addTag({ title })
     notify()
   }
 
