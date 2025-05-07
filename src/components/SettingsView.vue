@@ -1,5 +1,6 @@
 <script setup>
 import { ref, onMounted } from "vue"
+import { subscribe } from "@/utils/storageNotifier.js"
 import TagManager from "@/components/TagManager.vue"
 import ImportButton from "@/components/ImportButton.vue"
 import ExportButton from "@/components/ExportButton.vue"
@@ -8,6 +9,7 @@ const props = defineProps({
   entryModel: Object,
   tagModel: Object,
   importModel: Object,
+  exportModel: Object,
 })
 
 const allTags = ref([])
@@ -18,7 +20,11 @@ const updateTags = (updated) => {
 }
 
 onMounted(() => {
-  allTags.value = props.tagModel.getTagsOrdered()
+  const reload = () => {
+    allTags.value = props.tagModel.getTagsOrdered()
+  }
+  subscribe(reload)
+  reload()
 })
 </script>
 
@@ -35,7 +41,7 @@ onMounted(() => {
         記録を JSON
         ファイルとしてエクスポートします。エクスポートファイルは記録の復元に利用できます。
       </p>
-      <ExportButton :entry-model="entryModel" />
+      <ExportButton :export-model="exportModel" />
     </section>
 
     <section>

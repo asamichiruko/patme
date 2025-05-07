@@ -29,6 +29,10 @@ export class TaggingService {
     return this.taggingRepos.findByTagId(tagId).map((t) => t.achievementId)
   }
 
+  getTaggings() {
+    return this.taggingRepos.getAll()
+  }
+
   updateTaggings(achievementId, tagIds) {
     const currentTagIds = this.listTagIdsByAchievement(achievementId)
     const currentTagIdSet = new Set(currentTagIds)

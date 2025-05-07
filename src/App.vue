@@ -11,11 +11,13 @@ import { EntryService } from "@/services/EntryService.js"
 import { TagService } from "@/services/TagService.js"
 import { TaggingService } from "@/services/TaggingService.js"
 import { ImportService } from "@/services/ImportService.js"
+import { ExportService } from "@/services/ExportService.js"
 
 import { EntryModel } from "@/models/EntryModel.js"
 import { TaggingModel } from "@/models/TaggingModel.js"
 import { TagModel } from "@/models/TagModel.js"
 import { ImportModel } from "@/models/ImportModel.js"
+import { ExportModel } from "@/models/ExportModel.js"
 
 import InputAndListView from "@/components/InputAndListView.vue"
 import SettingsView from "@/components/SettingsView.vue"
@@ -32,11 +34,13 @@ const entryService = new EntryService({ entryRepository, tagRepository, taggingR
 const tagService = new TagService({ tagRepository, taggingRepository })
 const taggingService = new TaggingService({ taggingRepository, tagRepository })
 const importService = new ImportService({ tagService, taggingService, entryService })
+const exportService = new ExportService({ tagService, taggingService, entryService })
 
 const taggingModel = new TaggingModel({ taggingService, tagService })
 const tagModel = new TagModel(tagService)
 const entryModel = new EntryModel(entryService)
 const importModel = new ImportModel(importService)
+const exportModel = new ExportModel(exportService)
 
 const tabs = [
   {
@@ -49,7 +53,7 @@ const tabs = [
     key: "Settings",
     label: "設定",
     component: SettingsView,
-    props: { entryModel, tagModel, importModel },
+    props: { entryModel, tagModel, importModel, exportModel },
   },
 ]
 const currentTabKey = ref("Home")

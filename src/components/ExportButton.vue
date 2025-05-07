@@ -2,19 +2,23 @@
 import { useNotification } from "@/composables/useNotification.js"
 
 const props = defineProps({
-  entryModel: Object,
+  exportModel: Object,
 })
 
 const { trigger } = useNotification()
 
-const exportEntries = () => {
-  const json = props.entryModel.exportAsJson()
-  const blob = new Blob([JSON.stringify(json)], { type: "application/json" })
-  const url = URL.createObjectURL(blob)
+const filenameFromDate = () => {
   const dateString = new Date().toLocaleDateString("sv-SE")
+  return `entries-${dateString}.json`
+}
+
+const exportData = () => {
+  const file = props.exportModel.exportToFile()
+  console.log(file)
+  const url = URL.createObjectURL(file)
   const a = document.createElement("a")
   a.href = url
-  a.download = `entries-${dateString}.json`
+  a.download = filenameFromDate()
   document.body.appendChild(a)
   a.click()
   document.body.removeChild(a)
@@ -25,7 +29,7 @@ const exportEntries = () => {
 </script>
 
 <template>
-  <form @submit.prevent="exportEntries">
+  <form @submit.prevent="exportData">
     <button type="submit" class="primary-button">記録をエクスポートする</button>
   </form>
 </template>
