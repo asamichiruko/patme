@@ -41,8 +41,14 @@ export class EntryService {
   }
 
   addAchievement({ id = null, content, date }) {
+    const achievementId = id || generateId()
+
+    if (this.entryRepos.hasAchievement(achievementId)) {
+      return null
+    }
+
     const achievement = {
-      id: id || generateId(),
+      id: achievementId,
       content,
       date,
     }
@@ -52,6 +58,8 @@ export class EntryService {
   }
 
   addStar({ id = null, achievementId, content, date }) {
+    const starId = id || generateId()
+
     if (!this.entryRepos.hasAchievement(achievementId)) {
       return null
     }
@@ -60,7 +68,7 @@ export class EntryService {
     }
 
     const star = {
-      id: generateId(),
+      id: starId,
       content,
       date,
       achievementId,

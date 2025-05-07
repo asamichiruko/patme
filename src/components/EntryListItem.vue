@@ -29,8 +29,8 @@ const props = defineProps({
       <li class="tag selected" v-for="tag in props.entry.tags" :key="tag.id">{{ tag.title }}</li>
     </ul>
     <template v-if="props.entry.stars.length !== 0">
-      <ul class="stars" v-for="star in props.entry.stars" :key="star.id">
-        <li class="star-comment" v-if="star.content">
+      <ul class="stars">
+        <li class="star-comment" v-for="star in props.entry.stars" :key="star.id">
           <span class="star-content">{{ star.content }}</span>
           <span class="star-date">{{ formatRelativeDate(star.date) }}</span>
         </li>

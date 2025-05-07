@@ -22,6 +22,10 @@ export class TagRepository {
     return this._load()
   }
 
+  findByTitle(title) {
+    return this._load().find((t) => t.title === title)
+  }
+
   updateAll(tag) {
     this._save(tag)
   }

@@ -10,15 +10,15 @@ export class TaggingService {
 
   addTagging({ achievementId, tagId }) {
     if (!this.isValidTagId(tagId)) {
-      return false
+      return null
     }
 
     if (this.taggingRepos.has({ achievementId, tagId })) {
-      return false
+      return null
     }
 
     this.taggingRepos.add({ achievementId, tagId })
-    return true
+    return { achievementId, tagId }
   }
 
   listTagIdsByAchievement(achievementId) {

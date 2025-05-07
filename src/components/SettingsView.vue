@@ -7,6 +7,7 @@ import ExportButton from "@/components/ExportButton.vue"
 const props = defineProps({
   entryModel: Object,
   tagModel: Object,
+  importModel: Object,
 })
 
 const allTags = ref([])
@@ -43,7 +44,7 @@ onMounted(() => {
         保存した JSON
         ファイルをアップロードして記録をインポートします。差分の記録だけを追加し、既存の記録は上書きしません。
       </p>
-      <ImportButton :entry-model="entryModel" />
+      <ImportButton :import-model="importModel" />
     </section>
   </div>
 </template>

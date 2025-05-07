@@ -3,13 +3,13 @@ import { ref } from "vue"
 import { useNotification } from "@/composables/useNotification.js"
 
 const props = defineProps({
-  entryModel: Object,
+  importModel: Object,
 })
 
 const { trigger } = useNotification()
 const fileInput = ref(null)
 
-const importEntries = async (e) => {
+const importData = async (e) => {
   const file = e.target.files[0]
   if (!file) {
     return
@@ -18,10 +18,7 @@ const importEntries = async (e) => {
     return
   }
   try {
-    const jsonString = await file.text()
-    const json = JSON.parse(jsonString)
-    props.entryModel.importFromJson(json)
-
+    await props.importModel.importFromFile(file)
     trigger("データを復元しました", "success")
   } catch (err) {
     trigger(
@@ -45,7 +42,7 @@ const selectFile = () => {
       type="file"
       data-testid="import-file"
       accept=".json"
-      @change="importEntries"
+      @change="importData"
     />
   </form>
 </template>
