@@ -2,7 +2,7 @@ export class LocalStorageAdapter {
   constructor() {}
 
   load(key) {
-    if (typeof key !== "string" || key.trim() === "") {
+    if (!this._isValidKey(key)) {
       throw new Error("Invalid key: expected non-empty string")
     }
     const item = localStorage.getItem(key)
@@ -12,13 +12,28 @@ export class LocalStorageAdapter {
     return JSON.parse(item) || undefined
   }
 
-  save(key, value) {
-    if (typeof key !== "string" || key.trim() === "") {
+  has(key) {
+    if (!this._isValidKey(key)) {
       throw new Error("Invalid key: expected non-empty string")
     }
-    if (typeof value !== "object" || value === null) {
+    return localStorage.getItem(key) !== null
+  }
+
+  save(key, value) {
+    if (!this._isValidKey(key)) {
+      throw new Error("Invalid key: expected non-empty string")
+    }
+    if (!this._isValidValue(value)) {
       throw new Error("Invalid value: expected a non-null object")
     }
     localStorage.setItem(key, JSON.stringify(value))
+  }
+
+  _isValidKey(key) {
+    return typeof key === "string" && key.trim() !== ""
+  }
+
+  _isValidValue(value) {
+    return typeof value === "object" && value !== null
   }
 }
