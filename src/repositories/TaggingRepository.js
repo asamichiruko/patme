@@ -2,10 +2,13 @@ export class TaggingRepository {
   constructor(storage) {
     this.storage = storage
     this.key = "taggings"
+    if (!this.storage.has(this.key)) {
+      this.storage.save(this.key, [])
+    }
   }
 
   _load() {
-    return this.storage.load(this.key) || []
+    return this.storage.load(this.key)
   }
 
   _save(taggings) {
