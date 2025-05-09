@@ -3,6 +3,7 @@ import { ImportService } from "@/services/ImportService.js"
 describe("ImportService.js", () => {
   let importService
   let mockEntryService, mockTagService, mockTaggingService
+
   const testAchievements = [
     {
       id: "89bd5913-48f2-4156-8357-7997086471ac",
@@ -134,7 +135,7 @@ describe("ImportService.js", () => {
     expect(result.stars.rejected).toHaveLength(1)
   })
 
-  test("対応するachievementが存在しない新規データが破棄される", () => {
+  test("対応する達成事項が存在しない新規データが破棄される", () => {
     mockEntryService.getAchievements.mockReturnValue([])
     mockEntryService.getStars.mockReturnValue([])
     const result = importService.importData({
@@ -188,6 +189,21 @@ describe("ImportService.js", () => {
     expect(result.tags.rejected).toHaveLength(1)
   })
 
+  test("インポートされたタグが既存のタグの後ろに order 順で追加される", () => {
+    mockTagService.getTagsOrdered.mockReturnValue([testTags[3]])
+    const result = importService.importData({
+      achievements: [],
+      stars: [],
+      tags: [testTags[1], testTags[0]],
+      taggings: [],
+    })
+
+    expect(result.tags.added).toHaveLength(2)
+    expect(result.tags.rejected).toHaveLength(0)
+    expect(mockTagService.addTag.mock.calls[0][0]).toEqual(testTags[0])
+    expect(mockTagService.addTag.mock.calls[1][0]).toEqual(testTags[1])
+  })
+
   test("新規達成事項への tagging が追加される", () => {
     const tagging = { achievementId: testAchievements[0].id, tagId: testTags[0].id }
 
@@ -235,20 +251,5 @@ describe("ImportService.js", () => {
 
     expect(result.taggings.added).toHaveLength(0)
     expect(result.taggings.rejected).toHaveLength(1)
-  })
-
-  test("インポートされた tag が order 順に既存のタグの後ろに追加される", () => {
-    mockTagService.getTagsOrdered.mockReturnValue([testTags[3]])
-    const result = importService.importData({
-      achievements: [],
-      stars: [],
-      tags: [testTags[1], testTags[0]],
-      taggings: [],
-    })
-
-    expect(result.tags.added).toHaveLength(2)
-    expect(result.tags.rejected).toHaveLength(0)
-    expect(mockTagService.addTag.mock.calls[0][0]).toEqual(testTags[0])
-    expect(mockTagService.addTag.mock.calls[1][0]).toEqual(testTags[1])
   })
 })
