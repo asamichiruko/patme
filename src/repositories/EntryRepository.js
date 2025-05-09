@@ -28,20 +28,16 @@ export class EntryRepository {
   }
 
   add({ id, content, date, stars }) {
-    const storageAchievements = this._loadAchievements()
-    storageAchievements.push({ id, content, date })
-    this._saveAchievements(storageAchievements)
+    this.addAchievement({ id, content, date })
 
-    const storageStars = this._loadStar()
     stars.forEach((star) => {
-      storageStars.push({
+      this.addStar({
         id: star.id,
         achievementId: id,
         content: star.content,
         date: star.date,
       })
     })
-    this._saveStar(storageStars)
   }
 
   addAchievement({ id, content, date }) {
