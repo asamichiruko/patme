@@ -1,4 +1,4 @@
-import { isValidId } from "@/utils/idUtils"
+import { isValidAchievement, isValidStar, isValidTag, isValidTagging } from "@/utils/validator.js"
 
 export class ImportService {
   constructor({ tagService, taggingService, entryService }) {
@@ -58,12 +58,7 @@ export class ImportService {
     const validated = []
     data.forEach((dat) => {
       const { id, content, date } = dat
-      if (
-        isValidId(id) &&
-        content &&
-        content !== "" &&
-        new Date(date).toString() !== "Invalid Date"
-      ) {
+      if (isValidAchievement({ id, content, date })) {
         validated.push({ id, content, date })
       }
     })
@@ -102,13 +97,7 @@ export class ImportService {
     const validated = []
     data.forEach((dat) => {
       const { id, achievementId, content, date } = dat
-      if (
-        isValidId(id) &&
-        isValidId(achievementId) &&
-        content &&
-        content !== "" &&
-        new Date(date).toString() !== "Invalid Date"
-      ) {
+      if (isValidStar({ id, achievementId, content, date })) {
         validated.push({ id, achievementId, content, date })
       }
     })
@@ -150,7 +139,7 @@ export class ImportService {
     const validated = []
     data.forEach((dat) => {
       const { id, title, order } = dat
-      if (isValidId(id) && title && title !== "" && typeof order === "number" && order > 0) {
+      if (isValidTag({ id, title, order })) {
         validated.push({ id, title, order })
       }
     })
@@ -195,7 +184,7 @@ export class ImportService {
     const validated = []
     data.forEach((dat) => {
       const { achievementId, tagId } = dat
-      if (isValidId(achievementId) && isValidId(tagId)) {
+      if (isValidTagging({ achievementId, tagId })) {
         validated.push({ achievementId, tagId })
       }
     })

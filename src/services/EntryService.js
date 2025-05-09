@@ -1,4 +1,5 @@
 import { generateId } from "@/utils/idUtils.js"
+import { isValidAchievement, isValidStar } from "@/utils/validator.js"
 
 export class EntryService {
   constructor({ entryRepository, taggingRepository, tagRepository }) {
@@ -8,36 +9,25 @@ export class EntryService {
   }
 
   addEntry({ id = null, content, date, stars = [] }) {
-    const achievementId = id || generateId()
-    if (this.entryRepos.hasAchievement(achievementId)) {
+    const addedAchievement = this.addAchievement({ id, content, date })
+    if (!addedAchievement) {
       return null
     }
 
-    const starIdSet = new Set(this.entryRepos.getStars())
-    const filteredStars = stars
-      .map((s) => ({
-        id: s.id || generateId(),
-        content: s.content,
-        date: s.date,
-      }))
-      .filter((s) => {
-        if (!starIdSet.has(s.id)) {
-          starIdSet.add(s.id)
-          return true
-        } else {
-          return false
-        }
-      })
+    const addedStars = []
+    stars.forEach((star) => {
+      const result = this.addStar(star)
+      if (result) {
+        addedStars.push(result)
+      }
+    })
 
-    const achievement = {
-      id: achievementId,
+    return {
+      id: addedAchievement.id,
       content,
       date,
-      stars: filteredStars,
+      stars: addedStars,
     }
-
-    this.entryRepos.add(achievement)
-    return achievement
   }
 
   addAchievement({ id = null, content, date }) {
@@ -51,6 +41,10 @@ export class EntryService {
       id: achievementId,
       content,
       date,
+    }
+
+    if (!isValidAchievement(achievement)) {
+      return null
     }
 
     this.entryRepos.addAchievement(achievement)
@@ -72,6 +66,10 @@ export class EntryService {
       content,
       date,
       achievementId,
+    }
+
+    if (!isValidStar(star)) {
+      return null
     }
 
     this.entryRepos.addStar(star)
