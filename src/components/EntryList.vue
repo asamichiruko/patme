@@ -32,7 +32,11 @@ const inputComment = (achievementId) => {
 }
 
 const addStar = (content) => {
-  const result = props.entryModel.addStar({ achievementId: selectedId.value, content })
+  const result = props.entryModel.addStar({
+    achievementId: selectedId.value,
+    content,
+    date: new Date(),
+  })
   if (result) {
     trigger("コメントを記録しました！", "success")
   } else {

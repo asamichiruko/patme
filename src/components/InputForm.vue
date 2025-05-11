@@ -16,7 +16,7 @@ const submit = () => {
     trigger("できたことを入力してください", "error")
     return
   }
-  const result = props.entryModel.addAchievement({ content })
+  const result = props.entryModel.addAchievement({ content, date: new Date() })
   if (result) {
     text.value = ""
     trigger("できたことを記録しました！", "success")
