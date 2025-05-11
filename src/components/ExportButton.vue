@@ -14,7 +14,6 @@ const filenameFromDate = () => {
 
 const exportData = () => {
   const file = props.exportModel.exportToFile()
-  console.log(file)
   const url = URL.createObjectURL(file)
   const a = document.createElement("a")
   a.href = url
