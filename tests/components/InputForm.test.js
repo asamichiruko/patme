@@ -45,7 +45,10 @@ describe("InputForm.vue", () => {
     const button = screen.getByRole("button", { name: "記録する" })
     await fireEvent.click(button)
 
-    expect(entryModel.addAchievement).toHaveBeenCalledWith({ content: "テスト記録" })
+    expect(entryModel.addAchievement).toHaveBeenCalledWith({
+      content: "テスト記録",
+      date: expect.any(Date),
+    })
   })
 
   test("テキストを記入して Ctrl+Enter を入力すると達成内容を記録できる", async () => {
@@ -64,7 +67,10 @@ describe("InputForm.vue", () => {
       ctrlKey: true,
     })
 
-    expect(entryModel.addAchievement).toHaveBeenCalledWith({ content: "テスト記録" })
+    expect(entryModel.addAchievement).toHaveBeenCalledWith({
+      content: "テスト記録",
+      date: expect.any(Date),
+    })
   })
 
   test("記録に成功すると textarea がクリアされる", async () => {
