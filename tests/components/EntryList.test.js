@@ -4,11 +4,9 @@ import EntryList from "@/components/EntryList.vue"
 describe("EntryList.vue", () => {
   const testEntries = [
     {
-      achievement: {
-        id: "c2e0439a-7cd0-4743-a9ef-b299699f09a6",
-        content: "テスト記録1",
-        date: new Date("2025-04-01 15:00:00"),
-      },
+      id: "c2e0439a-7cd0-4743-a9ef-b299699f09a6",
+      content: "テスト記録1",
+      date: new Date("2025-04-01 15:00:00"),
       stars: [],
       tags: [
         {
@@ -19,11 +17,9 @@ describe("EntryList.vue", () => {
       ],
     },
     {
-      achievement: {
-        id: "8adcf1ba-89d8-475f-b651-b14df49853eb",
-        content: "テスト記録2",
-        date: new Date("2025-04-01 16:00:00"),
-      },
+      id: "8adcf1ba-89d8-475f-b651-b14df49853eb",
+      content: "テスト記録2",
+      date: new Date("2025-04-01 16:00:00"),
       stars: [
         {
           id: "13ac6ed5-e94e-4a56-8967-cc53d9c26eea",
@@ -44,13 +40,12 @@ describe("EntryList.vue", () => {
     vi.clearAllMocks()
     entryModel = {
       addStar: vi.fn(() => true),
-      getEntries: vi.fn(() => testEntries),
+      getEntriesWithTags: vi.fn(() => testEntries),
     }
     tagModel = {
       addTag: vi.fn(),
       getTagsOrdered: vi.fn(() => [
-        { id: "id1", title: "tag1", order: 1 },
-        { id: "id2", title: "tag2", order: 2 },
+        { id: "8adcf1ba-89d8-475f-b651-b14df49853eb", title: "テストタグ1", order: 1 },
       ]),
     }
     taggingModel = {
@@ -63,7 +58,7 @@ describe("EntryList.vue", () => {
   })
 
   test("entries が 0 件のときその旨を示すメッセージが表示される", async () => {
-    entryModel.getEntries.mockReturnValueOnce([])
+    entryModel.getEntriesWithTags.mockReturnValueOnce([])
     render(EntryList, {
       props: {
         entryModel: entryModel,
@@ -106,7 +101,7 @@ describe("EntryList.vue", () => {
       global: {
         stubs: {
           PromptDialog: {
-            template: `<button @click="$emit('submit', 'test comment')">dummypromptdialog</button>`,
+            template: `<button @click="$emit('submit', 'test comment')">DummyPromptDialog</button>`,
           },
         },
       },
@@ -115,12 +110,13 @@ describe("EntryList.vue", () => {
     const commentButtons = await screen.findAllByRole("button", { name: /コメント/i })
     await fireEvent.click(commentButtons[0])
 
-    const fakeDialog = await screen.findByRole("button", { name: /dummypromptdialog/i })
+    const fakeDialog = await screen.findByRole("button", { name: /DummyPromptDialog/i })
     await fireEvent.click(fakeDialog)
 
     expect(entryModel.addStar).toHaveBeenCalledWith({
       achievementId: expect.any(String),
       content: "test comment",
+      date: expect.any(Date),
     })
   })
 
@@ -140,7 +136,7 @@ describe("EntryList.vue", () => {
       },
     })
 
-    const tagButtons = await screen.findAllByRole("button", { name: /タグ/i })
+    const tagButtons = await screen.findAllByRole("button", { name: /DummyTaggingDialog/i })
     await fireEvent.click(tagButtons[0])
 
     const fakeDialog = await screen.findByRole("button", { name: /DummyTaggingDialog/i })

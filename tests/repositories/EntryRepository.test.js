@@ -46,7 +46,8 @@ describe("EntryRepository.js", () => {
     entryRepos.add(entry)
 
     expect(mockStorage.save).toHaveBeenCalledWith(entryRepos.achievementKey, [testAchievements[0]])
-    expect(mockStorage.save).toHaveBeenCalledWith(entryRepos.starKey, [testStars[0], testStars[1]])
+    expect(mockStorage.save).toHaveBeenCalledWith(entryRepos.starKey, [testStars[0]])
+    expect(mockStorage.save).toHaveBeenCalledWith(entryRepos.starKey, [testStars[1]])
   })
 
   test("achievement を追加できる", () => {

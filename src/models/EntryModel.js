@@ -1,4 +1,4 @@
-import { notify } from "@/utils/storageNotifier"
+import { notify } from "@/utils/storageNotifier.js"
 
 export class EntryModel {
   constructor(entryService) {
