@@ -13,7 +13,7 @@ describe("ImportButton.vue", () => {
     vi.clearAllMocks()
 
     model = {
-      importFromJson: vi.fn(),
+      importFromFile: vi.fn(),
     }
   })
 
@@ -24,7 +24,7 @@ describe("ImportButton.vue", () => {
   test("正常にファイルをインポートした後に成功通知が出る", async () => {
     render(ImportButton, {
       props: {
-        entryModel: model,
+        importModel: model,
       },
     })
 
@@ -40,14 +40,14 @@ describe("ImportButton.vue", () => {
 
     await fireEvent.update(fileInput)
 
-    expect(model.importFromJson).toHaveBeenCalled()
+    expect(model.importFromFile).toHaveBeenCalled()
     expect(trigger).toHaveBeenCalledWith(expect.any(String), "success")
   })
 
   test("json 形式でないファイルを選択したときにエラー通知が出る", async () => {
     render(ImportButton, {
       props: {
-        entryModel: model,
+        importModel: model,
       },
     })
 
@@ -63,81 +63,30 @@ describe("ImportButton.vue", () => {
 
     await fireEvent.update(fileInput)
 
-    expect(model.importFromJson).not.toHaveBeenCalled()
+    expect(model.importFromFile).not.toHaveBeenCalled()
     expect(trigger).toHaveBeenCalledWith(expect.any(String), "error")
   })
 
   test("ファイルの内容を読み込めなかったときにエラー通知が出る", async () => {
     render(ImportButton, {
       props: {
-        entryModel: model,
+        importModel: model,
       },
     })
 
     const fileInput = screen.getByTestId("import-file", { hidden: true })
 
-    const mockFile = new File(["{}"], "data.json", { type: "application/json" })
-    mockFile.text = vi.fn().mockRejectedValue()
+    model.importFromFile.mockImplementation(() => {
+      throw new Error()
+    })
 
     Object.defineProperty(fileInput, "files", {
-      value: [mockFile],
+      value: ["{}"],
       writable: true,
     })
 
     await fireEvent.update(fileInput)
 
-    expect(model.importFromJson).not.toHaveBeenCalled()
-    expect(trigger).toHaveBeenCalledWith(expect.any(String), "error")
-  })
-
-  test("ファイルのパースに失敗したときにエラー通知が出る", async () => {
-    render(ImportButton, {
-      props: {
-        entryModel: model,
-      },
-    })
-
-    const fileInput = screen.getByTestId("import-file", { hidden: true })
-
-    const mockFile = new File(["invalid json file"], "data.json", {
-      type: "application/json",
-    })
-    mockFile.text = vi.fn().mockResolvedValue("invalid json file")
-
-    Object.defineProperty(fileInput, "files", {
-      value: [mockFile],
-      writable: true,
-    })
-
-    await fireEvent.update(fileInput)
-
-    expect(model.importFromJson).not.toHaveBeenCalled()
-    expect(trigger).toHaveBeenCalledWith(expect.any(String), "error")
-  })
-
-  test("JSON ファイルが不正な型だったときにエラー通知が出る", async () => {
-    model.importFromJson.mockImplementation(() => {
-      throw new SyntaxError()
-    })
-    render(ImportButton, {
-      props: {
-        entryModel: model,
-      },
-    })
-
-    const fileInput = screen.getByTestId("import-file", { hidden: true })
-
-    const mockFile = new File(["{}"], "data.json", { type: "application/json" })
-    mockFile.text = vi.fn().mockResolvedValue("{}")
-
-    Object.defineProperty(fileInput, "files", {
-      value: [mockFile],
-      writable: true,
-    })
-
-    await fireEvent.update(fileInput)
-
-    expect(model.importFromJson).toHaveBeenCalled()
     expect(trigger).toHaveBeenCalledWith(expect.any(String), "error")
   })
 })

@@ -13,7 +13,7 @@ describe("ExportButton.vue", () => {
     vi.clearAllMocks()
 
     model = {
-      exportAsJson: vi.fn(),
+      exportToFile: vi.fn(),
     }
   })
 
@@ -26,7 +26,7 @@ describe("ExportButton.vue", () => {
 
     render(ExportButton, {
       props: {
-        entryModel: model,
+        exportModel: model,
       },
     })
 
@@ -37,7 +37,7 @@ describe("ExportButton.vue", () => {
 
     await fireEvent.click(screen.getByRole("button", { name: /エクスポート/i }))
 
-    expect(model.exportAsJson).toHaveBeenCalled()
+    expect(model.exportToFile).toHaveBeenCalled()
     expect(trigger).toHaveBeenCalledWith(expect.any(String), "success")
   })
 })

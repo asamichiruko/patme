@@ -41,7 +41,7 @@ onMounted(() => {
         記録を JSON
         ファイルとしてエクスポートします。エクスポートファイルは記録の復元に利用できます。
       </p>
-      <ExportButton :export-model="exportModel" />
+      <ExportButton :export-model="props.exportModel" />
     </section>
 
     <section>
@@ -50,7 +50,7 @@ onMounted(() => {
         保存した JSON
         ファイルをアップロードして記録をインポートします。差分の記録だけを追加し、既存の記録は上書きしません。
       </p>
-      <ImportButton :import-model="importModel" />
+      <ImportButton :import-model="props.importModel" />
     </section>
   </div>
 </template>
