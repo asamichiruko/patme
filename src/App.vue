@@ -31,8 +31,8 @@ const tagRepository = new TagRepository(storage)
 const taggingRepository = new TaggingRepository(storage)
 
 const entryService = new EntryService({ entryRepository, tagRepository, taggingRepository })
-const tagService = new TagService({ tagRepository, taggingRepository })
-const taggingService = new TaggingService({ taggingRepository, tagRepository })
+const tagService = new TagService({ tagRepository })
+const taggingService = new TaggingService({ entryRepository, tagRepository, taggingRepository })
 const importService = new ImportService({ tagService, taggingService, entryService })
 const exportService = new ExportService({ tagService, taggingService, entryService })
 

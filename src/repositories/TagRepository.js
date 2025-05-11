@@ -18,6 +18,10 @@ export class TagRepository {
     this._save(tags)
   }
 
+  has(id) {
+    return this._load().some((t) => t.id === id)
+  }
+
   getAll() {
     return this._load()
   }

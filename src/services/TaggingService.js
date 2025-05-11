@@ -1,15 +1,12 @@
 export class TaggingService {
-  constructor({ taggingRepository, tagRepository }) {
+  constructor({ entryRepository, taggingRepository, tagRepository }) {
+    this.entryRepos = entryRepository
     this.taggingRepos = taggingRepository
     this.tagRepos = tagRepository
   }
 
-  isValidTagId(tagId) {
-    return this.tagRepos.getAll().some((t) => t.id === tagId)
-  }
-
   addTagging({ achievementId, tagId }) {
-    if (!this.isValidTagId(tagId)) {
+    if (!this.tagRepos.has(tagId) || !this.entryRepos.hasAchievement(achievementId)) {
       return null
     }
 
@@ -21,20 +18,12 @@ export class TaggingService {
     return { achievementId, tagId }
   }
 
-  listTagIdsByAchievement(achievementId) {
-    return this.taggingRepos.findByAchievementId(achievementId).map((t) => t.tagId)
-  }
-
-  listAchievementIdsByTag(tagId) {
-    return this.taggingRepos.findByTagId(tagId).map((t) => t.achievementId)
-  }
-
   getTaggings() {
     return this.taggingRepos.getAll()
   }
 
   updateTaggings(achievementId, tagIds) {
-    const currentTagIds = this.listTagIdsByAchievement(achievementId)
+    const currentTagIds = this.taggingRepos.findByAchievementId(achievementId).map((t) => t.tagId)
     const currentTagIdSet = new Set(currentTagIds)
     const tagIdSet = new Set(tagIds)
 
