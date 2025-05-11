@@ -15,7 +15,7 @@ const props = defineProps({
 const allTags = ref([])
 
 const updateTags = (updated) => {
-  props.tagModel.updateTags(updated.map((t) => t.id))
+  props.tagModel.reorderTagByIds(updated.map((t) => t.id))
   allTags.value = props.tagModel.getTagsOrdered()
 }
 

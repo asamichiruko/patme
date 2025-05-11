@@ -30,8 +30,18 @@ export class TagService {
     return tags
   }
 
-  updateTags(idsInNewOrder) {
+  reorderTagByIds(idsInNewOrder) {
     const tags = this.tagRepos.getAll()
+
+    if (
+      !this._isArraysEqual(
+        tags.map((t) => t.id),
+        idsInNewOrder,
+      )
+    ) {
+      throw new Error("Invalid ids: ids must be equal to existing tags")
+    }
+
     const tagMap = new Map(tags.map((t) => [t.id, t]))
     const reorderedTags = []
 
@@ -44,5 +54,16 @@ export class TagService {
     })
 
     this.tagRepos.updateAll(reorderedTags)
+  }
+
+  _isArraysEqual(a, b) {
+    if (a.length !== b.length) {
+      return false
+    }
+
+    const sortedA = a.toSorted()
+    const sortedB = b.toSorted()
+
+    return sortedA.every((value, index) => value === sortedB[index])
   }
 }

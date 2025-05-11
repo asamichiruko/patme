@@ -14,8 +14,8 @@ export class TagModel {
     return this.tagService.getTagsOrdered()
   }
 
-  updateTags(idsInNewOrder) {
-    this.tagService.updateTags(idsInNewOrder)
+  reorderTagByIds(idsInNewOrder) {
+    this.tagService.reorderTagByIds(idsInNewOrder)
     notify()
   }
 }
