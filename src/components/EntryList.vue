@@ -5,8 +5,6 @@ import { useNotification } from "@/composables/useNotification.js"
 import { subscribe } from "@/utils/storageNotifier.js"
 import EntryListItem from "@/components/EntryListItem.vue"
 import TaggingDialog from "@/components/TaggingDialog.vue"
-import commentImg from "@/assets/comment.svg"
-import tagImg from "@/assets/tag.svg"
 
 const props = defineProps({
   entryModel: Object,
@@ -23,7 +21,7 @@ const showPrompt = ref(false)
 const selectedId = ref("")
 
 const tagEditorRef = ref(null)
-const showTabEditor = ref(false)
+const showTagEditor = ref(false)
 const selectedTagIds = ref([])
 
 const inputComment = (achievementId) => {
@@ -47,7 +45,7 @@ const addStar = (content) => {
 const editTags = (achievementId, tags) => {
   selectedId.value = achievementId
   selectedTagIds.value = tags.map((t) => t.id)
-  showTabEditor.value = true
+  showTagEditor.value = true
 }
 
 const updateTags = (tagIds) => {
@@ -88,17 +86,7 @@ onMounted(() => {
   </p>
   <ul class="entries" v-else>
     <li class="entry-item" v-for="entry in entries" :key="entry.id">
-      <EntryListItem :entry="entry" />
-      <div class="entry-actions">
-        <button class="comment-button" @click="inputComment(entry.id)">
-          <img :src="commentImg" alt="" class="comment-icon" width="20px" height="20px" />
-          <span class="comment-text">コメント</span>
-        </button>
-        <button class="tag-edit-button" @click="editTags(entry.id, entry.tags)">
-          <img :src="tagImg" alt="" class="tag-icon" width="20px" height="20px" />
-          <span class="tag-text">タグ</span>
-        </button>
-      </div>
+      <EntryListItem :entry="entry" @comment="inputComment" @tagging="editTags" />
     </li>
   </ul>
 
@@ -114,8 +102,8 @@ onMounted(() => {
 
   <TaggingDialog
     ref="tagEditorRef"
-    :show="showTabEditor"
-    @update:show="showTabEditor = $event"
+    :show="showTagEditor"
+    @update:show="showTagEditor = $event"
     :initial-tag-ids="selectedTagIds"
     :all-tags="allTags"
     @submit="updateTags"
@@ -143,69 +131,5 @@ onMounted(() => {
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   padding: 16px;
   border-radius: 4px;
-}
-.entry-actions {
-  margin-top: 24px;
-  display: flex;
-  gap: 16px;
-  align-items: center;
-}
-
-.comment-button {
-  background-color: var(--color-primary);
-  color: var(--color-primary-text);
-  font-size: 14px;
-  padding: 8px 16px;
-  border: none;
-  border-radius: 4px;
-  display: flex;
-  align-items: center;
-  transition: background-color 0.3s;
-}
-.comment-button:hover {
-  background-color: var(--color-primary-hover);
-}
-.comment-button:focus-visible {
-  outline: 2px solid var(--color-primary-focus);
-  outline-offset: 2px;
-  border-radius: 4px;
-}
-.comment-icon {
-  width: 18px;
-  height: 18px;
-  padding-right: 4px;
-  display: inline-block;
-}
-.comment-text {
-  display: inline-block;
-}
-
-.tag-edit-button {
-  background-color: var(--color-primary);
-  color: var(--color-primary-text);
-  font-size: 14px;
-  padding: 8px 16px;
-  border: none;
-  border-radius: 4px;
-  display: flex;
-  align-items: center;
-  transition: background-color 0.3s;
-}
-.tag-edit-button:hover {
-  background-color: var(--color-primary-hover);
-}
-.tag-edit-button:focus-visible {
-  outline: 2px solid var(--color-primary-focus);
-  outline-offset: 2px;
-  border-radius: 4px;
-}
-.tag-icon {
-  width: 18px;
-  height: 18px;
-  padding-right: 4px;
-  display: inline-block;
-}
-.tag-text {
-  display: inline-block;
 }
 </style>
