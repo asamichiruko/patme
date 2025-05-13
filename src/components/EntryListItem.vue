@@ -41,11 +41,11 @@ const emit = defineEmits(["comment", "tagging"])
       </ul>
     </template>
     <div class="entry-actions">
-      <button class="comment-button" @click="emit('comment', entry.id)">
+      <button class="comment-button" @click="emit('comment', entry)">
         <img :src="commentImg" alt="" class="comment-icon" width="20px" height="20px" />
         <span class="comment-text">コメント</span>
       </button>
-      <button class="tag-edit-button" @click="emit('tagging', entry.id, entry.tags)">
+      <button class="tag-edit-button" @click="emit('tagging', entry)">
         <img :src="tagImg" alt="" class="tag-icon" width="20px" height="20px" />
         <span class="tag-text">タグ</span>
       </button>
