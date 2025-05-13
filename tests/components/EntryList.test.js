@@ -136,7 +136,7 @@ describe("EntryList.vue", () => {
       },
     })
 
-    const tagButtons = await screen.findAllByRole("button", { name: /DummyTaggingDialog/i })
+    const tagButtons = await screen.findAllByRole("button", { name: /タグ/i })
     await fireEvent.click(tagButtons[0])
 
     const fakeDialog = await screen.findByRole("button", { name: /DummyTaggingDialog/i })
