@@ -1,6 +1,4 @@
 <script setup>
-import { ref, computed } from "vue"
-
 import { LocalStorageAdapter } from "@/adapters/LocalStorageAdapter.js"
 
 import { EntryRepository } from "@/repositories/EntryRepository.js"
@@ -21,8 +19,11 @@ import { ExportModel } from "@/models/ExportModel.js"
 
 import InputAndListView from "@/components/InputAndListView.vue"
 import SettingsView from "@/components/SettingsView.vue"
+
+import MainView from "@/components/MainView.vue"
 import TabNavigation from "@/components/TabNavigation.vue"
 import NotificationBar from "@/components/NotificationBar.vue"
+import { ref } from "vue"
 
 const storage = new LocalStorageAdapter()
 
@@ -56,27 +57,12 @@ const tabs = [
     props: { entryModel, tagModel, importModel, exportModel },
   },
 ]
-const currentTabKey = ref("Home")
 
-const currentTab = computed(() => {
-  const activeTab = tabs.find((tab) => tab.key === currentTabKey.value)
-  if (activeTab) {
-    return activeTab
-  } else {
-    return tabs[0]
-  }
-})
+const activeTab = ref("Home")
 </script>
 
 <template>
   <NotificationBar />
-  <TabNavigation :tabs="tabs" v-model:current-tab="currentTabKey" />
-
-  <div class="tab-content">
-    <div class="container">
-      <keep-alive>
-        <component :is="currentTab.component" v-bind="currentTab.props" />
-      </keep-alive>
-    </div>
-  </div>
+  <TabNavigation :tabs="tabs" v-model:active-tab="activeTab" />
+  <MainView :tabs="tabs" :active-tab="activeTab" />
 </template>

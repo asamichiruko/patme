@@ -1,10 +1,10 @@
 <script setup>
 defineProps({
-  currentTab: String,
+  activeTab: String,
   tabs: Array,
 })
 
-defineEmits(["update:currentTab"])
+defineEmits(["update:activeTab"])
 </script>
 
 <template>
@@ -12,8 +12,8 @@ defineEmits(["update:currentTab"])
     <button
       v-for="tab in tabs"
       :key="tab.key"
-      :class="['tab-button', { active: currentTab === tab.key }]"
-      @click="$emit('update:currentTab', tab.key)"
+      :class="['tab-button', { active: activeTab === tab.key }]"
+      @click="$emit('update:activeTab', tab.key)"
     >
       {{ tab.label }}
     </button>
