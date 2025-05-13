@@ -100,7 +100,7 @@ export class EntryService {
 
     const resolvedEntries = entries.map((entry) => ({
       ...entry,
-      tags: taggingMap.get(entry.id) || [],
+      tags: taggingMap.get(entry.id)?.toSorted((a, b) => a.order - b.order) || [],
     }))
 
     if (sortFn) {
