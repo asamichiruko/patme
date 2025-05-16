@@ -1,12 +1,12 @@
 import { render, screen, fireEvent, cleanup } from "@testing-library/vue"
-import ExportButton from "@/components/ExportButton.vue"
+import ExportForm from "@/components/ExportForm.vue"
 
 const trigger = vi.fn()
 vi.mock("@/composables/useNotification.js", () => {
   return { useNotification: () => ({ trigger }) }
 })
 
-describe("ExportButton.vue", () => {
+describe("ExportForm.vue", () => {
   let model
 
   beforeEach(() => {
@@ -24,7 +24,7 @@ describe("ExportButton.vue", () => {
   test("データを正常にエクスポートすると success 通知が出る", async () => {
     vi.stubGlobal("URL", { createObjectURL: vi.fn(), revokeObjectURL: vi.fn() })
 
-    render(ExportButton, {
+    render(ExportForm, {
       props: {
         exportModel: model,
       },

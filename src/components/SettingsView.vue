@@ -2,8 +2,8 @@
 import { ref, onMounted } from "vue"
 import { subscribe } from "@/utils/storageNotifier.js"
 import TagManager from "@/components/TagManager.vue"
-import ImportButton from "@/components/ImportButton.vue"
-import ExportButton from "@/components/ExportButton.vue"
+import ImportForm from "@/components/ImportForm.vue"
+import ExportForm from "@/components/ExportForm.vue"
 
 const props = defineProps({
   entryModel: Object,
@@ -41,7 +41,7 @@ onMounted(() => {
         記録を JSON
         ファイルとしてエクスポートします。エクスポートファイルは記録の復元に利用できます。
       </p>
-      <ExportButton :export-model="props.exportModel" />
+      <ExportForm :export-model="props.exportModel" />
     </section>
 
     <section>
@@ -50,7 +50,7 @@ onMounted(() => {
         保存した JSON
         ファイルをアップロードして記録をインポートします。差分の記録だけを追加し、既存の記録は上書きしません。
       </p>
-      <ImportButton :import-model="props.importModel" />
+      <ImportForm :import-model="props.importModel" />
     </section>
   </div>
 </template>

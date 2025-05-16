@@ -1,12 +1,12 @@
 import { render, screen, fireEvent, cleanup } from "@testing-library/vue"
-import ImportButton from "@/components/ImportButton.vue"
+import ImportForm from "@/components/ImportForm.vue"
 
 const trigger = vi.fn()
 vi.mock("@/composables/useNotification.js", () => {
   return { useNotification: () => ({ trigger }) }
 })
 
-describe("ImportButton.vue", () => {
+describe("ImportForm.vue", () => {
   let model
 
   beforeEach(() => {
@@ -22,7 +22,7 @@ describe("ImportButton.vue", () => {
   })
 
   test("正常にファイルをインポートした後に成功通知が出る", async () => {
-    render(ImportButton, {
+    render(ImportForm, {
       props: {
         importModel: model,
       },
@@ -45,7 +45,7 @@ describe("ImportButton.vue", () => {
   })
 
   test("json 形式でないファイルを選択したときにエラー通知が出る", async () => {
-    render(ImportButton, {
+    render(ImportForm, {
       props: {
         importModel: model,
       },
@@ -68,7 +68,7 @@ describe("ImportButton.vue", () => {
   })
 
   test("ファイルの内容を読み込めなかったときにエラー通知が出る", async () => {
-    render(ImportButton, {
+    render(ImportForm, {
       props: {
         importModel: model,
       },
