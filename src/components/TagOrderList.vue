@@ -1,7 +1,7 @@
 <script setup>
 import draggable from "vuedraggable"
-import handleImg from "@/assets/handle.svg"
 import { nextTick, ref, watch } from "vue"
+import TagOrderListItem from "@/components/TagOrderListItem.vue"
 
 const props = defineProps({
   initialTags: Array,
@@ -32,83 +32,39 @@ const resetOrder = () => {
   currentTags.value = props.initialTags.toSorted((a, b) => a.order - b.order)
 }
 
-const handleKeydown = (tagId, event) => {
-  if (activeTagId.value !== null && activeTagId.value !== tagId) {
-    deactivate()
-  }
+const isActive = (tagId) => {
+  return activeTagId?.value === tagId
+}
 
-  if (activeTagId.value === null) {
-    handleKeydownWhenInactive(tagId, event)
-  } else {
-    handleKeydownWhenActive(tagId, event)
+const handleRequestActivate = (tagId) => {
+  deactivate()
+  activate(tagId)
+}
+
+const handleRequestDeactivate = () => {
+  deactivate()
+}
+
+const handleRequestMoveItem = (tagId, dir) => {
+  const index = currentTags.value.findIndex((t) => t.id === tagId)
+  if (index != -1 && 0 <= index + dir && index + dir < currentTags.value.length) {
+    moveTagItem(index, index + dir)
   }
 }
 
-const handleKeydownWhenInactive = (tagId, event) => {
-  const isConfirmKey = event.key === "Enter" || event.key === " "
-  const isMoveUpKey = event.key === "ArrowUp"
-  const isMoveDownKey = event.key === "ArrowDown"
-
-  if (isConfirmKey) {
-    deactivate()
-    if (activeTagId.value !== tagId) {
-      activate(tagId)
-    }
-    event.preventDefault()
-    return
-  }
-
+const handleRequestMoveFocus = (tagId, dir) => {
   const index = currentTags.value.findIndex((t) => t.id === tagId)
-  if (isMoveUpKey && index - 1 >= 0) {
-    moveFocus(index - 1)
-    event.preventDefault()
-  } else if (isMoveDownKey && index + 1 < currentTags.value.length) {
-    moveFocus(index + 1)
-    event.preventDefault()
-  }
-}
-
-const handleKeydownWhenActive = (tagId, event) => {
-  const isConfirmKey = event.key === "Enter" || event.key === " "
-  const isCancelKey = event.key === "Escape" || event.key === "Tab"
-  const isMoveUpKey = event.key === "ArrowUp"
-  const isMoveDownKey = event.key === "ArrowDown"
-
-  if (isConfirmKey) {
-    deactivate()
-    event.preventDefault()
-    return
-  } else if (isCancelKey) {
-    deactivate()
-    return
-  }
-
-  const index = currentTags.value.findIndex((t) => t.id === tagId)
-  if (isMoveUpKey && index - 1 >= 0) {
-    moveTagItem(index, index - 1)
-    event.preventDefault()
-  } else if (isMoveDownKey && index + 1 < currentTags.value.length) {
-    moveTagItem(index, index + 1)
-    event.preventDefault()
+  if (index != -1 && 0 <= index + dir && index + dir < currentTags.value.length) {
+    moveFocus(index + dir)
   }
 }
 
 const activate = (tagId) => {
   activeTagId.value = tagId
-  const el = document.querySelector(`.tag-manager [tag-list-id="${tagId}"]`)
-  el?.classList.add("active")
-  const handle = el?.querySelector(`.drag-handle`)
-  handle.setAttribute("aria-pressed", "true")
 }
 
 const deactivate = () => {
   activeTagId.value = null
-  const activeItems = document.querySelectorAll(`.tag-manager .active`)
-  activeItems.forEach((el) => {
-    el?.classList.remove("active")
-    const handle = el?.querySelector(`.drag-handle`)
-    handle?.setAttribute("aria-pressed", "false")
-  })
 }
 
 const moveFocus = (toIndex) => {
@@ -117,13 +73,13 @@ const moveFocus = (toIndex) => {
   }
 
   const tagId = currentTags.value[toIndex].id
-  const el = document.querySelector(`.tag-manager .tag-list-item[tag-list-id="${tagId}"]`)
+  const el = document.querySelector(`.tag-list [tag-list-id="${tagId}"]`)
   const handle = el?.querySelector(`.drag-handle`)
-  handle?.focus()
   el?.scrollIntoView({
     behavior: "smooth",
     block: "nearest",
   })
+  handle?.focus()
 }
 
 const moveTagItem = (fromIndex, toIndex) => {
@@ -160,22 +116,15 @@ defineExpose({
     class="tag-list"
   >
     <template #item="{ element }">
-      <li class="tag-list-item" :tag-list-id="element.id">
-        <button
-          type="button"
-          class="drag-handle"
-          @keydown="handleKeydown(element.id, $event)"
-          aria-label="並び替えハンドル"
-        >
-          <img
-            :src="handleImg"
-            alt=""
-            width="20px"
-            height="20px"
-            :aria-pressed="element.id === activeTagId ? 'true' : 'false'"
-          />
-        </button>
-        <span class="tag-title">{{ element.title }}</span>
+      <li :tag-list-id="element.id">
+        <TagOrderListItem
+          :tag="element"
+          :is-active="isActive(element.id)"
+          @request-activate="handleRequestActivate"
+          @request-deactivate="handleRequestDeactivate"
+          @request-move-item="handleRequestMoveItem"
+          @request-move-focus="handleRequestMoveFocus"
+        />
       </li>
     </template>
   </draggable>
@@ -194,36 +143,5 @@ defineExpose({
   margin-bottom: 32px;
   border: 1px solid var(--color-tag-list-border);
   border-radius: 8px;
-}
-.tag-list-item {
-  background-color: var(--color-tag-list-bg);
-  color: var(--color-tag-list-text);
-  border-bottom: 1px solid var(--color-tag-list-border);
-  padding: 8px 0;
-  display: flex;
-  gap: 16px;
-  align-items: center;
-}
-
-.drag-handle {
-  width: 20px;
-  height: 20px;
-  display: inline-block;
-}
-.drag-handle:focus-visible {
-  outline: 2px solid var(--color-tag-list-border);
-  outline-offset: 2px;
-  border-radius: 4px;
-}
-.tag-title {
-  display: inline-block;
-  color: var(--color-tag-list-text);
-  height: 24px;
-}
-.ghost {
-  background-color: var(--color-tag-list-focus);
-}
-.tag-list-item.active {
-  background-color: var(--color-tag-list-focus);
 }
 </style>
