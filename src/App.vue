@@ -17,12 +17,12 @@ import { TagModel } from "@/models/TagModel.js"
 import { ImportModel } from "@/models/ImportModel.js"
 import { ExportModel } from "@/models/ExportModel.js"
 
-import EntryFormAndListView from "@/components/EntryFormAndListView.vue"
-import SettingsView from "@/components/SettingsView.vue"
+import EntryFormAndListView from "@/components/tab/EntryFormAndListView.vue"
+import SettingsView from "@/components/tab/SettingsView.vue"
 
-import MainView from "@/components/MainView.vue"
-import TabNavigation from "@/components/TabNavigation.vue"
-import NotificationBar from "@/components/NotificationBar.vue"
+import MainView from "@/components/tab/MainView.vue"
+import TabNavigation from "@/components/tab/TabNavigation.vue"
+import NotificationBar from "@/components/util/NotificationBar.vue"
 import { ref } from "vue"
 
 const storage = new LocalStorageAdapter()

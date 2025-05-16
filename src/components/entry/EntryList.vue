@@ -2,8 +2,8 @@
 import { onMounted, ref } from "vue"
 import { useNotification } from "@/composables/useNotification.js"
 import { subscribe } from "@/utils/storageNotifier.js"
-import EntryListItem from "@/components/EntryListItem.vue"
-import EntryDialogs from "./EntryDialogs.vue"
+import EntryListItem from "@/components/entry/EntryListItem.vue"
+import EntryDialogs from "@/components/entry/EntryDialogs.vue"
 
 const props = defineProps({
   entryModel: Object,

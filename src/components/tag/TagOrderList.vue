@@ -1,7 +1,7 @@
 <script setup>
 import draggable from "vuedraggable"
 import { nextTick, ref, watch } from "vue"
-import TagOrderListItem from "@/components/TagOrderListItem.vue"
+import TagOrderListItem from "@/components/tag/TagOrderListItem.vue"
 
 const props = defineProps({
   initialTags: Array,

@@ -1,9 +1,9 @@
 <script setup>
 import { ref, onMounted } from "vue"
 import { subscribe } from "@/utils/storageNotifier.js"
-import TagManager from "@/components/TagManager.vue"
-import ImportForm from "@/components/ImportForm.vue"
-import ExportForm from "@/components/ExportForm.vue"
+import TagManager from "@/components/tag/TagManager.vue"
+import ImportForm from "@/components/data/ImportForm.vue"
+import ExportForm from "@/components/data/ExportForm.vue"
 
 const props = defineProps({
   entryModel: Object,

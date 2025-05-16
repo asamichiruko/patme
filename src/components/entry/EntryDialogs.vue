@@ -1,6 +1,6 @@
 <script setup>
-import PromptDialog from "./PromptDialog.vue"
-import TaggingDialog from "./TaggingDialog.vue"
+import PromptDialog from "@/components/util/PromptDialog.vue"
+import TaggingDialog from "@/components/tag/TaggingDialog.vue"
 import { ref, watch } from "vue"
 
 const props = defineProps({

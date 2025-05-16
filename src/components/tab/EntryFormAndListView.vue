@@ -1,6 +1,6 @@
 <script setup>
-import EntryForm from "@/components/EntryForm.vue"
-import EntryList from "@/components/EntryList.vue"
+import EntryForm from "@/components/entry/EntryForm.vue"
+import EntryList from "@/components/entry/EntryList.vue"
 
 const props = defineProps({
   entryModel: Object,

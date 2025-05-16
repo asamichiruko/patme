@@ -1,7 +1,7 @@
 <script setup>
 import { ref, watch } from "vue"
 import { useNotification } from "@/composables/useNotification.js"
-import TagOrderList from "@/components/TagOrderList.vue"
+import TagOrderList from "@/components/tag/TagOrderList.vue"
 
 const { trigger } = useNotification()
 
