@@ -1,5 +1,5 @@
 <script setup>
-import InputForm from "@/components/InputForm.vue"
+import EntryForm from "@/components/EntryForm.vue"
 import EntryList from "@/components/EntryList.vue"
 
 const props = defineProps({
@@ -10,7 +10,7 @@ const props = defineProps({
 </script>
 
 <template>
-  <InputForm :entry-model="props.entryModel" />
+  <EntryForm :entry-model="props.entryModel" />
   <hr />
   <EntryList
     :entry-model="props.entryModel"

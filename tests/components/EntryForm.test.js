@@ -1,12 +1,12 @@
 import { render, screen, fireEvent, cleanup } from "@testing-library/vue"
-import InputForm from "@/components/InputForm.vue"
+import EntryForm from "@/components/EntryForm.vue"
 
 const trigger = vi.fn()
 vi.mock("@/composables/useNotification.js", () => {
   return { useNotification: () => ({ trigger }) }
 })
 
-describe("InputForm.vue", () => {
+describe("EntryForm.vue", () => {
   let entryModel
 
   beforeEach(() => {
@@ -21,7 +21,7 @@ describe("InputForm.vue", () => {
   })
 
   test("レンダリングされると textarea がフォーカスされる", async () => {
-    render(InputForm, {
+    render(EntryForm, {
       props: {
         entryModel: entryModel,
       },
@@ -33,7 +33,7 @@ describe("InputForm.vue", () => {
   })
 
   test("テキストを記入して記録ボタンを押すと達成内容を記録できる", async () => {
-    render(InputForm, {
+    render(EntryForm, {
       props: {
         entryModel: entryModel,
       },
@@ -52,7 +52,7 @@ describe("InputForm.vue", () => {
   })
 
   test("テキストを記入して Ctrl+Enter を入力すると達成内容を記録できる", async () => {
-    render(InputForm, {
+    render(EntryForm, {
       props: {
         entryModel: entryModel,
       },
@@ -74,7 +74,7 @@ describe("InputForm.vue", () => {
   })
 
   test("記録に成功すると textarea がクリアされる", async () => {
-    render(InputForm, {
+    render(EntryForm, {
       props: {
         entryModel: entryModel,
       },
@@ -90,7 +90,7 @@ describe("InputForm.vue", () => {
   })
 
   test("記録に成功すると success 通知が出る", async () => {
-    render(InputForm, {
+    render(EntryForm, {
       props: {
         entryModel: entryModel,
       },
@@ -105,7 +105,7 @@ describe("InputForm.vue", () => {
   })
 
   test("テキストを記入せずに送信した場合は達成内容を記録しない", async () => {
-    render(InputForm, {
+    render(EntryForm, {
       props: {
         entryModel: entryModel,
       },
@@ -118,7 +118,7 @@ describe("InputForm.vue", () => {
   })
 
   test("テキストを記入せずに送信すると error 通知が出る", async () => {
-    render(InputForm, {
+    render(EntryForm, {
       props: {
         entryModel: entryModel,
       },
@@ -133,7 +133,7 @@ describe("InputForm.vue", () => {
   test("記録に失敗すると textarea はクリアされない", async () => {
     entryModel.addAchievement.mockReturnValue(false)
 
-    render(InputForm, {
+    render(EntryForm, {
       props: {
         entryModel: entryModel,
       },
@@ -151,7 +151,7 @@ describe("InputForm.vue", () => {
   test("記録に失敗すると error 通知が出る", async () => {
     entryModel.addAchievement.mockReturnValue(false)
 
-    render(InputForm, {
+    render(EntryForm, {
       props: {
         entryModel: entryModel,
       },

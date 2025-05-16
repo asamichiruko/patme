@@ -17,7 +17,7 @@ import { TagModel } from "@/models/TagModel.js"
 import { ImportModel } from "@/models/ImportModel.js"
 import { ExportModel } from "@/models/ExportModel.js"
 
-import InputAndListView from "@/components/InputAndListView.vue"
+import EntryFormAndListView from "@/components/EntryFormAndListView.vue"
 import SettingsView from "@/components/SettingsView.vue"
 
 import MainView from "@/components/MainView.vue"
@@ -47,7 +47,7 @@ const tabs = [
   {
     key: "Home",
     label: "ホーム",
-    component: InputAndListView,
+    component: EntryFormAndListView,
     props: { entryModel, tagModel, taggingModel },
   },
   {
