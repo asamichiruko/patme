@@ -4,6 +4,7 @@ import { useNotification } from "@/composables/useNotification.js"
 import { subscribe } from "@/utils/storageNotifier.js"
 import EntryListItem from "@/components/entry/EntryListItem.vue"
 import EntryDialogs from "@/components/entry/EntryDialogs.vue"
+import { useDialogStore } from "@/composables/useDialogStore.js"
 
 const props = defineProps({
   entryModel: Object,
@@ -12,6 +13,7 @@ const props = defineProps({
 })
 
 const { trigger } = useNotification()
+const { open } = useDialogStore()
 
 const entries = ref([])
 const allTags = ref(null)
@@ -19,24 +21,29 @@ const showingDialog = ref("")
 const selectedEntry = ref(null)
 const entryDialogsRef = ref(null)
 
-const addStar = (content) => {
+const inputComment = async (entry) => {
+  const content = await open("prompt", {
+    message: "振り返り",
+    placeholder: "どんな点がよかったですか？",
+    submittext: "記録する",
+    canceltext: "キャンセル",
+  })
+
+  if (!content) {
+    return
+  }
+
   const result = props.entryModel.addStar({
-    achievementId: selectedEntry.value.id,
+    achievementId: entry.id,
     content,
     date: new Date(),
   })
+
   if (result) {
     trigger("コメントを記録しました！", "success")
   } else {
     trigger("記録に失敗しました。時間をおいて再度お試しください", "error")
   }
-
-  closeDialog()
-}
-
-const inputComment = (entry) => {
-  selectedEntry.value = entry
-  showingDialog.value = "comment"
 }
 
 const editTags = (entry) => {
@@ -98,7 +105,6 @@ onMounted(() => {
     :showingDialog="showingDialog"
     :entry="selectedEntry"
     :all-tags="allTags"
-    @add-star="addStar"
     @add-tag="addTag"
     @update-taggings="updateTaggings"
     @close="closeDialog"

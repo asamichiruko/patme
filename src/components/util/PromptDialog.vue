@@ -1,62 +1,56 @@
 <script setup>
-import { ref, watch } from "vue"
+import { computed, ref, watch } from "vue"
+import { useDialogStore } from "@/composables/useDialogStore.js"
 
-const props = defineProps({
-  show: Boolean,
-  message: String,
-  submittext: String,
-  canceltext: String,
-  placeholder: String,
-})
-const emit = defineEmits(["update:show", "submit", "cancel"])
+const { activeDialog, dialogParams, close } = useDialogStore()
 
 const dialogRef = ref(null)
 const text = ref("")
 
-watch(
-  () => props.show,
-  async (val) => {
-    if (val) {
-      text.value = ""
-      dialogRef.value?.showModal()
-    } else {
-      dialogRef.value?.close()
-    }
-  },
-)
+const message = computed(() => dialogParams.value?.message ?? "")
+const submittext = computed(() => dialogParams.value?.submittext ?? "OK")
+const canceltext = computed(() => dialogParams.value?.canceltext ?? "Cancel")
+const placeholder = computed(() => dialogParams.value?.placeholder ?? "")
+
+watch(activeDialog, (val) => {
+  if (val === "prompt") {
+    text.value = ""
+    dialogRef.value?.showModal()
+  } else if (val !== "prompt") {
+    dialogRef.value?.close()
+  }
+})
 
 const submit = () => {
-  emit("submit", text.value)
-  emit("update:show", false)
+  dialogRef.value.close()
+  close(text.value)
 }
 
 const cancel = () => {
-  emit("cancel")
-  emit("update:show", false)
+  dialogRef.value.close()
+  close(null)
 }
 </script>
 
 <template>
   <Teleport to="body">
     <dialog ref="dialogRef" @cancel="cancel">
-      <template v-if="show">
-        <form @submit.prevent="submit">
-          <label>
-            <span class="message">{{ message }}</span>
-            <textarea
-              v-model="text"
-              @keydown.ctrl.enter="submit"
-              :placeholder="placeholder"
-              class="text"
-              required
-            ></textarea>
-          </label>
-          <div class="actions">
-            <button class="cancel-button" type="button" @click="cancel">{{ canceltext }}</button>
-            <button class="primary-button" type="submit">{{ submittext }}</button>
-          </div>
-        </form>
-      </template>
+      <form @submit.prevent="submit">
+        <label>
+          <span class="message">{{ message }}</span>
+          <textarea
+            v-model="text"
+            @keydown.ctrl.enter="submit"
+            :placeholder="placeholder"
+            class="text"
+            required
+          ></textarea>
+        </label>
+        <div class="actions">
+          <button class="cancel-button" type="button" @click="cancel">{{ canceltext }}</button>
+          <button class="primary-button" type="submit">{{ submittext }}</button>
+        </div>
+      </form>
     </dialog>
   </Teleport>
 </template>

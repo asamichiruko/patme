@@ -23,7 +23,9 @@ import SettingsView from "@/components/tab/SettingsView.vue"
 import MainView from "@/components/tab/MainView.vue"
 import TabNavigation from "@/components/tab/TabNavigation.vue"
 import NotificationBar from "@/components/util/NotificationBar.vue"
+
 import { ref } from "vue"
+import PromptDialog from "./components/util/PromptDialog.vue"
 
 const storage = new LocalStorageAdapter()
 
@@ -65,4 +67,5 @@ const activeTab = ref("Home")
   <NotificationBar />
   <TabNavigation :tabs="tabs" v-model:active-tab="activeTab" />
   <MainView :tabs="tabs" :active-tab="activeTab" />
+  <PromptDialog />
 </template>
