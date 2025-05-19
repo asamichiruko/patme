@@ -1,5 +1,6 @@
 <script setup>
 import { nextTick, ref, watch } from "vue"
+import TagCreateInlineForm from "./TagCreateInlineForm.vue"
 
 const props = defineProps({
   show: Boolean,
@@ -55,12 +56,8 @@ const cancel = () => {
   emit("update:show", false)
 }
 
-const addTag = () => {
-  const title = newTagTitle.value.trim()
-  if (title) {
-    emit("add-tag", newTagTitle.value)
-    newTagTitle.value = ""
-  }
+const handleCreateTag = (title) => {
+  emit("add-tag", title)
 }
 
 const toggleSelectedState = (id) => {
@@ -96,19 +93,7 @@ defineExpose({
               </button>
             </li>
           </ul>
-          <div class="add-tag-form">
-            <label>
-              <span class="new-tag-label">タグを追加</span>
-              <input
-                class="new-tag-title"
-                type="text"
-                v-model="newTagTitle"
-                @keydown.enter.prevent="addTag"
-                placeholder="新しいタグ"
-              />
-            </label>
-            <button class="add-tag-button" type="button" @click="addTag">追加</button>
-          </div>
+          <TagCreateInlineForm @create-tag="handleCreateTag" />
           <div class="actions">
             <button class="cancel-button" type="button" @click="cancel">キャンセル</button>
             <button class="primary-button" type="submit">決定</button>
@@ -148,34 +133,6 @@ dialog {
 }
 .tag.selected:hover {
   background-color: var(--color-tag-selected-hover);
-}
-
-.new-tag-label {
-  font-size: 15px;
-}
-.new-tag-title {
-  padding: 8px;
-  font-size: 15px;
-  margin: 0 8px;
-  width: 100px;
-}
-.add-tag-button {
-  background-color: var(--color-primary);
-  color: var(--color-primary-text);
-  border: none;
-  font-size: 14px;
-  padding: 8px 16px;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-.add-tag-button:hover {
-  background-color: var(--color-primary-hover);
-}
-.add-tag-button:focus-visible {
-  outline: 2px solid var(--color-primary-focus);
-  outline-offset: 2px;
-  border-radius: 4px;
 }
 
 @keyframes pulse {
