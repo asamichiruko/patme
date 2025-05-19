@@ -1,42 +1,38 @@
 <script setup>
-import { nextTick, ref, watch } from "vue"
-import TagCreateInlineForm from "./TagCreateInlineForm.vue"
+import { computed, nextTick, ref, watch } from "vue"
+import TagCreateInlineForm from "@/components/tag/TagCreateInlineForm.vue"
+import { useDialogStore } from "@/composables/useDialogStore.js"
 
-const props = defineProps({
-  show: Boolean,
-  initialTagIds: Array,
-  allTags: Array,
-})
-const emit = defineEmits(["update:show", "submit", "cancel", "add-tag"])
+const emit = defineEmits(["submit", "cancel"])
+
+const { activeDialog, dialogParams, close } = useDialogStore()
 
 const dialogRef = ref(null)
 const tagListRef = ref(null)
+
 const selectedTagIds = ref([])
-const newTagTitle = ref("")
+const initialTagIds = computed(() => dialogParams.value?.initialTagIds ?? [])
+const tagStore = computed(() => dialogParams.value?.tagStore ?? null)
+const allTags = computed(() => dialogParams.value?.tagStore?.allTags ?? [])
 
-watch(
-  () => props.show,
-  (val) => {
-    if (val) {
-      selectedTagIds.value = Array.from(props.initialTagIds)
-      newTagTitle.value = ""
-      dialogRef.value?.showModal()
-    } else {
-      dialogRef.value?.close()
-    }
-  },
-  { immediate: true },
-)
+watch(activeDialog, (val) => {
+  if (val === "tagging") {
+    selectedTagIds.value = [...initialTagIds.value]
+    dialogRef.value?.showModal()
+  } else if (val !== "tagging") {
+    dialogRef.value?.close()
+  }
+})
 
-const selectTagById = async (id) => {
-  if (!id) {
+const handleTagCreated = async (tag) => {
+  if (!tag) {
     return
   }
-  if (!selectedTagIds.value.includes(id)) {
-    selectedTagIds.value.push(id)
+  if (!selectedTagIds.value.includes(tag.id)) {
+    selectedTagIds.value.push(tag.id)
   }
   await nextTick(() => {
-    const added = document.querySelector(`.tag[tag-id='${id}']`)
+    const added = document.querySelector(`.tag[tag-id='${tag.id}']`)
     added?.scrollIntoView({
       behavior: "smooth",
       block: "center",
@@ -47,17 +43,13 @@ const selectTagById = async (id) => {
 }
 
 const submit = () => {
-  emit("submit", Array.from(selectedTagIds.value))
-  emit("update:show", false)
+  emit("submit", selectedTagIds.value)
+  close(selectedTagIds.value)
 }
 
 const cancel = () => {
   emit("cancel")
-  emit("update:show", false)
-}
-
-const handleCreateTag = (title) => {
-  emit("add-tag", title)
+  close(null)
 }
 
 const toggleSelectedState = (id) => {
@@ -68,38 +60,32 @@ const toggleSelectedState = (id) => {
     selectedTagIds.value.splice(idx, 1)
   }
 }
-
-defineExpose({
-  selectTagById,
-})
 </script>
 
 <template>
   <Teleport to="body">
     <dialog ref="dialogRef" @cancel="cancel">
-      <template v-if="show">
-        <p class="message">割り当てるタグを選んでください</p>
-        <form @submit.prevent="submit">
-          <ul class="tag-list" ref="tagListRef">
-            <li v-for="tag in props.allTags" :key="tag.id">
-              <button
-                :class="['tag', { selected: selectedTagIds.includes(tag.id) }]"
-                :aria-pressed="selectedTagIds.includes(tag.id)"
-                type="button"
-                @click="toggleSelectedState(tag.id)"
-                :tag-id="tag.id"
-              >
-                {{ tag.title }}
-              </button>
-            </li>
-          </ul>
-          <TagCreateInlineForm @create-tag="handleCreateTag" />
-          <div class="actions">
-            <button class="cancel-button" type="button" @click="cancel">キャンセル</button>
-            <button class="primary-button" type="submit">決定</button>
-          </div>
-        </form>
-      </template>
+      <p class="message">割り当てるタグを選んでください</p>
+      <form @submit.prevent="submit">
+        <ul class="tag-list" ref="tagListRef">
+          <li v-for="tag in allTags" :key="tag.id">
+            <button
+              :class="['tag', { selected: selectedTagIds.includes(tag.id) }]"
+              :aria-pressed="selectedTagIds.includes(tag.id)"
+              type="button"
+              @click="toggleSelectedState(tag.id)"
+              :tag-id="tag.id"
+            >
+              {{ tag.title }}
+            </button>
+          </li>
+        </ul>
+        <TagCreateInlineForm :tag-store="tagStore" @tag-created="handleTagCreated" />
+        <div class="actions">
+          <button class="cancel-button" type="button" @click="cancel">キャンセル</button>
+          <button class="primary-button" type="submit">決定</button>
+        </div>
+      </form>
     </dialog>
   </Teleport>
 </template>

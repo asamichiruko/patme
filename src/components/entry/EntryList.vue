@@ -3,8 +3,8 @@ import { onMounted, ref } from "vue"
 import { useNotification } from "@/composables/useNotification.js"
 import { subscribe } from "@/utils/storageNotifier.js"
 import EntryListItem from "@/components/entry/EntryListItem.vue"
-import EntryDialogs from "@/components/entry/EntryDialogs.vue"
 import { useDialogStore } from "@/composables/useDialogStore.js"
+import { useTagStore } from "@/composables/useTagStore"
 
 const props = defineProps({
   entryModel: Object,
@@ -14,14 +14,11 @@ const props = defineProps({
 
 const { trigger } = useNotification()
 const { open } = useDialogStore()
+const tagStore = useTagStore(props.tagModel)
 
 const entries = ref([])
-const allTags = ref(null)
-const showingDialog = ref("")
-const selectedEntry = ref(null)
-const entryDialogsRef = ref(null)
 
-const inputComment = async (entry) => {
+const addComment = async (entry) => {
   const content = await open("prompt", {
     message: "振り返り",
     placeholder: "どんな点がよかったですか？",
@@ -46,34 +43,13 @@ const inputComment = async (entry) => {
   }
 }
 
-const editTags = (entry) => {
-  selectedEntry.value = entry
-  showingDialog.value = "tagging"
-}
-
-const closeDialog = () => {
-  selectedEntry.value = null
-  showingDialog.value = ""
-}
-
-const updateTaggings = (tagIds) => {
-  props.taggingModel.updateTaggings({ achievementId: selectedEntry.value.id, tagIds })
-
-  closeDialog()
-}
-
-const addTag = async (title) => {
-  const newTag = props.tagModel.addTag({ title })
-
-  if (newTag) {
-    allTags.value = props.tagModel.getTagsOrdered()
-    await entryDialogsRef.value?.selectTagById(newTag.id)
-    return
-  }
-
-  const found = allTags.value.find((tag) => tag.title === title)
-  if (found) {
-    await entryDialogsRef.value?.selectTagById(found.id)
+const updateTaggings = async (entry) => {
+  const tagIds = await open("tagging", {
+    initialTagIds: entry.tags.map((t) => t.id),
+    tagStore,
+  })
+  if (tagIds) {
+    props.taggingModel.updateTaggings({ achievementId: entry.id, tagIds })
   }
 }
 
@@ -82,7 +58,6 @@ onMounted(() => {
     entries.value = props.entryModel.getEntriesWithTags({
       sortFn: (a, b) => new Date(b.date) - new Date(a.date),
     })
-    allTags.value = props.tagModel.getTagsOrdered()
   }
 
   subscribe(reload)
@@ -96,19 +71,9 @@ onMounted(() => {
   </p>
   <ul class="entries" v-else>
     <li class="entry-item" v-for="entry in entries" :key="entry.id">
-      <EntryListItem :entry="entry" @comment="inputComment" @tagging="editTags" />
+      <EntryListItem :entry="entry" @comment="addComment" @tagging="updateTaggings" />
     </li>
   </ul>
-
-  <EntryDialogs
-    ref="entryDialogsRef"
-    :showingDialog="showingDialog"
-    :entry="selectedEntry"
-    :all-tags="allTags"
-    @add-tag="addTag"
-    @update-taggings="updateTaggings"
-    @close="closeDialog"
-  />
 </template>
 
 <style scoped>

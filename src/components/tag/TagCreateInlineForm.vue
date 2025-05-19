@@ -1,8 +1,11 @@
 <script setup>
 import { ref } from "vue"
 
-const emits = defineEmits("create-tag")
+const props = defineProps({
+  tagStore: Object,
+})
 
+const emit = defineEmits(["tag-created"])
 const newTagTitle = ref("")
 
 const handleCreateTag = () => {
@@ -11,8 +14,12 @@ const handleCreateTag = () => {
     return
   }
 
-  emits("create-tag", trimmed)
+  let result = props.tagStore?.addTag(trimmed)
   newTagTitle.value = ""
+  if (!result) {
+    result = props.tagStore?.findByTitle(trimmed)
+  }
+  emit("tag-created", result)
 }
 </script>
 

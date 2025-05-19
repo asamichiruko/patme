@@ -19,6 +19,7 @@ describe("TagModel.js", () => {
   })
 
   test("addTag が tagService.addTag に移譲される", () => {
+    tagService.addTag.mockReturnValue({ id: "tag1", title: "tag 1" })
     tagModel.addTag({ title: "tag 1" })
 
     expect(tagService.addTag).toHaveBeenCalledWith({ title: "tag 1" })

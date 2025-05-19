@@ -6,7 +6,7 @@ export class TagModel {
   }
 
   findByTitle({ title }) {
-    return this.tagService.findByTitle(title.trim())
+    return this.tagService.findByTitle({ title: title.trim() })
   }
 
   addTag({ title }) {
@@ -14,9 +14,8 @@ export class TagModel {
     if (result) {
       notify()
       return result
-    } else {
-      return this.tagService.findByTitle(title.trim())
     }
+    return null
   }
 
   getTagsOrdered() {
