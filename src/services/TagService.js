@@ -5,6 +5,13 @@ export class TagService {
     this.tagRepos = tagRepository
   }
 
+  findByTitle({ title }) {
+    if (!title) {
+      return null
+    }
+    return this.tagRepos.findByTitle(title)
+  }
+
   addTag({ id = null, title }) {
     if (!title || this.tagRepos.findByTitle(title)) {
       return null
@@ -15,7 +22,7 @@ export class TagService {
     const maxOrder = tags.reduce((max, tag) => Math.max(max, tag.order), 0)
     const newTag = {
       id: tagId,
-      title: title,
+      title,
       order: maxOrder + 1,
     }
 
@@ -38,7 +45,7 @@ export class TagService {
         idsInNewOrder,
       )
     ) {
-      throw new Error("Invalid ids: ids must be equal to existing tags")
+      throw new Error("Invalid ids: ids Set must be equal to existing tags")
     }
 
     const tagMap = new Map(tags.map((t) => [t.id, t]))

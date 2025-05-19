@@ -5,9 +5,18 @@ export class TagModel {
     this.tagService = tagService
   }
 
+  findByTitle({ title }) {
+    return this.tagService.findByTitle(title.trim())
+  }
+
   addTag({ title }) {
-    this.tagService.addTag({ title })
-    notify()
+    const result = this.tagService.addTag({ title: title.trim() })
+    if (result) {
+      notify()
+      return result
+    } else {
+      return this.tagService.findByTitle(title.trim())
+    }
   }
 
   getTagsOrdered() {
