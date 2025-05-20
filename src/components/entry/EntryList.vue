@@ -3,8 +3,7 @@ import { onMounted, ref } from "vue"
 import { useNotification } from "@/composables/useNotification.js"
 import { subscribe } from "@/utils/storageNotifier.js"
 import EntryListItem from "@/components/entry/EntryListItem.vue"
-import { useDialogStore } from "@/composables/useDialogStore.js"
-import { useTagStore } from "@/composables/useTagStore"
+import { useTagStore } from "@/composables/useTagStore.js"
 
 const props = defineProps({
   entryModel: Object,
@@ -13,28 +12,11 @@ const props = defineProps({
 })
 
 const { trigger } = useNotification()
-const { open } = useDialogStore()
 const tagStore = useTagStore(props.tagModel)
-
 const entries = ref([])
 
-const addComment = async (entry) => {
-  const content = await open("prompt", {
-    message: "振り返り",
-    placeholder: "どんな点がよかったですか？",
-    submittext: "記録する",
-    canceltext: "キャンセル",
-  })
-
-  if (!content) {
-    return
-  }
-
-  const result = props.entryModel.addStar({
-    achievementId: entry.id,
-    content,
-    date: new Date(),
-  })
+const addComment = (star) => {
+  const result = props.entryModel.addStar(star)
 
   if (result) {
     trigger("コメントを記録しました！", "success")
@@ -43,14 +25,8 @@ const addComment = async (entry) => {
   }
 }
 
-const updateTaggings = async (entry) => {
-  const tagIds = await open("tagging", {
-    initialTagIds: entry.tags.map((t) => t.id),
-    tagStore,
-  })
-  if (tagIds) {
-    props.taggingModel.updateTaggings({ achievementId: entry.id, tagIds })
-  }
+const updateTaggings = (taggings) => {
+  props.taggingModel.updateTaggings(taggings)
 }
 
 onMounted(() => {
@@ -71,7 +47,12 @@ onMounted(() => {
   </p>
   <ul class="entries" v-else>
     <li class="entry-item" v-for="entry in entries" :key="entry.id">
-      <EntryListItem :entry="entry" @comment="addComment" @tagging="updateTaggings" />
+      <EntryListItem
+        :entry="entry"
+        @commented="addComment"
+        @tagged="updateTaggings"
+        :tag-store="tagStore"
+      />
     </li>
   </ul>
 </template>

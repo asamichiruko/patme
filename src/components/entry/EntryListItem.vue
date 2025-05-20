@@ -4,12 +4,51 @@ import starImg from "@/assets/star.svg"
 import blankStarImg from "@/assets/blank-star.svg"
 import commentImg from "@/assets/comment.svg"
 import tagImg from "@/assets/tag.svg"
+import { useDialogStore } from "@/composables/useDialogStore.js"
+
+const { open } = useDialogStore()
 
 const props = defineProps({
   entry: Object,
+  tagStore: Object,
 })
 
-const emit = defineEmits(["comment", "tagging"])
+const emit = defineEmits(["commented", "tagged"])
+
+const handleAddComment = async () => {
+  const content = await open("prompt", {
+    message: "振り返り",
+    placeholder: "どんな点がよかったですか？",
+    submittext: "記録する",
+    canceltext: "キャンセル",
+  })
+
+  if (!content) {
+    return
+  }
+
+  const star = {
+    achievementId: props.entry.id,
+    content,
+    date: new Date(),
+  }
+
+  emit("commented", star)
+}
+
+const handleUpdateTagging = async () => {
+  const tagIds = await open("tagging", {
+    initialTagIds: props.entry.tags.map((t) => t.id),
+    tagStore: props.tagStore,
+  })
+
+  if (!tagIds) {
+    return
+  }
+
+  const taggings = { achievementId: props.entry.id, tagIds }
+  emit("tagged", taggings)
+}
 </script>
 
 <template>
@@ -41,11 +80,11 @@ const emit = defineEmits(["comment", "tagging"])
       </ul>
     </template>
     <div class="entry-actions">
-      <button class="comment-button" @click="emit('comment', entry)">
+      <button class="comment-button" @click="handleAddComment">
         <img :src="commentImg" alt="" class="comment-icon" width="20px" height="20px" />
         <span class="comment-text">コメント</span>
       </button>
-      <button class="tag-edit-button" @click="emit('tagging', entry)">
+      <button class="tag-edit-button" @click="handleUpdateTagging">
         <img :src="tagImg" alt="" class="tag-icon" width="20px" height="20px" />
         <span class="tag-text">タグ</span>
       </button>
