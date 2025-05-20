@@ -5,6 +5,7 @@ import blankStarImg from "@/assets/blank-star.svg"
 import commentImg from "@/assets/comment.svg"
 import tagImg from "@/assets/tag.svg"
 import { useDialogStore } from "@/composables/useDialogStore.js"
+import TagPillList from "@/components/tag/TagPillList.vue"
 
 const { open } = useDialogStore()
 
@@ -65,12 +66,13 @@ const handleUpdateTagging = async () => {
       </div>
       <div class="achievement-date">{{ formatRelativeDate(props.entry.date) }}</div>
     </div>
+
     <div class="achievement-content">
       {{ props.entry.content }}
     </div>
-    <ul class="tags">
-      <li class="tag selected" v-for="tag in props.entry.tags" :key="tag.id">{{ tag.title }}</li>
-    </ul>
+
+    <TagPillList :tags="props.entry.tags" />
+
     <template v-if="props.entry.stars.length !== 0">
       <ul class="stars">
         <li class="star-comment" v-for="star in props.entry.stars" :key="star.id">
@@ -79,6 +81,7 @@ const handleUpdateTagging = async () => {
         </li>
       </ul>
     </template>
+
     <div class="entry-actions">
       <button class="comment-button" @click="handleAddComment">
         <img :src="commentImg" alt="" class="comment-icon" width="20px" height="20px" />
@@ -126,15 +129,6 @@ const handleUpdateTagging = async () => {
   white-space: pre-wrap;
   margin: 32px 0;
   padding: 0 32px;
-}
-
-.tags {
-  list-style-type: none;
-  padding: 0;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-bottom: 24px;
 }
 
 .stars {
