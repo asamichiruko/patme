@@ -6,6 +6,7 @@ import commentImg from "@/assets/comment.svg"
 import tagImg from "@/assets/tag.svg"
 import { useDialogStore } from "@/composables/useDialogStore.js"
 import TagPillList from "@/components/tag/TagPillList.vue"
+import StarList from "@/components/entry/StarList.vue"
 
 const { open } = useDialogStore()
 
@@ -72,15 +73,7 @@ const handleUpdateTagging = async () => {
     </div>
 
     <TagPillList :tags="props.entry.tags" />
-
-    <template v-if="props.entry.stars.length !== 0">
-      <ul class="stars">
-        <li class="star-comment" v-for="star in props.entry.stars" :key="star.id">
-          <span class="star-content">{{ star.content }}</span>
-          <span class="star-date">{{ formatRelativeDate(star.date) }}</span>
-        </li>
-      </ul>
-    </template>
+    <StarList :stars="props.entry.stars" />
 
     <div class="entry-actions">
       <button class="action-button" @click="handleAddComment">
@@ -131,31 +124,12 @@ const handleUpdateTagging = async () => {
   padding: 0 32px;
 }
 
-.stars {
-  list-style-type: none;
-  padding: 0;
-  font-size: 15px;
-  color: var(--color-text);
-}
-.star-comment {
-  margin: 16px 0;
-}
-.star-content {
-  white-space: pre-wrap;
-}
-.star-date {
-  color: var(--color-subtext);
-  margin-left: 16px;
-  font-size: 14px;
-}
-
 .entry-actions {
   margin-top: 24px;
   display: flex;
   gap: 16px;
   align-items: center;
 }
-
 .action-button {
   background-color: var(--color-primary);
   color: var(--color-primary-text);
