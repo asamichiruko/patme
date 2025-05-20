@@ -83,13 +83,13 @@ const handleUpdateTagging = async () => {
     </template>
 
     <div class="entry-actions">
-      <button class="comment-button" @click="handleAddComment">
-        <img :src="commentImg" alt="" class="comment-icon" width="20px" height="20px" />
-        <span class="comment-text">コメント</span>
+      <button class="action-button" @click="handleAddComment">
+        <img :src="commentImg" alt="" class="action-icon" width="20px" height="20px" />
+        <span class="action-text">コメント</span>
       </button>
-      <button class="tag-edit-button" @click="handleUpdateTagging">
-        <img :src="tagImg" alt="" class="tag-icon" width="20px" height="20px" />
-        <span class="tag-text">タグ</span>
+      <button class="action-button" @click="handleUpdateTagging">
+        <img :src="tagImg" alt="" class="action-icon" width="20px" height="20px" />
+        <span class="action-text">タグ</span>
       </button>
     </div>
   </div>
@@ -156,7 +156,7 @@ const handleUpdateTagging = async () => {
   align-items: center;
 }
 
-.comment-button {
+.action-button {
   background-color: var(--color-primary);
   color: var(--color-primary-text);
   font-size: 14px;
@@ -167,50 +167,21 @@ const handleUpdateTagging = async () => {
   align-items: center;
   transition: background-color 0.3s;
 }
-.comment-button:hover {
+.action-button:hover {
   background-color: var(--color-primary-hover);
 }
-.comment-button:focus-visible {
+.action-button:focus-visible {
   outline: 2px solid var(--color-primary-focus);
   outline-offset: 2px;
   border-radius: 4px;
 }
-.comment-icon {
+.action-icon {
   width: 18px;
   height: 18px;
   padding-right: 4px;
   display: inline-block;
 }
-.comment-text {
-  display: inline-block;
-}
-
-.tag-edit-button {
-  background-color: var(--color-primary);
-  color: var(--color-primary-text);
-  font-size: 14px;
-  padding: 8px 16px;
-  border: none;
-  border-radius: 4px;
-  display: flex;
-  align-items: center;
-  transition: background-color 0.3s;
-}
-.tag-edit-button:hover {
-  background-color: var(--color-primary-hover);
-}
-.tag-edit-button:focus-visible {
-  outline: 2px solid var(--color-primary-focus);
-  outline-offset: 2px;
-  border-radius: 4px;
-}
-.tag-icon {
-  width: 18px;
-  height: 18px;
-  padding-right: 4px;
-  display: inline-block;
-}
-.tag-text {
+.action-text {
   display: inline-block;
 }
 </style>
