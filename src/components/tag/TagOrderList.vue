@@ -37,12 +37,11 @@ const isActive = (tagId) => {
 }
 
 const handleRequestActivate = (tagId) => {
-  deactivate()
-  activate(tagId)
+  activeTagId.value = tagId
 }
 
 const handleRequestDeactivate = () => {
-  deactivate()
+  activeTagId.value = null
 }
 
 const handleRequestMoveItem = (tagId, dir) => {
@@ -57,14 +56,6 @@ const handleRequestMoveFocus = (tagId, dir) => {
   if (index != -1 && 0 <= index + dir && index + dir < currentTags.value.length) {
     moveFocus(index + dir)
   }
-}
-
-const activate = (tagId) => {
-  activeTagId.value = tagId
-}
-
-const deactivate = () => {
-  activeTagId.value = null
 }
 
 const moveFocus = (toIndex) => {
