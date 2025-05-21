@@ -13,5 +13,8 @@ export const useTagStore = (tagModel) => {
       const result = tagModel.findByTitle({ title })
       return result
     },
+    refreshTags: () => {
+      allTags.value = tagModel.getTagsOrdered()
+    },
   }
 }

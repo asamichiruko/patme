@@ -7,15 +7,17 @@ import tagImg from "@/assets/tag.svg"
 import { useDialogStore } from "@/composables/useDialogStore.js"
 import TagPillList from "@/components/tag/TagPillList.vue"
 import StarList from "@/components/entry/StarList.vue"
+import { inject } from "vue"
+import { useNotification } from "@/composables/useNotification"
 
+const { trigger } = useNotification()
 const { open } = useDialogStore()
+const addStar = inject("addStar")
+const updateTaggings = inject("updateTaggings")
 
 const props = defineProps({
   entry: Object,
-  tagStore: Object,
 })
-
-const emit = defineEmits(["commented", "tagged"])
 
 const handleAddComment = async () => {
   const content = await open("prompt", {
@@ -29,27 +31,29 @@ const handleAddComment = async () => {
     return
   }
 
-  const star = {
+  const result = addStar({
     achievementId: props.entry.id,
     content,
     date: new Date(),
-  }
+  })
 
-  emit("commented", star)
+  if (result) {
+    trigger("コメントを記録しました！", "success")
+  } else {
+    trigger("記録に失敗しました。時間をおいて再度お試しください", "error")
+  }
 }
 
 const handleUpdateTagging = async () => {
   const tagIds = await open("tagging", {
     initialTagIds: props.entry.tags.map((t) => t.id),
-    tagStore: props.tagStore,
   })
 
   if (!tagIds) {
     return
   }
 
-  const taggings = { achievementId: props.entry.id, tagIds }
-  emit("tagged", taggings)
+  updateTaggings({ achievementId: props.entry.id, tagIds })
 }
 </script>
 

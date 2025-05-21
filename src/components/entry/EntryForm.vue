@@ -1,11 +1,8 @@
 <script setup>
-import { ref } from "vue"
+import { inject, ref } from "vue"
 import { useNotification } from "@/composables/useNotification.js"
 
-const props = defineProps({
-  entryModel: Object,
-})
-
+const addAchievement = inject("addAchievement")
 const { trigger } = useNotification()
 const text = ref("")
 const textareaRef = ref(null)
@@ -13,13 +10,13 @@ const textareaRef = ref(null)
 const submit = () => {
   const content = text.value.trim()
   if (!content) {
-    trigger("できたことを入力してください", "error")
+    trigger("達成内容を入力してください", "error")
     return
   }
-  const result = props.entryModel.addAchievement({ content, date: new Date() })
+  const result = addAchievement({ content, date: new Date() })
   if (result) {
     text.value = ""
-    trigger("できたことを記録しました！", "success")
+    trigger("達成内容を記録しました！", "success")
   } else {
     trigger("記録に失敗しました。時間をおいて再度お試しください", "error")
   }

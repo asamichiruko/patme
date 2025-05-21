@@ -1,25 +1,25 @@
 <script setup>
-import { computed, nextTick, ref, watch } from "vue"
+import { computed, inject, nextTick, ref, watch } from "vue"
 import TagCreateInlineForm from "@/components/tag/TagCreateInlineForm.vue"
 import { useDialogStore } from "@/composables/useDialogStore.js"
 
 const emit = defineEmits(["submit", "cancel"])
 
 const { activeDialog, dialogParams, close } = useDialogStore()
+const tagStore = inject("tagStore")
+const allTags = computed(() => tagStore.allTags.value)
 
 const dialogRef = ref(null)
 const tagListRef = ref(null)
 
 const selectedTagIds = ref([])
 const initialTagIds = computed(() => dialogParams.value?.initialTagIds ?? [])
-const tagStore = computed(() => dialogParams.value?.tagStore ?? null)
-const allTags = computed(() => dialogParams.value?.tagStore?.allTags ?? [])
 
 watch(activeDialog, (val) => {
   if (val === "tagging") {
     selectedTagIds.value = [...initialTagIds.value]
     dialogRef.value?.showModal()
-  } else if (val !== "tagging") {
+  } else {
     dialogRef.value?.close()
   }
 })
@@ -80,7 +80,7 @@ const toggleSelectedState = (id) => {
             </button>
           </li>
         </ul>
-        <TagCreateInlineForm :tag-store="tagStore" @tag-created="handleTagCreated" />
+        <TagCreateInlineForm @tag-created="handleTagCreated" />
         <div class="actions">
           <button class="cancel-button" type="button" @click="cancel">キャンセル</button>
           <button class="primary-button" type="submit">決定</button>
@@ -111,9 +111,6 @@ dialog {
   overflow-y: scroll;
 }
 
-.tag {
-  transition: background-color 0.3s;
-}
 .tag:hover {
   background-color: var(--color-tag-hover);
 }

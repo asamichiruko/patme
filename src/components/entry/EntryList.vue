@@ -1,37 +1,14 @@
 <script setup>
-import { onMounted, ref } from "vue"
-import { useNotification } from "@/composables/useNotification.js"
+import { inject, onMounted, ref } from "vue"
 import { subscribe } from "@/utils/storageNotifier.js"
 import EntryListItem from "@/components/entry/EntryListItem.vue"
-import { useTagStore } from "@/composables/useTagStore.js"
 
-const props = defineProps({
-  entryModel: Object,
-  tagModel: Object,
-  taggingModel: Object,
-})
-
-const { trigger } = useNotification()
-const tagStore = useTagStore(props.tagModel)
+const getEntriesWithTags = inject("getEntriesWithTags")
 const entries = ref([])
-
-const addComment = (star) => {
-  const result = props.entryModel.addStar(star)
-
-  if (result) {
-    trigger("コメントを記録しました！", "success")
-  } else {
-    trigger("記録に失敗しました。時間をおいて再度お試しください", "error")
-  }
-}
-
-const updateTaggings = (taggings) => {
-  props.taggingModel.updateTaggings(taggings)
-}
 
 onMounted(() => {
   const reload = () => {
-    entries.value = props.entryModel.getEntriesWithTags({
+    entries.value = getEntriesWithTags({
       sortFn: (a, b) => new Date(b.date) - new Date(a.date),
     })
   }
@@ -47,12 +24,7 @@ onMounted(() => {
   </p>
   <ul class="entries" v-else>
     <li class="entry-item" v-for="entry in entries" :key="entry.id">
-      <EntryListItem
-        :entry="entry"
-        @commented="addComment"
-        @tagged="updateTaggings"
-        :tag-store="tagStore"
-      />
+      <EntryListItem :entry="entry" />
     </li>
   </ul>
 </template>

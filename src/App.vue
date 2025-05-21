@@ -26,7 +26,8 @@ import NotificationBar from "@/components/util/NotificationBar.vue"
 import PromptDialog from "@/components/util/PromptDialog.vue"
 import TaggingDialog from "@/components/tag/TaggingDialog.vue"
 
-import { ref } from "vue"
+import { provide, ref } from "vue"
+import { useTagStore } from "./composables/useTagStore"
 
 const storage = new LocalStorageAdapter()
 
@@ -45,6 +46,9 @@ const tagModel = new TagModel(tagService)
 const entryModel = new EntryModel(entryService)
 const importModel = new ImportModel(importService)
 const exportModel = new ExportModel(exportService)
+
+const tagStore = useTagStore(tagModel)
+provide("tagStore", tagStore)
 
 const tabs = [
   {
