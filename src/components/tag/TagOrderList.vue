@@ -23,13 +23,13 @@ watch(
 watch(
   () => props.initialTags,
   (updated) => {
-    currentTags.value = updated.toSorted((a, b) => a.order - b.order)
+    currentTags.value = updated
   },
   { immediate: true },
 )
 
 const resetOrder = () => {
-  currentTags.value = props.initialTags.toSorted((a, b) => a.order - b.order)
+  currentTags.value = props.initialTags
 }
 
 const isActive = (tagId) => {

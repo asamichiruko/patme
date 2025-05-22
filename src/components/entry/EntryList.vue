@@ -3,12 +3,12 @@ import { inject, onMounted, ref } from "vue"
 import { subscribe } from "@/utils/storageNotifier.js"
 import EntryListItem from "@/components/entry/EntryListItem.vue"
 
-const getEntriesWithTags = inject("getEntriesWithTags")
+const entryStore = inject("entryStore")
 const entries = ref([])
 
 onMounted(() => {
   const reload = () => {
-    entries.value = getEntriesWithTags({
+    entries.value = entryStore.getEntriesWithTags({
       sortFn: (a, b) => new Date(b.date) - new Date(a.date),
     })
   }

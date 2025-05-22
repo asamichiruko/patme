@@ -2,7 +2,7 @@
 import { inject, ref } from "vue"
 import { useNotification } from "@/composables/useNotification.js"
 
-const addAchievement = inject("addAchievement")
+const entryStore = inject("entryStore")
 const { trigger } = useNotification()
 const text = ref("")
 const textareaRef = ref(null)
@@ -13,7 +13,7 @@ const submit = () => {
     trigger("達成内容を入力してください", "error")
     return
   }
-  const result = addAchievement({ content, date: new Date() })
+  const result = entryStore.addAchievement({ content, date: new Date() })
   if (result) {
     text.value = ""
     trigger("達成内容を記録しました！", "success")

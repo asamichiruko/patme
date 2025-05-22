@@ -9,17 +9,8 @@ const props = defineProps({
   taggingModel: Object,
 })
 
-provide("addAchievement", ({ content, date }) => {
-  return props.entryModel.addAchievement({ content, date })
-})
-provide("addStar", ({ achievementId, content, date }) => {
-  return props.entryModel.addStar({ achievementId, content, date })
-})
 provide("updateTaggings", (taggings) => {
   return props.taggingModel.updateTaggings(taggings)
-})
-provide("getEntriesWithTags", ({ sortFn }) => {
-  return props.entryModel.getEntriesWithTags({ sortFn })
 })
 </script>
 

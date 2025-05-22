@@ -7,12 +7,12 @@ import tagImg from "@/assets/tag.svg"
 import { useDialogStore } from "@/composables/useDialogStore.js"
 import TagPillList from "@/components/tag/TagPillList.vue"
 import StarList from "@/components/entry/StarList.vue"
+import { useNotification } from "@/composables/useNotification.js"
 import { inject } from "vue"
-import { useNotification } from "@/composables/useNotification"
 
 const { trigger } = useNotification()
 const { open } = useDialogStore()
-const addStar = inject("addStar")
+const entryStore = inject("entryStore")
 const updateTaggings = inject("updateTaggings")
 
 const props = defineProps({
@@ -31,7 +31,7 @@ const handleAddComment = async () => {
     return
   }
 
-  const result = addStar({
+  const result = entryStore.addStar({
     achievementId: props.entry.id,
     content,
     date: new Date(),

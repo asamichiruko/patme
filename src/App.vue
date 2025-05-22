@@ -26,8 +26,9 @@ import NotificationBar from "@/components/util/NotificationBar.vue"
 import PromptDialog from "@/components/util/PromptDialog.vue"
 import TaggingDialog from "@/components/tag/TaggingDialog.vue"
 
+import { useTagStore } from "@/composables/useTagStore.js"
+import { useEntryStore } from "./composables/useEntryStore"
 import { provide, ref } from "vue"
-import { useTagStore } from "./composables/useTagStore"
 
 const storage = new LocalStorageAdapter()
 
@@ -47,6 +48,8 @@ const entryModel = new EntryModel(entryService)
 const importModel = new ImportModel(importService)
 const exportModel = new ExportModel(exportService)
 
+const entryStore = useEntryStore(entryModel)
+provide("entryStore", entryStore)
 const tagStore = useTagStore(tagModel)
 provide("tagStore", tagStore)
 
@@ -61,7 +64,7 @@ const tabs = [
     key: "Settings",
     label: "設定",
     component: SettingsView,
-    props: { entryModel, tagModel, importModel, exportModel },
+    props: { tagModel, importModel, exportModel },
   },
 ]
 

@@ -6,7 +6,6 @@ import ImportForm from "@/components/data/ImportForm.vue"
 import ExportForm from "@/components/data/ExportForm.vue"
 
 const props = defineProps({
-  entryModel: Object,
   tagModel: Object,
   importModel: Object,
   exportModel: Object,
