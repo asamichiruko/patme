@@ -13,6 +13,10 @@ export const useTagStore = (tagModel) => {
       const result = tagModel.findByTitle({ title })
       return result
     },
+    reorderTagByIds: (ids) => {
+      tagModel.reorderTagByIds(ids)
+      allTags.value = tagModel.getTagsOrdered()
+    },
     refreshTags: () => {
       allTags.value = tagModel.getTagsOrdered()
     },

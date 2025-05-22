@@ -1,29 +1,11 @@
 <script setup>
-import { ref, onMounted } from "vue"
-import { subscribe } from "@/utils/storageNotifier.js"
 import TagManager from "@/components/tag/TagManager.vue"
 import ImportForm from "@/components/data/ImportForm.vue"
 import ExportForm from "@/components/data/ExportForm.vue"
 
 const props = defineProps({
-  tagModel: Object,
   importModel: Object,
   exportModel: Object,
-})
-
-const allTags = ref([])
-
-const updateTags = (updated) => {
-  props.tagModel.reorderTagByIds(updated.map((t) => t.id))
-  allTags.value = props.tagModel.getTagsOrdered()
-}
-
-onMounted(() => {
-  const reload = () => {
-    allTags.value = props.tagModel.getTagsOrdered()
-  }
-  subscribe(reload)
-  reload()
 })
 </script>
 

@@ -64,7 +64,7 @@ const tabs = [
     key: "Settings",
     label: "設定",
     component: SettingsView,
-    props: { tagModel, importModel, exportModel },
+    props: { importModel, exportModel },
   },
 ]
 

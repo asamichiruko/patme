@@ -3,8 +3,6 @@ import { inject, ref } from "vue"
 import { useNotification } from "@/composables/useNotification.js"
 import TagOrderList from "@/components/tag/TagOrderList.vue"
 
-const emit = defineEmits(["save"])
-
 const { trigger } = useNotification()
 const tagStore = inject("tagStore")
 
@@ -17,8 +15,7 @@ const onUpdateTags = (updated) => {
 
 const confirm = () => {
   latestTags.value.forEach((tag, idx) => (tag.order = idx + 1))
-  emit("save", [...latestTags.value])
-  tagStore.refreshTags()
+  tagStore.reorderTagByIds(latestTags.value.map((t) => t.id))
   trigger("タグの編集内容を保存しました", "success")
 }
 
