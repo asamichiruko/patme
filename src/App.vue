@@ -27,7 +27,9 @@ import PromptDialog from "@/components/util/PromptDialog.vue"
 import TaggingDialog from "@/components/tag/TaggingDialog.vue"
 
 import { useTagStore } from "@/composables/useTagStore.js"
-import { useEntryStore } from "./composables/useEntryStore"
+import { useEntryStore } from "@/composables/useEntryStore"
+import { useTaggingStore } from "@/composables/useTaggingStore"
+
 import { provide, ref } from "vue"
 
 const storage = new LocalStorageAdapter()
@@ -52,13 +54,15 @@ const entryStore = useEntryStore(entryModel)
 provide("entryStore", entryStore)
 const tagStore = useTagStore(tagModel)
 provide("tagStore", tagStore)
+const taggingStore = useTaggingStore(taggingModel)
+provide("taggingStore", taggingStore)
 
 const tabs = [
   {
     key: "Home",
     label: "ホーム",
     component: EntryFormAndListView,
-    props: { entryModel, tagModel, taggingModel },
+    props: {},
   },
   {
     key: "Settings",

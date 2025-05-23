@@ -13,7 +13,7 @@ import { inject } from "vue"
 const { trigger } = useNotification()
 const { open } = useDialogStore()
 const entryStore = inject("entryStore")
-const updateTaggings = inject("updateTaggings")
+const taggingStore = inject("taggingStore")
 
 const props = defineProps({
   entry: Object,
@@ -53,7 +53,7 @@ const handleUpdateTagging = async () => {
     return
   }
 
-  updateTaggings({ achievementId: props.entry.id, tagIds })
+  taggingStore.updateTaggings({ achievementId: props.entry.id, tagIds })
 }
 </script>
 

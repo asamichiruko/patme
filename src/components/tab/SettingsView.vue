@@ -13,7 +13,7 @@ const props = defineProps({
   <div class="settings-form">
     <section>
       <h2>タグの編集</h2>
-      <TagManager :all-tags="allTags" @save="updateTags" />
+      <TagManager />
     </section>
 
     <section>
