@@ -1,8 +1,9 @@
 <script setup>
-import { inject, ref } from "vue"
+import { ref } from "vue"
 import { useNotification } from "@/composables/useNotification.js"
+import { useEntryStore } from "@/stores/useEntryStore.js"
 
-const entryStore = inject("entryStore")
+const entryStore = useEntryStore()
 const { trigger } = useNotification()
 const text = ref("")
 const textareaRef = ref(null)

@@ -1,9 +1,10 @@
 <script setup>
-import { inject, ref } from "vue"
+import { ref } from "vue"
+import { useTagStore } from "@/stores/useTagStore.js"
 
 const emit = defineEmits(["tag-created"])
 const newTagTitle = ref("")
-const tagStore = inject("tagStore")
+const tagStore = useTagStore()
 
 const handleCreateTag = () => {
   const trimmed = newTagTitle.value.trim()

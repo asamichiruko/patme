@@ -1,13 +1,14 @@
 <script setup>
-import { computed, inject, nextTick, ref, watch } from "vue"
+import { computed, nextTick, ref, watch } from "vue"
 import TagCreateInlineForm from "@/components/tag/TagCreateInlineForm.vue"
 import { useDialogStore } from "@/composables/useDialogStore.js"
+import { useTagStore } from "@/stores/useTagStore.js"
 
 const emit = defineEmits(["submit", "cancel"])
 
 const { activeDialog, dialogParams, close } = useDialogStore()
-const tagStore = inject("tagStore")
-const allTags = computed(() => tagStore.allTags.value)
+const tagStore = useTagStore()
+const allTags = ref(tagStore.getTagsOrdered())
 
 const dialogRef = ref(null)
 const tagListRef = ref(null)

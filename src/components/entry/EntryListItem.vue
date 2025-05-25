@@ -1,19 +1,22 @@
 <script setup>
-import { formatRelativeDate } from "@/utils/formatDate.js"
 import starImg from "@/assets/star.svg"
 import blankStarImg from "@/assets/blank-star.svg"
 import commentImg from "@/assets/comment.svg"
 import tagImg from "@/assets/tag.svg"
-import { useDialogStore } from "@/composables/useDialogStore.js"
+
 import TagPillList from "@/components/tag/TagPillList.vue"
 import StarList from "@/components/entry/StarList.vue"
+
+import { formatRelativeDate } from "@/utils/formatDate.js"
+import { useDialogStore } from "@/composables/useDialogStore.js"
 import { useNotification } from "@/composables/useNotification.js"
-import { inject } from "vue"
+import { useEntryStore } from "@/stores/useEntryStore.js"
+import { useTaggingStore } from "@/stores/useTaggingStore.js"
 
 const { trigger } = useNotification()
 const { open } = useDialogStore()
-const entryStore = inject("entryStore")
-const taggingStore = inject("taggingStore")
+const entryStore = useEntryStore()
+const taggingStore = useTaggingStore()
 
 const props = defineProps({
   entry: Object,

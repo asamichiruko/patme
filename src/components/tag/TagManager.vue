@@ -1,12 +1,13 @@
 <script setup>
-import { inject, ref } from "vue"
+import { ref } from "vue"
 import { useNotification } from "@/composables/useNotification.js"
 import TagOrderList from "@/components/tag/TagOrderList.vue"
+import { useTagStore } from "@/stores/useTagStore.js"
 
 const { trigger } = useNotification()
-const tagStore = inject("tagStore")
+const tagStore = useTagStore()
 
-const latestTags = ref([...tagStore.allTags.value])
+const latestTags = ref(tagStore.getTagsOrdered())
 const TagOrderListRef = ref(null)
 
 const onUpdateTags = (updated) => {
@@ -21,7 +22,7 @@ const confirm = () => {
 
 const discard = () => {
   TagOrderListRef.value.resetOrder()
-  latestTags.value = tagStore.allTags.value
+  latestTags.value = tagStore.getTagsOrdered()
   trigger("タグの編集内容を破棄しました", "info")
 }
 </script>

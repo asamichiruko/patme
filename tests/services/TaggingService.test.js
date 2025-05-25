@@ -66,10 +66,10 @@ describe("TaggingService.js", () => {
     mockEntryRepository.hasAchievement.mockReturnValue(true)
 
     mockTaggingRepository.findByAchievementId.mockReturnValue([testTaggings[0], testTaggings[1]])
-    taggingService.updateTaggings(testTaggings[0].achievementId, [
-      testTaggings[1].tagId,
-      testTaggings[2].tagId,
-    ])
+    taggingService.updateTaggings({
+      achievementId: testTaggings[0].achievementId,
+      tagIds: [testTaggings[1].tagId, testTaggings[2].tagId],
+    })
 
     expect(mockTaggingRepository.add).toHaveBeenCalledWith(testTaggings[2])
     expect(mockTaggingRepository.remove).toHaveBeenCalledWith(testTaggings[0])

@@ -1,61 +1,40 @@
 <script setup>
-import { LocalStorageAdapter } from "@/adapters/LocalStorageAdapter.js"
-
-import { EntryRepository } from "@/repositories/EntryRepository.js"
-import { TagRepository } from "@/repositories/TagRepository.js"
-import { TaggingRepository } from "@/repositories/TaggingRepository.js"
-
-import { EntryService } from "@/services/EntryService.js"
-import { TagService } from "@/services/TagService.js"
-import { TaggingService } from "@/services/TaggingService.js"
-import { ImportService } from "@/services/ImportService.js"
-import { ExportService } from "@/services/ExportService.js"
-
-import { EntryModel } from "@/models/EntryModel.js"
-import { TaggingModel } from "@/models/TaggingModel.js"
-import { TagModel } from "@/models/TagModel.js"
-import { ImportModel } from "@/models/ImportModel.js"
-import { ExportModel } from "@/models/ExportModel.js"
-
-import EntryFormAndListView from "@/components/tab/EntryFormAndListView.vue"
-import SettingsView from "@/components/tab/SettingsView.vue"
+import { ref } from "vue"
 
 import MainView from "@/components/tab/MainView.vue"
 import TabNavigation from "@/components/tab/TabNavigation.vue"
 import NotificationBar from "@/components/util/NotificationBar.vue"
 import PromptDialog from "@/components/util/PromptDialog.vue"
 import TaggingDialog from "@/components/tag/TaggingDialog.vue"
+import EntryFormAndListView from "@/components/tab/EntryFormAndListView.vue"
+import SettingsView from "@/components/tab/SettingsView.vue"
 
-import { useTagStore } from "@/composables/useTagStore.js"
-import { useEntryStore } from "@/composables/useEntryStore"
-import { useTaggingStore } from "@/composables/useTaggingStore"
+import { LocalStorageAdapter } from "@/adapters/LocalStorageAdapter.js"
+import { createServices } from "./utils/createServices"
 
-import { provide, ref } from "vue"
+import { useEntryStore } from "@/stores/useEntryStore.js"
+import { useDataTransferStore } from "@/stores/useDataTransferStore.js"
+import { useTagStore } from "@/stores/useTagStore.js"
+import { useTaggingStore } from "@/stores/useTaggingStore.js"
 
 const storage = new LocalStorageAdapter()
 
-const entryRepository = new EntryRepository(storage)
-const tagRepository = new TagRepository(storage)
-const taggingRepository = new TaggingRepository(storage)
+const services = createServices(storage)
 
-const entryService = new EntryService({ entryRepository, tagRepository, taggingRepository })
-const tagService = new TagService({ tagRepository })
-const taggingService = new TaggingService({ entryRepository, tagRepository, taggingRepository })
-const importService = new ImportService({ tagService, taggingService, entryService })
-const exportService = new ExportService({ tagService, taggingService, entryService })
+const entryStore = useEntryStore()
+entryStore.setService({ entryService: services.entryService })
 
-const taggingModel = new TaggingModel({ taggingService, tagService })
-const tagModel = new TagModel(tagService)
-const entryModel = new EntryModel(entryService)
-const importModel = new ImportModel(importService)
-const exportModel = new ExportModel(exportService)
+const dataTransferStore = useDataTransferStore()
+dataTransferStore.setService({
+  importService: services.importService,
+  exportService: services.exportService,
+})
 
-const entryStore = useEntryStore(entryModel)
-provide("entryStore", entryStore)
-const tagStore = useTagStore(tagModel)
-provide("tagStore", tagStore)
-const taggingStore = useTaggingStore(taggingModel)
-provide("taggingStore", taggingStore)
+const tagStore = useTagStore()
+tagStore.setService({ tagService: services.tagService })
+
+const taggingStore = useTaggingStore()
+taggingStore.setService({ taggingService: services.taggingService })
 
 const tabs = [
   {
@@ -68,7 +47,7 @@ const tabs = [
     key: "Settings",
     label: "設定",
     component: SettingsView,
-    props: { importModel, exportModel },
+    props: {},
   },
 ]
 

@@ -2,11 +2,6 @@
 import TagManager from "@/components/tag/TagManager.vue"
 import ImportForm from "@/components/data/ImportForm.vue"
 import ExportForm from "@/components/data/ExportForm.vue"
-
-const props = defineProps({
-  importModel: Object,
-  exportModel: Object,
-})
 </script>
 
 <template>
@@ -22,7 +17,7 @@ const props = defineProps({
         記録を JSON
         ファイルとしてエクスポートします。エクスポートファイルは記録の復元に利用できます。
       </p>
-      <ExportForm :export-model="props.exportModel" />
+      <ExportForm />
     </section>
 
     <section>
@@ -31,7 +26,7 @@ const props = defineProps({
         保存した JSON
         ファイルをアップロードして記録をインポートします。差分の記録だけを追加し、既存の記録は上書きしません。
       </p>
-      <ImportForm :import-model="props.importModel" />
+      <ImportForm />
     </section>
   </div>
 </template>

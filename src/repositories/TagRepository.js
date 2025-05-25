@@ -2,6 +2,9 @@ export class TagRepository {
   constructor(storage) {
     this.storage = storage
     this.key = "tags"
+    if (!this.storage.has(this.key)) {
+      this.storage.save(this.key, [])
+    }
   }
 
   _load() {

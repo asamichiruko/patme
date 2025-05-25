@@ -1,11 +1,9 @@
 <script setup>
 import { useNotification } from "@/composables/useNotification.js"
-
-const props = defineProps({
-  exportModel: Object,
-})
+import { useDataTransferStore } from "@/stores/useDataTransferStore.js"
 
 const { trigger } = useNotification()
+const dataTransferStore = useDataTransferStore()
 
 const filenameFromDate = () => {
   const dateString = new Date().toLocaleDateString("sv-SE")
@@ -13,7 +11,7 @@ const filenameFromDate = () => {
 }
 
 const exportData = () => {
-  const file = props.exportModel.exportToFile()
+  const file = dataTransferStore.exportToFile()
   const url = URL.createObjectURL(file)
   const a = document.createElement("a")
   a.href = url

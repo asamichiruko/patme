@@ -1,12 +1,10 @@
 <script setup>
 import { ref } from "vue"
 import { useNotification } from "@/composables/useNotification.js"
-
-const props = defineProps({
-  importModel: Object,
-})
+import { useDataTransferStore } from "@/stores/useDataTransferStore.js"
 
 const { trigger } = useNotification()
+const dataTransferStore = useDataTransferStore()
 const fileInput = ref(null)
 
 const importData = async (e) => {
@@ -18,7 +16,7 @@ const importData = async (e) => {
     return
   }
   try {
-    await props.importModel.importFromFile(file)
+    await dataTransferStore.importFromFile(file)
     trigger("データを復元しました", "success")
   } catch (err) {
     trigger(

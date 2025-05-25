@@ -1,9 +1,10 @@
 <script setup>
-import { inject, onMounted, ref } from "vue"
+import { onMounted, ref } from "vue"
 import { subscribe } from "@/utils/storageNotifier.js"
+import { useEntryStore } from "@/stores/useEntryStore"
 import EntryListItem from "@/components/entry/EntryListItem.vue"
 
-const entryStore = inject("entryStore")
+const entryStore = useEntryStore()
 const entries = ref([])
 
 onMounted(() => {
