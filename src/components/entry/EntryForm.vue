@@ -1,10 +1,10 @@
 <script setup>
 import { ref } from "vue"
-import { useNotification } from "@/composables/useNotification.js"
+import { useNotificationBar } from "@/composables/useNotificationBar.js"
 import { useEntryStore } from "@/stores/useEntryStore.js"
 
 const entryStore = useEntryStore()
-const { trigger } = useNotification()
+const { trigger } = useNotificationBar()
 const text = ref("")
 const textareaRef = ref(null)
 

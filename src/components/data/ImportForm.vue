@@ -1,9 +1,9 @@
 <script setup>
 import { ref } from "vue"
-import { useNotification } from "@/composables/useNotification.js"
+import { useNotificationBar } from "@/composables/useNotificationBar.js"
 import { useDataTransferStore } from "@/stores/useDataTransferStore.js"
 
-const { trigger } = useNotification()
+const { trigger } = useNotificationBar()
 const dataTransferStore = useDataTransferStore()
 const fileInput = ref(null)
 

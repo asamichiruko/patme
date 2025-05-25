@@ -1,10 +1,10 @@
 <script setup>
 import { ref } from "vue"
-import { useNotification } from "@/composables/useNotification.js"
+import { useNotificationBar } from "@/composables/useNotificationBar.js"
 import TagOrderList from "@/components/tag/TagOrderList.vue"
 import { useTagStore } from "@/stores/useTagStore.js"
 
-const { trigger } = useNotification()
+const { trigger } = useNotificationBar()
 const tagStore = useTagStore()
 
 const latestTags = ref(tagStore.getTagsOrdered())

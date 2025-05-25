@@ -8,7 +8,7 @@ const notification = reactive({
 
 let timeoutId
 
-export function useNotification() {
+export function useNotificationBar() {
   const trigger = (msg, type = "info", duration = 3000) => {
     notification.message = msg
     notification.type = type

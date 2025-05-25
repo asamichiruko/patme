@@ -9,11 +9,11 @@ import StarList from "@/components/entry/StarList.vue"
 
 import { formatRelativeDate } from "@/utils/formatDate.js"
 import { useDialogStore } from "@/composables/useDialogStore.js"
-import { useNotification } from "@/composables/useNotification.js"
+import { useNotificationBar } from "@/composables/useNotificationBar.js"
 import { useEntryStore } from "@/stores/useEntryStore.js"
 import { useTaggingStore } from "@/stores/useTaggingStore.js"
 
-const { trigger } = useNotification()
+const { trigger } = useNotificationBar()
 const { open } = useDialogStore()
 const entryStore = useEntryStore()
 const taggingStore = useTaggingStore()

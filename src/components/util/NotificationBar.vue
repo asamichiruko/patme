@@ -1,7 +1,7 @@
 <script setup>
-import { useNotification } from "@/composables/useNotification.js"
+import { useNotificationBar } from "@/composables/useNotificationBar.js"
 
-const { notification } = useNotification()
+const { notification } = useNotificationBar()
 </script>
 
 <template>
