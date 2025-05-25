@@ -49,7 +49,7 @@ describe("useDataTransferStore.js", () => {
     const mockFile = new File(["{}"], "data.json", { type: "application/json" })
     mockFile.text = vi.fn().mockRejectedValue(new Error("text() rejected"))
 
-    await expect(dataTransferStore.importFromFile(mockFile)).rejects.toThrow()
+    await expect(() => dataTransferStore.importFromFile(mockFile)).rejects.toThrow()
     expect(notifySpy).not.toHaveBeenCalled()
   })
 

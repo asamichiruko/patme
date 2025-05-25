@@ -1,20 +1,25 @@
 import { render, screen, fireEvent, cleanup } from "@testing-library/vue"
-import ExportForm from "@/components/ExportForm.vue"
-
-const trigger = vi.fn()
-vi.mock("@/composables/useNotification.js", () => {
-  return { useNotification: () => ({ trigger }) }
-})
+import { createTestingPinia } from "@pinia/testing"
+import * as notificationBar from "@/composables/useNotificationBar.js"
+import * as dataTransferStore from "@/stores/useDataTransferStore.js"
+import ExportForm from "@/components/data/ExportForm.vue"
 
 describe("ExportForm.vue", () => {
-  let model
+  let triggerMock
+  let exportToFileMock
 
   beforeEach(() => {
     vi.clearAllMocks()
 
-    model = {
-      exportToFile: vi.fn(),
-    }
+    triggerMock = vi.fn()
+    vi.spyOn(notificationBar, "useNotificationBar").mockReturnValue({
+      trigger: triggerMock,
+    })
+
+    exportToFileMock = vi.fn()
+    vi.spyOn(dataTransferStore, "useDataTransferStore").mockReturnValue({
+      exportToFile: exportToFileMock,
+    })
   })
 
   afterEach(() => {
@@ -25,8 +30,12 @@ describe("ExportForm.vue", () => {
     vi.stubGlobal("URL", { createObjectURL: vi.fn(), revokeObjectURL: vi.fn() })
 
     render(ExportForm, {
-      props: {
-        exportModel: model,
+      global: {
+        plugins: [
+          createTestingPinia({
+            stubActions: true,
+          }),
+        ],
       },
     })
 
@@ -37,7 +46,7 @@ describe("ExportForm.vue", () => {
 
     await fireEvent.click(screen.getByRole("button", { name: /エクスポート/i }))
 
-    expect(model.exportToFile).toHaveBeenCalled()
-    expect(trigger).toHaveBeenCalledWith(expect.any(String), "success")
+    expect(exportToFileMock).toHaveBeenCalled()
+    expect(triggerMock).toHaveBeenCalledWith(expect.any(String), "success")
   })
 })
