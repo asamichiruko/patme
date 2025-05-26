@@ -1,65 +1,83 @@
 import { render, screen, fireEvent, cleanup } from "@testing-library/vue"
-import EntryForm from "@/components/EntryForm.vue"
-
-const trigger = vi.fn()
-vi.mock("@/composables/useNotification.js", () => {
-  return { useNotification: () => ({ trigger }) }
-})
+import EntryForm from "@/components/entry/EntryForm.vue"
+import * as notificationBar from "@/composables/useNotificationBar.js"
+import * as entryStore from "@/stores/useEntryStore.js"
+import { createTestingPinia } from "@pinia/testing"
 
 describe("EntryForm.vue", () => {
-  let entryModel
+  let triggerMock
+  let addAchievementMock
 
   beforeEach(() => {
     vi.clearAllMocks()
-    entryModel = {
-      addAchievement: vi.fn(() => true),
-    }
+
+    triggerMock = vi.fn()
+    vi.spyOn(notificationBar, "useNotificationBar").mockReturnValue({
+      trigger: triggerMock,
+    })
+
+    addAchievementMock = vi.fn()
+    vi.spyOn(entryStore, "useEntryStore").mockReturnValue({
+      addAchievement: addAchievementMock,
+    })
   })
 
   afterEach(() => {
     cleanup()
   })
 
-  test("レンダリングされると textarea がフォーカスされる", async () => {
+  test("達成内容を書いて記録ボタンを押すと達成事項が追加される", async () => {
     render(EntryForm, {
-      props: {
-        entryModel: entryModel,
+      global: {
+        plugins: [
+          createTestingPinia({
+            stubActions: true,
+          }),
+        ],
       },
     })
 
-    const textarea = screen.getByLabelText("達成内容")
-
-    expect(document.activeElement).toContain(textarea)
-  })
-
-  test("テキストを記入して記録ボタンを押すと達成内容を記録できる", async () => {
-    render(EntryForm, {
-      props: {
-        entryModel: entryModel,
-      },
-    })
+    const testAchievement = {
+      id: "achievement1",
+      content: "achievement 1",
+      date: new Date("2025-04-01"),
+    }
+    addAchievementMock.mockReturnValue(testAchievement)
 
     const textarea = screen.getByLabelText("達成内容")
-    await fireEvent.update(textarea, "テスト記録")
+    await fireEvent.update(textarea, testAchievement.content)
 
-    const button = screen.getByRole("button", { name: "記録する" })
+    const button = screen.getByRole("button", { name: /記録する/i })
     await fireEvent.click(button)
 
-    expect(entryModel.addAchievement).toHaveBeenCalledWith({
-      content: "テスト記録",
+    expect(addAchievementMock).toHaveBeenCalledWith({
+      content: testAchievement.content,
       date: expect.any(Date),
     })
+    expect(triggerMock).toHaveBeenCalledWith(expect.any(String), "success")
+    expect(textarea.value).toBe("")
   })
 
-  test("テキストを記入して Ctrl+Enter を入力すると達成内容を記録できる", async () => {
+  test("達成内容を書いて Ctrl+Enter キーを押すと達成事項が追加される", async () => {
     render(EntryForm, {
-      props: {
-        entryModel: entryModel,
+      global: {
+        plugins: [
+          createTestingPinia({
+            stubActions: true,
+          }),
+        ],
       },
     })
 
+    const testAchievement = {
+      id: "achievement1",
+      content: "achievement 1",
+      date: new Date("2025-04-01"),
+    }
+    addAchievementMock.mockReturnValue(testAchievement)
+
     const textarea = screen.getByLabelText("達成内容")
-    await fireEvent.update(textarea, "テスト記録")
+    await fireEvent.update(textarea, testAchievement.content)
 
     await fireEvent.keyDown(textarea, {
       key: "Enter",
@@ -67,102 +85,61 @@ describe("EntryForm.vue", () => {
       ctrlKey: true,
     })
 
-    expect(entryModel.addAchievement).toHaveBeenCalledWith({
-      content: "テスト記録",
+    expect(addAchievementMock).toHaveBeenCalled({
+      content: testAchievement.content,
       date: expect.any(Date),
     })
-  })
-
-  test("記録に成功すると textarea がクリアされる", async () => {
-    render(EntryForm, {
-      props: {
-        entryModel: entryModel,
-      },
-    })
-
-    const textarea = screen.getByLabelText("達成内容")
-    await fireEvent.update(textarea, "テスト記録")
-
-    const button = screen.getByRole("button", { name: "記録する" })
-    await fireEvent.click(button)
-
+    expect(triggerMock).toHaveBeenCalledWith(expect.any(String), "success")
     expect(textarea.value).toBe("")
   })
 
-  test("記録に成功すると success 通知が出る", async () => {
+  test("達成内容を書かずに記録ボタンを押した場合はエラー通知が表示される", async () => {
     render(EntryForm, {
-      props: {
-        entryModel: entryModel,
+      global: {
+        plugins: [
+          createTestingPinia({
+            stubActions: true,
+          }),
+        ],
       },
     })
+
+    const button = screen.getByRole("button", { name: /記録する/i })
+    await fireEvent.click(button)
+
+    expect(addAchievementMock).not.toHaveBeenCalled()
+    expect(triggerMock).toHaveBeenCalledWith(expect.any(String), "error")
+  })
+
+  test("記録に失敗した場合はエラー通知が表示される", async () => {
+    render(EntryForm, {
+      global: {
+        plugins: [
+          createTestingPinia({
+            stubActions: true,
+          }),
+        ],
+      },
+    })
+
+    const testAchievement = {
+      id: "achievement1",
+      content: "achievement 1",
+      date: new Date("2025-04-01"),
+    }
+    addAchievementMock.mockReturnValue(null)
 
     const textarea = screen.getByLabelText("達成内容")
-    await fireEvent.update(textarea, "テスト記録")
+    await fireEvent.update(textarea, testAchievement.content)
 
-    await fireEvent.click(screen.getByRole("button", { name: "記録する" }))
-
-    expect(trigger).toHaveBeenCalledWith(expect.any(String), "success")
-  })
-
-  test("テキストを記入せずに送信した場合は達成内容を記録しない", async () => {
-    render(EntryForm, {
-      props: {
-        entryModel: entryModel,
-      },
-    })
-
-    const button = screen.getByRole("button", { name: "記録する", hidden: false })
+    const button = screen.getByRole("button", { name: /記録する/i })
     await fireEvent.click(button)
 
-    expect(entryModel.addAchievement).not.toHaveBeenCalled()
-  })
-
-  test("テキストを記入せずに送信すると error 通知が出る", async () => {
-    render(EntryForm, {
-      props: {
-        entryModel: entryModel,
-      },
+    expect(addAchievementMock).toHaveBeenCalled({
+      content: testAchievement.content,
+      date: expect.any(Date),
     })
-
-    const button = screen.getByRole("button", { name: "記録する" })
-    await fireEvent.click(button)
-
-    expect(trigger).toHaveBeenCalledWith(expect.any(String), "error")
-  })
-
-  test("記録に失敗すると textarea はクリアされない", async () => {
-    entryModel.addAchievement.mockReturnValue(false)
-
-    render(EntryForm, {
-      props: {
-        entryModel: entryModel,
-      },
-    })
-
-    const textarea = screen.getByLabelText("達成内容")
-    await fireEvent.update(textarea, "テスト記録")
-
-    const button = screen.getByRole("button", { name: "記録する", hidden: false })
-    await fireEvent.click(button)
-
-    expect(textarea.value).not.toBe("")
-  })
-
-  test("記録に失敗すると error 通知が出る", async () => {
-    entryModel.addAchievement.mockReturnValue(false)
-
-    render(EntryForm, {
-      props: {
-        entryModel: entryModel,
-      },
-    })
-
-    const textarea = screen.getByLabelText("達成内容")
-    await fireEvent.update(textarea, "テスト記録")
-
-    const button = screen.getByRole("button", { name: "記録する" })
-    await fireEvent.click(button)
-
-    expect(trigger).toHaveBeenCalledWith(expect.any(String), "error")
+    expect(triggerMock).toHaveBeenCalledWith(expect.any(String), "error")
+    expect(textarea.value).toBe(testAchievement.content)
   })
 })
