@@ -1,87 +1,128 @@
-import { render, screen, cleanup } from "@testing-library/vue"
-import { mount } from "@vue/test-utils"
-import TagManager from "@/components/TagManager.vue"
+import { render, screen, cleanup, fireEvent } from "@testing-library/vue"
+import TagManager from "@/components/tag/TagManager.vue"
+import * as tagStore from "@/stores/useTagStore.js"
+import * as notificationBar from "@/composables/useNotificationBar.js"
+import { createTestingPinia } from "@pinia/testing"
+import { defineComponent, h } from "vue"
 
-describe("TagEditorDialog.vue", () => {
+describe("TagManager.vue", () => {
+  let getTagsOrderedMock = vi.fn()
+  let reorderTagByIdsMock = vi.fn()
+  let triggerMock = vi.fn()
+
   beforeEach(() => {
     vi.clearAllMocks()
+
+    vi.spyOn(tagStore, "useTagStore").mockReturnValue({
+      getTagsOrdered: getTagsOrderedMock,
+      reorderTagByIds: reorderTagByIdsMock,
+    })
+
+    vi.spyOn(notificationBar, "useNotificationBar").mockReturnValue({
+      trigger: triggerMock,
+    })
   })
 
   afterEach(() => {
     cleanup()
   })
 
-  test("正常にタグリストを初期化できる", async () => {
+  test("保存ボタンを押すとタグ順序が保存される", async () => {
     const tags = [
       { id: "id1", title: "tag1", order: 1 },
       { id: "id2", title: "tag2", order: 2 },
     ]
+    getTagsOrderedMock.mockReturnValue(tags)
 
     render(TagManager, {
-      props: {
-        allTags: tags,
+      global: {
+        plugins: [
+          createTestingPinia({
+            stubActions: true,
+          }),
+        ],
       },
     })
 
-    const items = await screen.findAllByRole("listitem")
-    const titles = items.map((el) => el.textContent.trim())
+    const saveButton = screen.getByRole("button", { name: /保存/i })
+    await fireEvent.click(saveButton)
 
-    expect(titles).toEqual(["tag1", "tag2"])
+    expect(reorderTagByIdsMock).toHaveBeenCalledWith(["id1", "id2"])
+    expect(triggerMock).toHaveBeenCalledWith(expect.any(String), "success")
   })
 
-  test("リストを並び替えた後に順序を保存できる", async () => {
-    const tags = [
-      { id: "id1", title: "tag1", order: 1 },
-      { id: "id2", title: "tag2", order: 2 },
-    ]
+  test("キャンセルボタンを押すとタグ順序がリセットされる", async () => {
+    const resetOrderMock = vi.fn()
 
-    const wrapper = mount(TagManager, {
-      props: {
-        allTags: tags,
+    const TagOrderListStub = defineComponent({
+      name: "TagOrderList",
+      setup(_, { expose }) {
+        expose({ resetOrder: resetOrderMock })
+        return () => h("div", "stub")
       },
     })
 
-    try {
-      wrapper.vm.reorderedTags = [tags[1], tags[0]]
+    render(TagManager, {
+      global: {
+        plugins: [
+          createTestingPinia({
+            stubActions: true,
+          }),
+        ],
+        stubs: {
+          TagOrderList: TagOrderListStub,
+        },
+      },
+    })
 
-      wrapper.vm.confirmReorder()
+    const cancelButton = screen.getByRole("button", { name: /キャンセル/i })
+    await fireEvent.click(cancelButton)
 
-      const emits = wrapper.emitted("save")
-      expect(emits).toHaveLength(1)
-      const reorderedTags = emits[0][0]
-      expect(reorderedTags[0].id).toBe("id2")
-      expect(reorderedTags[1].id).toBe("id1")
-      expect(reorderedTags[0].order).toBe(1)
-      expect(reorderedTags[1].order).toBe(2)
-    } finally {
-      wrapper.unmount()
-    }
+    expect(resetOrderMock).toHaveBeenCalled()
+    expect(triggerMock).toHaveBeenCalledWith(expect.any(String), "info")
   })
 
-  test("リストを並び替えた後にキャンセルして状態を戻せる", async () => {
-    const tags = [
-      { id: "id1", title: "tag1", order: 1 },
-      { id: "id2", title: "tag2", order: 2 },
+  test("update イベントを受け取ると保存すべきリストの順序が更新される", async () => {
+    const updatedTags = [
+      { id: "id2", title: "tag2", order: 1 },
+      { id: "id1", title: "tag1", order: 2 },
     ]
 
-    const wrapper = mount(TagManager, {
-      props: {
-        allTags: tags,
+    const TagOrderListStub = defineComponent({
+      name: "TagOrderList",
+      emits: ["update"],
+      setup(_, { emit }) {
+        return () =>
+          h(
+            "button",
+            {
+              onClick: () => emit("update", updatedTags),
+            },
+            "Update",
+          )
       },
     })
 
-    try {
-      wrapper.vm.reorderedTags = [tags[1], tags[0]]
+    render(TagManager, {
+      global: {
+        plugins: [
+          createTestingPinia({
+            stubActions: true,
+          }),
+        ],
+        stubs: {
+          TagOrderList: TagOrderListStub,
+        },
+      },
+    })
 
-      wrapper.vm.discardReorder()
+    const stub = screen.getByRole("button", { name: "Update" })
+    await fireEvent.click(stub)
 
-      const resetedTags = wrapper.vm.reorderedTags
-      expect(resetedTags[0].id).toBe("id1")
-      expect(resetedTags[1].id).toBe("id2")
-      expect(resetedTags[0].order).toBe(1)
-      expect(resetedTags[1].order).toBe(2)
-    } finally {
-      wrapper.unmount()
-    }
+    // 保存ボタンの副作用でリスト順が更新されていることを確認する
+    const saveButton = screen.getByRole("button", { name: /保存/i })
+    await fireEvent.click(saveButton)
+
+    expect(reorderTagByIdsMock).toHaveBeenCalledWith(["id2", "id1"])
   })
 })
