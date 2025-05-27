@@ -1,132 +1,223 @@
 import { render, screen, fireEvent, cleanup } from "@testing-library/vue"
-import TaggingDialog from "@/components/TaggingDialog.vue"
+import TaggingDialog from "@/components/tag/TaggingDialog.vue"
+import * as tagStore from "@/stores/useTagStore.js"
+import { createTestingPinia } from "@pinia/testing"
+import { nextTick, ref } from "vue"
 
-describe("TagEditorDialog.vue", () => {
-  const showModal = vi.fn()
-  const close = vi.fn()
+const activeDialog = ref(null)
+const dialogParams = ref({ initialTagIds: [] })
+const closeMock = vi.fn()
+
+vi.mock("@/composables/useDialogStore.js", () => ({
+  useDialogStore: () => ({
+    activeDialog,
+    dialogParams,
+    close: closeMock,
+  }),
+}))
+
+describe("TaggingDialog.vue", () => {
+  const domShowModal = vi.fn()
+  const domClose = vi.fn()
+  let getTagsOrderedMock = vi.fn()
 
   beforeEach(() => {
     vi.clearAllMocks()
 
     // jsdom に showModal/close メソッドが存在しないのでモック
-    HTMLDialogElement.prototype.showModal = showModal
-    HTMLDialogElement.prototype.close = close
+    HTMLDialogElement.prototype.showModal = domShowModal
+    HTMLDialogElement.prototype.close = domClose
+
+    vi.spyOn(tagStore, "useTagStore").mockReturnValue({
+      getTagsOrdered: getTagsOrderedMock,
+    })
+    dialogParams.value = { initialTagIds: [] }
+    activeDialog.value = null
   })
 
   afterEach(() => {
     cleanup()
   })
 
-  test("ダイアログが正常に表示される", async () => {
-    const mockSubmit = vi.fn()
-
-    const { rerender } = render(TaggingDialog, {
-      props: {
-        show: false,
-        allTags: [],
-        initialTagIds: [],
-        onSubmit: mockSubmit,
+  test("activeDialog を tagging に設定するとダイアログが表示される", async () => {
+    render(TaggingDialog, {
+      global: {
+        plugins: [
+          createTestingPinia({
+            stubActions: true,
+          }),
+        ],
       },
     })
 
-    await rerender({
-      show: true,
-    })
+    activeDialog.value = "tagging"
+    await nextTick()
+    expect(domShowModal).toHaveBeenCalled()
 
-    expect(showModal).toHaveBeenCalled()
-
-    // dialog に open 属性をつけることで実際に表示する
-    const dialog = await screen.findByRole("dialog", { hidden: true })
+    // dialog に open 属性を加えることで実際に表示する
+    const dialog = screen.getByRole("dialog", { hidden: true })
     dialog.open = true
 
-    expect(dialog).toBeInTheDocument()
-    expect(screen.getByRole("button", { name: /決定/i })).toBeInTheDocument()
-    expect(screen.getByRole("button", { name: /キャンセル/i })).toBeInTheDocument()
+    expect(dialog).toBeVisible()
   })
 
-  test("ボタンを押してキャンセルするとダイアログが閉じられる", async () => {
-    const mockCancel = vi.fn()
-    const mockOnUpdateShow = vi.fn()
-
+  test("activeDialog を tagging 以外に設定するとダイアログが表示されない", async () => {
     render(TaggingDialog, {
-      props: {
-        show: true,
-        allTags: [],
-        initialTagIds: [],
-        onCancel: mockCancel,
-        "onUpdate:show": mockOnUpdateShow,
+      global: {
+        plugins: [
+          createTestingPinia({
+            stubActions: true,
+          }),
+        ],
       },
     })
 
-    const dialog = await screen.findByRole("dialog", { hidden: true })
+    activeDialog.value = "prompt"
+    await nextTick(() => {
+      expect(domClose).toHaveBeenCalled()
+    })
+  })
+
+  test("キャンセルボタンを押すとダイアログが閉じられる", async () => {
+    const { emitted } = render(TaggingDialog, {
+      global: {
+        plugins: [
+          createTestingPinia({
+            stubActions: true,
+          }),
+        ],
+      },
+    })
+
+    const dialog = screen.getByRole("dialog", { hidden: true })
     dialog.open = true
 
-    const cancelButton = await screen.findByRole("button", { name: /キャンセル/i })
+    const cancelButton = screen.getByRole("button", { name: /キャンセル/i })
     await fireEvent.click(cancelButton)
 
-    expect(mockCancel).toHaveBeenCalled()
-    expect(mockOnUpdateShow).toHaveBeenCalledWith(false)
+    expect(emitted()).toHaveProperty("cancel")
+    expect(emitted().cancel[0]).toEqual([])
+    expect(closeMock).toHaveBeenCalledWith(null)
   })
 
-  test("initialTagIds を与えて選択状態を初期化できる", async () => {
+  test("すべてのタグに対応するピルボタンが表示される", async () => {
+    getTagsOrderedMock.mockReturnValue([
+      { id: "tag1", title: "tag 1" },
+      { id: "tag2", title: "tag 2" },
+    ])
+    const allTagTitles = getTagsOrderedMock().map((tag) => tag.title)
+
     render(TaggingDialog, {
-      props: {
-        show: true,
-        allTags: [
-          { id: "id1", title: "tag1" },
-          { id: "id2", title: "tag2" },
+      global: {
+        plugins: [
+          createTestingPinia({
+            stubActions: true,
+          }),
         ],
-        initialTagIds: ["id1"],
       },
     })
 
-    const dialog = await screen.findByRole("dialog", { hidden: true })
+    const dialog = screen.getByRole("dialog", { hidden: true })
     dialog.open = true
 
-    const tagButton1 = await screen.findByRole("button", { name: "tag1" })
-    const tagButton2 = await screen.findByRole("button", { name: "tag2" })
+    const pillButtons = screen.queryAllByRole("button", { name: /tag/i })
+    const pillButtonNames = pillButtons.map((el) => el.textContent)
 
-    expect(tagButton1).toHaveAttribute("aria-pressed", "true")
-    expect(tagButton2).toHaveAttribute("aria-pressed", "false")
+    expect(pillButtonNames).toEqual(allTagTitles)
   })
 
-  test("タグボタンを押して選択状態をトグルできる", async () => {
+  test("initialTagIds で指定した初期状態が反映される", async () => {
+    getTagsOrderedMock.mockReturnValue([
+      { id: "tag1", title: "tag 1" },
+      { id: "tag2", title: "tag 2" },
+    ])
+    dialogParams.value = { initialTagIds: ["tag1"] }
+
     render(TaggingDialog, {
-      props: {
-        show: true,
-        allTags: [{ id: "id1", title: "tag1" }],
-        initialTagIds: [],
+      global: {
+        plugins: [
+          createTestingPinia({
+            stubActions: true,
+          }),
+        ],
       },
     })
 
-    const dialog = await screen.findByRole("dialog", { hidden: true })
+    activeDialog.value = "tagging"
+    await nextTick()
+    const dialog = screen.getByRole("dialog", { hidden: true })
     dialog.open = true
 
-    const tagButton1 = await screen.findByRole("button", { name: "tag1" })
-    await fireEvent.click(tagButton1)
+    const pillButton1 = screen.getByRole("button", { name: /tag 1/i })
+    const pillButton2 = screen.getByRole("button", { name: /tag 2/i })
 
-    expect(tagButton1).toHaveAttribute("aria-pressed", "true")
+    expect(pillButton1).toHaveAttribute("aria-pressed", "true")
+    expect(pillButton2).toHaveAttribute("aria-pressed", "false")
   })
 
-  test("新しいタグの追加リクエストを送れる", async () => {
-    const { emitted } = render(TaggingDialog, {
-      props: {
-        show: true,
-        allTags: [],
-        initialTagIds: [],
+  test("ピルボタンを押すと選択状態がトグルされる", async () => {
+    getTagsOrderedMock.mockReturnValue([
+      { id: "tag1", title: "tag 1" },
+      { id: "tag2", title: "tag 2" },
+    ])
+    dialogParams.value = { initialTagIds: ["tag1"] }
+
+    render(TaggingDialog, {
+      global: {
+        plugins: [
+          createTestingPinia({
+            stubActions: true,
+          }),
+        ],
       },
     })
 
-    const dialog = await screen.findByRole("dialog", { hidden: true })
+    activeDialog.value = "tagging"
+    await nextTick()
+    const dialog = screen.getByRole("dialog", { hidden: true })
     dialog.open = true
 
-    const newTagInput = await screen.findByRole("textbox", { name: /タグを追加/i })
-    await fireEvent.update(newTagInput, "TestTag")
+    const pillButton1 = screen.getByRole("button", { name: /tag 1/i })
+    const pillButton2 = screen.getByRole("button", { name: /tag 2/i })
 
-    const addTagButton = await screen.findByRole("button", { name: /追加/i })
-    await fireEvent.click(addTagButton)
+    await fireEvent.click(pillButton1)
+    await fireEvent.click(pillButton2)
 
-    expect(emitted()["add-tag"]).toBeTruthy()
-    expect(emitted()["add-tag"][0]).toEqual(["TestTag"])
+    expect(pillButton1).toHaveAttribute("aria-pressed", "false")
+    expect(pillButton2).toHaveAttribute("aria-pressed", "true")
+  })
+
+  test("決定ボタンを押すと選択状態が emit される", async () => {
+    getTagsOrderedMock.mockReturnValue([
+      { id: "tag1", title: "tag 1" },
+      { id: "tag2", title: "tag 2" },
+    ])
+    dialogParams.value = { initialTagIds: [] }
+    await nextTick()
+
+    const { emitted } = render(TaggingDialog, {
+      global: {
+        plugins: [
+          createTestingPinia({
+            stubActions: true,
+          }),
+        ],
+      },
+    })
+
+    activeDialog.value = "tagging"
+    await nextTick()
+    const dialog = screen.getByRole("dialog", { hidden: true })
+    dialog.open = true
+
+    const pillButton1 = screen.getByRole("button", { name: /tag 1/i })
+    await fireEvent.click(pillButton1)
+
+    const submitButton = screen.getByRole("button", { name: /決定/i })
+    await fireEvent.click(submitButton)
+
+    expect(emitted()).toHaveProperty("submit")
+    expect(emitted().submit[0]).toEqual([["tag1"]])
+    expect(closeMock).toHaveBeenCalledWith(["tag1"])
   })
 })
