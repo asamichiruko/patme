@@ -7,12 +7,8 @@ import { useTagStore } from "@/stores/useTagStore.js"
 const { trigger } = useNotificationBar()
 const tagStore = useTagStore()
 
-const latestTags = ref(tagStore.getTagsOrdered())
-const TagOrderListRef = ref(null)
-
-const onUpdateTags = (updated) => {
-  latestTags.value = updated
-}
+const initialTags = ref([...tagStore.getTagsOrdered()])
+const latestTags = ref([...initialTags.value])
 
 const confirm = () => {
   latestTags.value.forEach((tag, idx) => (tag.order = idx + 1))
@@ -21,15 +17,15 @@ const confirm = () => {
 }
 
 const discard = () => {
-  TagOrderListRef.value.resetOrder()
-  latestTags.value = tagStore.getTagsOrdered()
+  initialTags.value = tagStore.getTagsOrdered()
+  latestTags.value = initialTags.value
   trigger("タグの編集内容を破棄しました", "info")
 }
 </script>
 
 <template>
   <form class="tag-manager" @submit.prevent="confirm">
-    <TagOrderList ref="TagOrderListRef" :initial-tags="latestTags" @update="onUpdateTags" />
+    <TagOrderList v-model:tags="latestTags" />
     <div class="tag-edit-actions">
       <button type="button" class="cancel-button" @click="discard">キャンセル</button>
       <button type="submit" class="primary-button">保存</button>

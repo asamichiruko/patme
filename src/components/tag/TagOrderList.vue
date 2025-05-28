@@ -1,39 +1,17 @@
 <script setup>
 import draggable from "vuedraggable"
-import { nextTick, ref, watch } from "vue"
+import { nextTick, ref } from "vue"
 import TagOrderListItem from "@/components/tag/TagOrderListItem.vue"
 
-const props = defineProps({
-  initialTags: Array,
-})
-
-const emit = defineEmits(["update"])
-
+const tags = defineModel("tags", { required: true })
 const activeTagId = ref(null)
-const currentTags = ref([...props.initialTags])
-
-watch(
-  () => currentTags.value,
-  (val) => {
-    emit("update", val)
-  },
-  { immediate: true },
-)
-
-watch(
-  () => props.initialTags,
-  (updated) => {
-    currentTags.value = updated
-  },
-  { immediate: true },
-)
-
-const resetOrder = () => {
-  currentTags.value = props.initialTags
-}
 
 const isActive = (tagId) => {
   return activeTagId?.value === tagId
+}
+
+const isValidIndex = (index) => {
+  return 0 <= index && index < tags.value.length
 }
 
 const handleRequestActivate = (tagId) => {
@@ -45,25 +23,29 @@ const handleRequestDeactivate = () => {
 }
 
 const handleRequestMoveItem = (tagId, dir) => {
-  const index = currentTags.value.findIndex((t) => t.id === tagId)
-  if (index != -1 && 0 <= index + dir && index + dir < currentTags.value.length) {
+  const index = tags.value.findIndex((t) => t.id === tagId)
+  if (index != -1 && isValidIndex(index + dir)) {
     moveTagItem(index, index + dir)
   }
+  // 全体が update されて focus が外れるので付け直す
+  nextTick(() => {
+    moveFocus(index + dir)
+  })
 }
 
 const handleRequestMoveFocus = (tagId, dir) => {
-  const index = currentTags.value.findIndex((t) => t.id === tagId)
-  if (index != -1 && 0 <= index + dir && index + dir < currentTags.value.length) {
+  const index = tags.value.findIndex((t) => t.id === tagId)
+  if (index != -1 && isValidIndex(index + dir)) {
     moveFocus(index + dir)
   }
 }
 
 const moveFocus = (toIndex) => {
-  if (toIndex < 0 || currentTags.value.length <= toIndex) {
+  if (!isValidIndex(toIndex)) {
     return
   }
 
-  const tagId = currentTags.value[toIndex].id
+  const tagId = tags.value[toIndex].id
   const el = document.querySelector(`.tag-list [tag-list-id="${tagId}"]`)
   const handle = el?.querySelector(`.drag-handle`)
   el?.scrollIntoView({
@@ -74,31 +56,20 @@ const moveFocus = (toIndex) => {
 }
 
 const moveTagItem = (fromIndex, toIndex) => {
-  if (fromIndex < 0 || currentTags.value.length <= fromIndex) {
-    return
-  }
-  if (toIndex < 0 || currentTags.value.length <= toIndex) {
+  if (!isValidIndex(fromIndex) || !isValidIndex(toIndex)) {
     return
   }
 
-  const updated = [...currentTags.value]
+  const updated = [...tags.value]
   const [moved] = updated.splice(fromIndex, 1)
   updated.splice(toIndex, 0, moved)
-  currentTags.value = updated
-
-  nextTick(() => {
-    moveFocus(toIndex)
-  })
+  tags.value = updated
 }
-
-defineExpose({
-  resetOrder,
-})
 </script>
 
 <template>
   <draggable
-    v-model="currentTags"
+    v-model="tags"
     item-key="id"
     handle=".drag-handle"
     tag="ul"
