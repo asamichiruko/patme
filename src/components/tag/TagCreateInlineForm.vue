@@ -13,11 +13,11 @@ const handleCreateTag = () => {
   }
 
   let result = tagStore.addTag(trimmed)
-  newTagTitle.value = ""
   if (!result) {
     result = tagStore.findByTitle(trimmed)
   }
   emit("tag-created", result)
+  newTagTitle.value = ""
 }
 </script>
 

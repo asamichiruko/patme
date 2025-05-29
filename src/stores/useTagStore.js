@@ -1,5 +1,5 @@
 import { defineStore } from "pinia"
-import { notify } from "@/utils/storageNotifier"
+import { notify } from "@/utils/storageNotifier.js"
 
 let localTagService
 
@@ -8,17 +8,18 @@ export const useTagStore = defineStore("tag", {
     setService({ tagService }) {
       localTagService = tagService
     },
-    addTag({ title }) {
+    addTag(title) {
       if (!localTagService) {
         throw new Error("TagService not set")
       }
       const result = localTagService.addTag({ title: title.trim() })
+
       if (result) {
         notify()
       }
       return result
     },
-    findByTitle({ title }) {
+    findByTitle(title) {
       if (!localTagService) {
         throw new Error("TagService not set")
       }

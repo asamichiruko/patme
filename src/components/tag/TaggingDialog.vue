@@ -29,6 +29,7 @@ const handleTagCreated = async (tag) => {
   if (!tag) {
     return
   }
+  allTags.value = tagStore.getTagsOrdered()
   if (!selectedTagIds.value.includes(tag.id)) {
     selectedTagIds.value.push(tag.id)
   }

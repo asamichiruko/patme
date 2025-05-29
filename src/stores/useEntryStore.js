@@ -1,5 +1,5 @@
 import { defineStore } from "pinia"
-import { notify } from "@/utils/storageNotifier"
+import { notify } from "@/utils/storageNotifier.js"
 
 let localEntryService
 
