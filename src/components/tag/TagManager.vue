@@ -18,7 +18,7 @@ const confirm = () => {
 
 const discard = () => {
   initialTags.value = tagStore.getTagsOrdered()
-  latestTags.value = initialTags.value
+  latestTags.value = [...initialTags.value]
   trigger("タグの編集内容を破棄しました", "info")
 }
 </script>

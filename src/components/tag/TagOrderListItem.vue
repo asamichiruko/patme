@@ -6,40 +6,7 @@ const props = defineProps({
   isActive: Boolean,
 })
 
-const emit = defineEmits([
-  "request-activate",
-  "request-deactivate",
-  "request-move-item",
-  "request-move-focus",
-])
-
-const handleKeydown = (event) => {
-  if (event.key === "Escape" || event.key === "Tab") {
-    emit("request-deactivate", props.tag.id)
-    return
-  }
-
-  if (event.key === "Enter" || event.key === " ") {
-    if (props.isActive) {
-      emit("request-deactivate")
-    } else {
-      emit("request-activate", props.tag.id)
-    }
-    event.preventDefault()
-    return
-  }
-
-  if (event.key === "ArrowUp" || event.key === "ArrowDown") {
-    const dir = event.key === "ArrowUp" ? -1 : 1
-    if (props.isActive) {
-      emit("request-move-item", props.tag.id, dir)
-    } else {
-      emit("request-move-focus", props.tag.id, dir)
-    }
-    event.preventDefault()
-    return
-  }
-}
+const emit = defineEmits(["keydown-on-handle"])
 </script>
 
 <template>
@@ -47,7 +14,7 @@ const handleKeydown = (event) => {
     <button
       type="button"
       class="drag-handle"
-      @keydown="handleKeydown"
+      @keydown="(e) => emit('keydown-on-handle', e)"
       aria-label="並び替えハンドル"
     >
       <img
