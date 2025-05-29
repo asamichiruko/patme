@@ -2,6 +2,8 @@
 import { computed, ref, watch } from "vue"
 import { useDialogStore } from "@/composables/useDialogStore.js"
 
+const emit = defineEmits(["submit", "cancel"])
+
 const { activeDialog, dialogParams, close } = useDialogStore()
 
 const dialogRef = ref(null)
@@ -22,12 +24,12 @@ watch(activeDialog, (val) => {
 })
 
 const submit = () => {
-  dialogRef.value.close()
+  emit("submit", text.value)
   close(text.value)
 }
 
 const cancel = () => {
-  dialogRef.value.close()
+  emit("cancel")
   close(null)
 }
 </script>
