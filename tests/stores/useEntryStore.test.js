@@ -2,7 +2,7 @@ import { setActivePinia, createPinia } from "pinia"
 import { useEntryStore } from "@/stores/useEntryStore.js"
 import * as storageNotifier from "@/utils/storageNotifier.js"
 
-describe("useDataTransferStore.js", () => {
+describe("useEntryStore.js", () => {
   let mockEntryService
   let entryStore
   let notifySpy
