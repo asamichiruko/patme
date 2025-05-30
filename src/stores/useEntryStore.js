@@ -8,7 +8,7 @@ export const useEntryStore = defineStore("entry", {
     setService({ entryService }) {
       localEntryService = entryService
     },
-    getEntriesWithTags({ sortFn }) {
+    getEntriesWithTags({ sortFn = null } = {}) {
       if (!localEntryService) {
         throw new Error("EntryService not set")
       }
