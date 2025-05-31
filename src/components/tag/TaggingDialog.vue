@@ -18,6 +18,7 @@ const initialTagIds = computed(() => dialogParams.value?.initialTagIds ?? [])
 
 watch(activeDialog, (val) => {
   if (val === "tagging") {
+    allTags.value = tagStore.getTagsOrdered()
     selectedTagIds.value = [...initialTagIds.value]
     dialogRef.value?.showModal()
   } else {
@@ -82,7 +83,7 @@ const toggleSelectedState = (id) => {
             </button>
           </li>
         </ul>
-        <TagCreateInlineForm @tag-created="handleTagCreated" />
+        <TagCreateInlineForm @tag-created="handleTagCreated" labeltext="タグを追加" />
         <div class="actions">
           <button class="cancel-button" type="button" @click="cancel">キャンセル</button>
           <button class="primary-button" type="submit">決定</button>

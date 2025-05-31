@@ -1,10 +1,18 @@
 <script setup>
-import { ref } from "vue"
+import { computed, ref } from "vue"
 import { useTagStore } from "@/stores/useTagStore.js"
 
+const props = defineProps({
+  labeltext: {
+    type: String,
+    default: "",
+  },
+})
 const emit = defineEmits(["tag-created"])
 const newTagTitle = ref("")
 const tagStore = useTagStore()
+
+const isVisibleLabel = computed(() => props.labeltext.trim() !== "")
 
 const handleCreateTag = () => {
   const trimmed = newTagTitle.value.trim()
@@ -24,9 +32,12 @@ const handleCreateTag = () => {
 <template>
   <div class="tag-create-form">
     <label>
-      <span class="new-tag-label">タグを追加</span>
+      <span class="new-tag-label" :class="{ 'sr-only': !isVisibleLabel }">{{
+        props.labeltext || "タグ名"
+      }}</span>
       <input
         class="new-tag-title"
+        id="new-tag-title"
         type="text"
         v-model="newTagTitle"
         @keydown.enter.prevent="handleCreateTag"
@@ -40,11 +51,12 @@ const handleCreateTag = () => {
 <style scoped>
 .new-tag-label {
   font-size: 15px;
+  margin-right: 8px;
 }
 .new-tag-title {
   padding: 8px;
   font-size: 15px;
-  margin: 0 8px;
+  margin-right: 8px;
   width: 100px;
 }
 .tag-create-button {
@@ -64,5 +76,14 @@ const handleCreateTag = () => {
   outline: 2px solid var(--color-primary-focus);
   outline-offset: 2px;
   border-radius: 4px;
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
 }
 </style>
