@@ -1,13 +1,8 @@
 <script setup>
-import { ref } from "vue"
-
-import MainView from "@/components/tab/MainView.vue"
-import TabNavigation from "@/components/tab/TabNavigation.vue"
+import TabNavigation from "@/components/util/TabNavigation.vue"
 import NotificationBar from "@/components/util/NotificationBar.vue"
 import PromptDialog from "@/components/util/PromptDialog.vue"
 import TaggingDialog from "@/components/tag/TaggingDialog.vue"
-import EntryFormAndListView from "@/components/tab/EntryFormAndListView.vue"
-import SettingsView from "@/components/tab/SettingsView.vue"
 
 import { LocalStorageAdapter } from "@/adapters/LocalStorageAdapter.js"
 import { createServices } from "./utils/createServices"
@@ -35,29 +30,14 @@ tagStore.setService({ tagService: services.tagService })
 
 const taggingStore = useTaggingStore()
 taggingStore.setService({ taggingService: services.taggingService })
-
-const tabs = [
-  {
-    key: "Home",
-    label: "ホーム",
-    component: EntryFormAndListView,
-    props: {},
-  },
-  {
-    key: "Settings",
-    label: "設定",
-    component: SettingsView,
-    props: {},
-  },
-]
-
-const activeTab = ref("Home")
 </script>
 
 <template>
   <NotificationBar />
-  <TabNavigation :tabs="tabs" v-model:active-tab="activeTab" />
-  <MainView :tabs="tabs" :active-tab="activeTab" />
+  <TabNavigation />
+  <div class="container">
+    <RouterView />
+  </div>
   <PromptDialog />
   <TaggingDialog />
 </template>

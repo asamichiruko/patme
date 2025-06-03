@@ -1,23 +1,27 @@
 <script setup>
-defineProps({
-  activeTab: String,
-  tabs: Array,
-})
+import { useRoute } from "vue-router"
 
-defineEmits(["update:activeTab"])
+const route = useRoute()
+const isActive = (path) => route.path === path
 </script>
 
 <template>
-  <div class="tab-container">
-    <button
-      v-for="tab in tabs"
-      :key="tab.key"
-      :class="['tab-button', { active: activeTab === tab.key }]"
-      @click="$emit('update:activeTab', tab.key)"
+  <nav class="tab-container">
+    <RouterLink
+      :to="{ name: 'entry' }"
+      class="tab-button"
+      :class="{ active: isActive('/') || isActive('/entry') }"
     >
-      {{ tab.label }}
-    </button>
-  </div>
+      ホーム
+    </RouterLink>
+    <RouterLink
+      :to="{ name: 'settings' }"
+      class="tab-button"
+      :class="{ active: isActive('/settings') }"
+    >
+      設定
+    </RouterLink>
+  </nav>
 </template>
 
 <style scoped>
@@ -29,6 +33,7 @@ defineEmits(["update:activeTab"])
   padding: 8px 16px;
   background-color: var(--color-tab-muted);
   color: var(--color-tab-muted-text);
+  text-decoration: none;
   cursor: pointer;
   border-radius: 4px 4px 0 0;
 }

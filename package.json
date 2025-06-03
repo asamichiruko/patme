@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && cp dist/index.html dist/404.html",
     "preview": "vite preview",
     "test": "vitest run",
     "prepare-deploy": "npm run build && touch dist/.nojekyll && rm -rf docs && mv dist docs",
@@ -14,6 +14,7 @@
   "dependencies": {
     "pinia": "^3.0.2",
     "vue": "^3.5.13",
+    "vue-router": "^4.5.1",
     "vuedraggable": "^4.1.0"
   },
   "devDependencies": {
