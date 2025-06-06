@@ -4,15 +4,15 @@ import * as tagStore from "@/stores/useTagStore.js"
 import { createTestingPinia } from "@pinia/testing"
 import { nextTick, ref } from "vue"
 
-const activeDialog = ref(null)
-const dialogParams = ref({ initialTagIds: [] })
+const isOpen = ref(false)
+const params = ref({ initialTagIds: [] })
 const closeMock = vi.fn()
 
-vi.mock("@/composables/useDialogStore.js", () => ({
-  useDialogStore: () => ({
-    activeDialog,
-    dialogParams,
-    close: closeMock,
+vi.mock("@/composables/useTaggingDialog.js", () => ({
+  useTaggingDialog: () => ({
+    isOpen,
+    params,
+    closeTaggingDialog: closeMock,
   }),
 }))
 
@@ -31,15 +31,15 @@ describe("TaggingDialog.vue", () => {
     vi.spyOn(tagStore, "useTagStore").mockReturnValue({
       getTagsOrdered: getTagsOrderedMock,
     })
-    dialogParams.value = { initialTagIds: [] }
-    activeDialog.value = null
+    params.value = { initialTagIds: [] }
+    isOpen.value = false
   })
 
   afterEach(() => {
     cleanup()
   })
 
-  test("activeDialog を tagging に設定するとダイアログが表示される", async () => {
+  test("isOpen を true に設定するとダイアログが表示される", async () => {
     render(TaggingDialog, {
       global: {
         plugins: [
@@ -50,7 +50,7 @@ describe("TaggingDialog.vue", () => {
       },
     })
 
-    activeDialog.value = "tagging"
+    isOpen.value = true
     await nextTick()
     expect(domShowModal).toHaveBeenCalled()
 
@@ -61,7 +61,7 @@ describe("TaggingDialog.vue", () => {
     expect(dialog).toBeVisible()
   })
 
-  test("activeDialog を tagging 以外に設定するとダイアログが表示されない", async () => {
+  test("isOpen を false に設定するとダイアログが閉じられる", async () => {
     render(TaggingDialog, {
       global: {
         plugins: [
@@ -72,10 +72,13 @@ describe("TaggingDialog.vue", () => {
       },
     })
 
-    activeDialog.value = "prompt"
-    await nextTick(() => {
-      expect(domClose).toHaveBeenCalled()
-    })
+    // 一旦ダイアログを開く
+    isOpen.value = true
+    await nextTick()
+
+    isOpen.value = false
+    await nextTick()
+    expect(domClose).toHaveBeenCalled()
   })
 
   test("キャンセルボタンを押すとダイアログが閉じられる", async () => {
@@ -131,7 +134,7 @@ describe("TaggingDialog.vue", () => {
       { id: "tag1", title: "tag 1" },
       { id: "tag2", title: "tag 2" },
     ])
-    dialogParams.value = { initialTagIds: ["tag1"] }
+    params.value = { initialTagIds: ["tag1"] }
 
     render(TaggingDialog, {
       global: {
@@ -143,7 +146,7 @@ describe("TaggingDialog.vue", () => {
       },
     })
 
-    activeDialog.value = "tagging"
+    isOpen.value = true
     await nextTick()
     const dialog = screen.getByRole("dialog", { hidden: true })
     dialog.open = true
@@ -160,7 +163,7 @@ describe("TaggingDialog.vue", () => {
       { id: "tag1", title: "tag 1" },
       { id: "tag2", title: "tag 2" },
     ])
-    dialogParams.value = { initialTagIds: ["tag1"] }
+    params.value = { initialTagIds: ["tag1"] }
 
     render(TaggingDialog, {
       global: {
@@ -172,7 +175,7 @@ describe("TaggingDialog.vue", () => {
       },
     })
 
-    activeDialog.value = "tagging"
+    isOpen.value = true
     await nextTick()
     const dialog = screen.getByRole("dialog", { hidden: true })
     dialog.open = true
@@ -192,7 +195,7 @@ describe("TaggingDialog.vue", () => {
       { id: "tag1", title: "tag 1" },
       { id: "tag2", title: "tag 2" },
     ])
-    dialogParams.value = { initialTagIds: [] }
+    params.value = { initialTagIds: [] }
     await nextTick()
 
     const { emitted } = render(TaggingDialog, {
@@ -205,7 +208,7 @@ describe("TaggingDialog.vue", () => {
       },
     })
 
-    activeDialog.value = "tagging"
+    isOpen.value = true
     await nextTick()
     const dialog = screen.getByRole("dialog", { hidden: true })
     dialog.open = true

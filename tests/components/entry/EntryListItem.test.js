@@ -1,6 +1,6 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/vue"
 import EntryListItem from "@/components/entry/EntryListItem.vue"
-import * as dialogStore from "@/composables/useDialogStore.js"
+import * as taggingDialog from "@/composables/useTaggingDialog.js"
 import * as promptDialog from "@/composables/usePromptDialog.js"
 import * as notificationBar from "@/composables/useNotificationBar.js"
 import * as entryStore from "@/stores/useEntryStore.js"
@@ -8,7 +8,7 @@ import * as taggingStore from "@/stores/useTaggingStore.js"
 import { createTestingPinia } from "@pinia/testing"
 
 describe("EntryListItem.vue", () => {
-  let openMock
+  let openTaggingDialogMock
   let openPromptMock
   let triggerMock
   let addStarMock
@@ -24,9 +24,9 @@ describe("EntryListItem.vue", () => {
   beforeEach(() => {
     vi.clearAllMocks()
 
-    openMock = vi.fn()
-    vi.spyOn(dialogStore, "useDialogStore").mockReturnValue({
-      open: openMock,
+    openTaggingDialogMock = vi.fn()
+    vi.spyOn(taggingDialog, "useTaggingDialog").mockReturnValue({
+      open: openTaggingDialogMock,
     })
 
     openPromptMock = vi.fn()
@@ -129,12 +129,12 @@ describe("EntryListItem.vue", () => {
     })
 
     const testTagIds = ["tag1", "tag2"]
-    openMock.mockResolvedValue(testTagIds)
+    openTaggingDialogMock.mockResolvedValue(testTagIds)
 
     const taggingButton = screen.getByRole("button", { name: /タグ/i })
     await fireEvent.click(taggingButton)
 
-    expect(openMock).toHaveBeenCalledWith("tagging", {
+    expect(openTaggingDialogMock).toHaveBeenCalledWith("tagging", {
       initialTagIds: [],
     })
     expect(updateTaggingsMock).toHaveBeenCalledWith({
@@ -157,12 +157,12 @@ describe("EntryListItem.vue", () => {
       },
     })
 
-    openMock.mockResolvedValue(null)
+    openTaggingDialogMock.mockResolvedValue(null)
 
     const taggingButton = screen.getByRole("button", { name: /タグ/i })
     await fireEvent.click(taggingButton)
 
-    expect(openMock).toHaveBeenCalled()
+    expect(openTaggingDialogMock).toHaveBeenCalled()
     expect(updateTaggingsMock).not.toHaveBeenCalled()
   })
 })

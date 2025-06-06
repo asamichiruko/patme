@@ -8,14 +8,14 @@ import TagPillList from "@/components/tag/TagPillList.vue"
 import StarList from "@/components/entry/StarList.vue"
 
 import { formatRelativeDate } from "@/utils/formatDate.js"
-import { useDialogStore } from "@/composables/useDialogStore.js"
+import { useTaggingDialog } from "@/composables/useTaggingDialog.js"
 import { usePromptDialog } from "@/composables/usePromptDialog.js"
 import { useNotificationBar } from "@/composables/useNotificationBar.js"
 import { useEntryStore } from "@/stores/useEntryStore.js"
 import { useTaggingStore } from "@/stores/useTaggingStore.js"
 
 const { trigger } = useNotificationBar()
-const { open } = useDialogStore()
+const { openTaggingDialog } = useTaggingDialog()
 const { openPrompt } = usePromptDialog()
 const entryStore = useEntryStore()
 const taggingStore = useTaggingStore()
@@ -47,7 +47,7 @@ const handleAddComment = async () => {
 }
 
 const handleUpdateTagging = async () => {
-  const tagIds = await open("tagging", {
+  const tagIds = await openTaggingDialog({
     initialTagIds: props.entry.tags.map((t) => t.id),
   })
 

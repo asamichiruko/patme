@@ -1,12 +1,12 @@
 <script setup>
 import { computed, nextTick, ref, watch } from "vue"
 import TagCreateInlineForm from "@/components/tag/TagCreateInlineForm.vue"
-import { useDialogStore } from "@/composables/useDialogStore.js"
+import { useTaggingDialog } from "@/composables/useTaggingDialog.js"
 import { useTagStore } from "@/stores/useTagStore.js"
 
 const emit = defineEmits(["submit", "cancel"])
 
-const { activeDialog, dialogParams, close } = useDialogStore()
+const { isOpen, params, closeTaggingDialog } = useTaggingDialog()
 const tagStore = useTagStore()
 const allTags = ref(tagStore.getTagsOrdered())
 
@@ -14,10 +14,10 @@ const dialogRef = ref(null)
 const tagListRef = ref(null)
 
 const selectedTagIds = ref([])
-const initialTagIds = computed(() => dialogParams.value?.initialTagIds ?? [])
+const initialTagIds = computed(() => params.value?.initialTagIds ?? [])
 
-watch(activeDialog, (val) => {
-  if (val === "tagging") {
+watch(isOpen, (val) => {
+  if (val) {
     allTags.value = tagStore.getTagsOrdered()
     selectedTagIds.value = [...initialTagIds.value]
     dialogRef.value?.showModal()
@@ -47,12 +47,12 @@ const handleTagCreated = async (tag) => {
 
 const submit = () => {
   emit("submit", selectedTagIds.value)
-  close(selectedTagIds.value)
+  closeTaggingDialog(selectedTagIds.value)
 }
 
 const cancel = () => {
   emit("cancel")
-  close(null)
+  closeTaggingDialog(null)
 }
 
 const toggleSelectedState = (id) => {
