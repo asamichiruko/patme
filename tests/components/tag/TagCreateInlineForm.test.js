@@ -37,7 +37,7 @@ describe("TagCreateInlineForm.vue", () => {
     addTagMock.mockReturnValue(newTag)
     findByTitleMock.mockReturnValue(null)
 
-    const tagTitleInput = screen.getByLabelText(/タグを追加/i)
+    const tagTitleInput = screen.getByLabelText(/タグ/i)
     await fireEvent.update(tagTitleInput, newTag.title)
 
     const addButton = screen.getByRole("button", { name: /追加/i })
@@ -65,7 +65,7 @@ describe("TagCreateInlineForm.vue", () => {
     addTagMock.mockReturnValue(null)
     findByTitleMock.mockReturnValue(existingTag)
 
-    const tagTitleInput = screen.getByLabelText(/タグを追加/i)
+    const tagTitleInput = screen.getByLabelText(/タグ/i)
     await fireEvent.update(tagTitleInput, existingTag.title)
 
     const addButton = screen.getByRole("button", { name: /追加/i })
@@ -93,7 +93,7 @@ describe("TagCreateInlineForm.vue", () => {
     addTagMock.mockReturnValue(newTag)
     findByTitleMock.mockReturnValue(null)
 
-    const tagTitleInput = screen.getByLabelText(/タグを追加/i)
+    const tagTitleInput = screen.getByLabelText(/タグ/i)
     await fireEvent.update(tagTitleInput, newTag.title)
 
     await fireEvent.keyDown(tagTitleInput, {
