@@ -1,6 +1,7 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/vue"
 import EntryListItem from "@/components/entry/EntryListItem.vue"
 import * as dialogStore from "@/composables/useDialogStore.js"
+import * as promptDialog from "@/composables/usePromptDialog.js"
 import * as notificationBar from "@/composables/useNotificationBar.js"
 import * as entryStore from "@/stores/useEntryStore.js"
 import * as taggingStore from "@/stores/useTaggingStore.js"
@@ -8,6 +9,7 @@ import { createTestingPinia } from "@pinia/testing"
 
 describe("EntryListItem.vue", () => {
   let openMock
+  let openPromptMock
   let triggerMock
   let addStarMock
   let updateTaggingsMock
@@ -25,6 +27,11 @@ describe("EntryListItem.vue", () => {
     openMock = vi.fn()
     vi.spyOn(dialogStore, "useDialogStore").mockReturnValue({
       open: openMock,
+    })
+
+    openPromptMock = vi.fn()
+    vi.spyOn(promptDialog, "usePromptDialog").mockReturnValue({
+      openPrompt: openPromptMock,
     })
 
     triggerMock = vi.fn()
@@ -66,17 +73,14 @@ describe("EntryListItem.vue", () => {
       content: "star 1",
     }
 
-    openMock.mockResolvedValue(testStar.content)
+    openPromptMock.mockResolvedValue(testStar.content)
     addStarMock.mockReturnValue(testStar)
 
     const commentButton = screen.getByRole("button", { name: /コメント/i })
     await fireEvent.click(commentButton)
 
-    expect(openMock).toHaveBeenCalledWith("prompt", {
-      message: expect.any(String),
-      placeholder: expect.any(String),
-      submittext: expect.any(String),
-      canceltext: expect.any(String),
+    expect(openPromptMock).toHaveBeenCalledWith({
+      defaultValue: "",
     })
     expect(addStarMock).toHaveBeenCalledWith({
       achievementId: testStar.achievementId,
@@ -100,12 +104,12 @@ describe("EntryListItem.vue", () => {
       },
     })
 
-    openMock.mockResolvedValue(null)
+    openPromptMock.mockResolvedValue(null)
 
     const commentButton = screen.getByRole("button", { name: /コメント/i })
     await fireEvent.click(commentButton)
 
-    expect(openMock).toHaveBeenCalled()
+    expect(openPromptMock).toHaveBeenCalled()
     expect(addStarMock).not.toHaveBeenCalled()
     expect(triggerMock).not.toHaveBeenCalled()
   })

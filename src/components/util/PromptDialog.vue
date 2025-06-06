@@ -1,22 +1,17 @@
 <script setup>
-import { computed, ref, watch } from "vue"
-import { useDialogStore } from "@/composables/useDialogStore.js"
+import { ref, watch } from "vue"
+import { usePromptDialog } from "@/composables/usePromptDialog.js"
 
 const emit = defineEmits(["submit", "cancel"])
 
-const { activeDialog, dialogParams, close } = useDialogStore()
+const { isOpen, params, closePrompt } = usePromptDialog()
 
 const dialogRef = ref(null)
-const text = ref("")
+const inputValue = ref("")
 
-const message = computed(() => dialogParams.value?.message ?? "")
-const submittext = computed(() => dialogParams.value?.submittext ?? "OK")
-const canceltext = computed(() => dialogParams.value?.canceltext ?? "Cancel")
-const placeholder = computed(() => dialogParams.value?.placeholder ?? "")
-
-watch(activeDialog, (val) => {
-  if (val === "prompt") {
-    text.value = ""
+watch(isOpen, (val) => {
+  if (val) {
+    inputValue.value = params.defaultValue
     dialogRef.value?.showModal()
   } else if (val !== "prompt") {
     dialogRef.value?.close()
@@ -24,13 +19,13 @@ watch(activeDialog, (val) => {
 })
 
 const submit = () => {
-  emit("submit", text.value)
-  close(text.value)
+  emit("submit", inputValue.value)
+  closePrompt(inputValue.value)
 }
 
 const cancel = () => {
   emit("cancel")
-  close(null)
+  closePrompt(null)
 }
 </script>
 
@@ -39,18 +34,18 @@ const cancel = () => {
     <dialog ref="dialogRef" @cancel="cancel">
       <form @submit.prevent="submit">
         <label>
-          <span class="message">{{ message }}</span>
+          <span class="message">振り返り</span>
           <textarea
-            v-model="text"
+            v-model="inputValue"
             @keydown.ctrl.enter="submit"
-            :placeholder="placeholder"
+            placeholder="どんな点がよかったですか？"
             class="text"
             required
           ></textarea>
         </label>
         <div class="actions">
-          <button class="cancel-button" type="button" @click="cancel">{{ canceltext }}</button>
-          <button class="primary-button" type="submit">{{ submittext }}</button>
+          <button class="cancel-button" type="button" @click="cancel">キャンセル</button>
+          <button class="primary-button" type="submit">記録する</button>
         </div>
       </form>
     </dialog>

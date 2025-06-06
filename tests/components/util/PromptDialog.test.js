@@ -1,17 +1,16 @@
 import { render, screen, fireEvent, cleanup } from "@testing-library/vue"
 import PromptDialog from "@/components/util/PromptDialog.vue"
-import { createTestingPinia } from "@pinia/testing"
 import { nextTick, ref } from "vue"
 
-const activeDialog = ref(null)
-const dialogParams = ref({ initialTagIds: [] })
-const closeMock = vi.fn()
+const isOpen = ref(false)
+const params = ref({ defaultValue: "" })
+const closePromptMock = vi.fn()
 
-vi.mock("@/composables/useDialogStore.js", () => ({
-  useDialogStore: () => ({
-    activeDialog,
-    dialogParams,
-    close: closeMock,
+vi.mock("@/composables/usePromptDialog.js", () => ({
+  usePromptDialog: () => ({
+    isOpen,
+    params,
+    closePrompt: closePromptMock,
   }),
 }))
 
@@ -26,31 +25,20 @@ describe("PromptDialog.vue", () => {
     HTMLDialogElement.prototype.showModal = domShowModal
     HTMLDialogElement.prototype.close = domClose
 
-    dialogParams.value = {
-      message: "message",
-      submittext: "OK",
-      canceltext: "Cancel",
-      placeholder: "placeholder",
+    params.value = {
+      defaultValue: "",
     }
-    activeDialog.value = null
+    isOpen.value = false
   })
 
   afterEach(() => {
     cleanup()
   })
 
-  test("activeDialog を prompt に設定するとダイアログが表示される", async () => {
-    render(PromptDialog, {
-      global: {
-        plugins: [
-          createTestingPinia({
-            stubActions: true,
-          }),
-        ],
-      },
-    })
+  test("isOpen を true に設定するとダイアログが表示される", async () => {
+    render(PromptDialog)
 
-    activeDialog.value = "prompt"
+    isOpen.value = true
     await nextTick()
     expect(domShowModal).toHaveBeenCalled()
 
@@ -61,69 +49,49 @@ describe("PromptDialog.vue", () => {
     expect(dialog).toBeVisible()
   })
 
-  test("activeDialog を prompt 以外に設定するとダイアログが表示されない", async () => {
-    render(PromptDialog, {
-      global: {
-        plugins: [
-          createTestingPinia({
-            stubActions: true,
-          }),
-        ],
-      },
-    })
+  test("isOpen を false に設定するとダイアログが閉じられる", async () => {
+    render(PromptDialog)
 
-    activeDialog.value = "tagging"
-    await nextTick(() => {
-      expect(domClose).toHaveBeenCalled()
-    })
+    // まず開いておく
+    isOpen.value = true
+    await nextTick()
+
+    isOpen.value = false
+    await nextTick()
+    expect(domClose).toHaveBeenCalled()
   })
 
   test("キャンセルボタンを押すとダイアログが閉じられる", async () => {
-    const { emitted } = render(PromptDialog, {
-      global: {
-        plugins: [
-          createTestingPinia({
-            stubActions: true,
-          }),
-        ],
-      },
-    })
+    const { emitted } = render(PromptDialog)
 
+    isOpen.value = true
     const dialog = screen.getByRole("dialog", { hidden: true })
     dialog.open = true
 
-    const cancelButton = screen.getByRole("button", { name: /cancel/i })
+    const cancelButton = screen.getByRole("button", { name: /キャンセル/i })
     await fireEvent.click(cancelButton)
 
     expect(emitted()).toHaveProperty("cancel")
     expect(emitted().cancel[0]).toEqual([])
-    expect(closeMock).toHaveBeenCalledWith(null)
+    expect(closePromptMock).toHaveBeenCalledWith(null)
   })
 
   test("ボタンを押して送信するとダイアログが閉じられる", async () => {
-    const { emitted } = render(PromptDialog, {
-      global: {
-        plugins: [
-          createTestingPinia({
-            stubActions: true,
-          }),
-        ],
-      },
-    })
+    const { emitted } = render(PromptDialog)
 
-    activeDialog.value = "prompt"
+    isOpen.value = true
     await nextTick()
     const dialog = screen.getByRole("dialog", { hidden: true })
     dialog.open = true
 
-    const textInput = screen.getByRole("textbox", { name: /message/i })
+    const textInput = screen.getByRole("textbox", { name: /振り返り/i })
     await fireEvent.update(textInput, "text")
 
-    const submitButton = screen.getByRole("button", { name: /OK/i })
+    const submitButton = screen.getByRole("button", { name: /記録する/i })
     await fireEvent.click(submitButton)
 
     expect(emitted()).toHaveProperty("submit")
     expect(emitted().submit[0]).toEqual(["text"])
-    expect(closeMock).toHaveBeenCalledWith("text")
+    expect(closePromptMock).toHaveBeenCalledWith("text")
   })
 })
