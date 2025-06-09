@@ -1,5 +1,6 @@
 <script setup>
 import handleImg from "@/assets/handle.svg"
+import trashImg from "@/assets/trash.svg"
 
 const props = defineProps({
   tag: Object,
@@ -7,6 +8,10 @@ const props = defineProps({
 })
 
 const emit = defineEmits(["keydown-on-handle"])
+
+const handlePressDelete = () => {
+  console.log(props.tag.id)
+}
 </script>
 
 <template>
@@ -26,6 +31,9 @@ const emit = defineEmits(["keydown-on-handle"])
       />
     </button>
     <span class="tag-title">{{ props.tag.title }}</span>
+    <button type="button" class="delete-button" @click="handlePressDelete">
+      <img :src="trashImg" alt="削除" width="20px" height="20px" />
+    </button>
   </div>
 </template>
 
@@ -61,5 +69,17 @@ const emit = defineEmits(["keydown-on-handle"])
   display: inline-block;
   color: var(--color-tag-list-text);
   height: 24px;
+}
+
+.delete-button {
+  margin-left: auto;
+  width: 20px;
+  height: 20px;
+  display: inline-block;
+}
+.delete-button:focus-visible {
+  outline: 2px solid var(--color-error);
+  outline-offset: 2px;
+  border-radius: 4px;
 }
 </style>
