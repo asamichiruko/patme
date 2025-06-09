@@ -20,6 +20,7 @@ export function useTagOrderList(tags, getHandleElementById) {
   }
 
   const moveTagItem = (fromIndex, toIndex) => {
+    if (fromIndex === toIndex) return
     if (!isValidIndex(fromIndex) || !isValidIndex(toIndex)) return
     const updated = [...tags.value]
     const [moved] = updated.splice(fromIndex, 1)

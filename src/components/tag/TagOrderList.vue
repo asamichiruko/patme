@@ -8,6 +8,13 @@ const tags = defineModel("tags", { required: true })
 const getHandleElementById = (tagId) =>
   document.querySelector(`.tag-list [tag-list-id="${tagId}"] .drag-handle`)
 const { isActive, handleKeydown } = useTagOrderList(tags, getHandleElementById)
+
+const scrollToTag = (tagId) => {
+  const handle = getHandleElementById(tagId)
+  handle?.scrollIntoView({ behavior: "smooth", block: "nearest" })
+}
+
+defineExpose({ scrollToTag })
 </script>
 
 <template>
