@@ -13,7 +13,7 @@ watch(isOpen, (val) => {
   if (val) {
     inputValue.value = params.defaultValue
     dialogRef.value?.showModal()
-  } else if (val !== "prompt") {
+  } else {
     dialogRef.value?.close()
   }
 })
