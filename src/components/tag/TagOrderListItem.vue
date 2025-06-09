@@ -1,6 +1,11 @@
 <script setup>
 import handleImg from "@/assets/handle.svg"
 import trashImg from "@/assets/trash.svg"
+import { useNotificationBar } from "@/composables/useNotificationBar.js"
+import { useConfirmDialog } from "@/composables/useConfirmDialog.js"
+
+const { trigger } = useNotificationBar()
+const { openConfirm } = useConfirmDialog()
 
 const props = defineProps({
   tag: Object,
@@ -9,8 +14,15 @@ const props = defineProps({
 
 const emit = defineEmits(["keydown-on-handle"])
 
-const handlePressDelete = () => {
-  console.log(props.tag.id)
+const handlePressDelete = async () => {
+  const result = await openConfirm({
+    title: `タグの削除の確認`,
+    message: `タグ「${props.tag.title}」を削除しようとしています。本当に削除してもよろしいですか？`,
+  })
+
+  if (result) {
+    trigger(`タグ「${props.tag.title}」を削除しました`, "success")
+  }
 }
 </script>
 

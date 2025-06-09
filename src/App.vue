@@ -3,6 +3,7 @@ import TabNavigation from "@/components/util/TabNavigation.vue"
 import NotificationBar from "@/components/util/NotificationBar.vue"
 import PromptDialog from "@/components/util/PromptDialog.vue"
 import TaggingDialog from "@/components/tag/TaggingDialog.vue"
+import ConfirmDialog from "@/components/util/ConfirmDialog.vue"
 
 import { LocalStorageAdapter } from "@/adapters/LocalStorageAdapter.js"
 import { createServices } from "./utils/createServices"
@@ -40,4 +41,5 @@ taggingStore.setService({ taggingService: services.taggingService })
   </div>
   <PromptDialog />
   <TaggingDialog />
+  <ConfirmDialog />
 </template>
