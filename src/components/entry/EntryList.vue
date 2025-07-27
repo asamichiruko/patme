@@ -1,11 +1,12 @@
 <script setup>
-import { onMounted, ref } from "vue"
-import { subscribe } from "@/utils/storageNotifier.js"
-import { useEntryStore } from "@/stores/useEntryStore"
 import EntryListItem from "@/components/entry/EntryListItem.vue"
+import { useEntryStore } from "@/stores/useEntryStore"
+import { subscribe } from "@/utils/storageNotifier.js"
+import { onMounted, ref } from "vue"
 
 const entryStore = useEntryStore()
 const entries = ref([])
+const viewMode = ref("accepted")
 
 onMounted(() => {
   const reload = () => {
@@ -23,11 +24,22 @@ onMounted(() => {
   <p class="empty-state" v-if="!entries || entries.length === 0">
     できたことを記録してみましょう！
   </p>
-  <ul class="entries" v-else>
-    <li class="entry-item" v-for="entry in entries" :key="entry.id">
-      <EntryListItem :entry="entry" />
-    </li>
-  </ul>
+  <div v-else>
+    <div class="view-mode">
+      <label>
+        <span class="mode-select-label">表示する記録</span>
+        <select v-model="viewMode">
+          <option value="accepted" selected>ふりかえり済み</option>
+          <option value="all">すべて</option>
+        </select>
+      </label>
+    </div>
+    <ul class="entries">
+      <li class="entry-item" v-for="entry in entries" :key="entry.id">
+        <EntryListItem :entry="entry" />
+      </li>
+    </ul>
+  </div>
 </template>
 
 <style scoped>
