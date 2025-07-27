@@ -77,6 +77,7 @@ export class EntryRepository {
       id: a.id,
       content: a.content,
       date: a.date,
+      entryType: a.entryType,
       stars: starMap.get(a.id) || [],
     }))
   }
