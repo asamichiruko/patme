@@ -1,23 +1,24 @@
 <script setup>
-import { ref } from "vue"
 import { useNotificationBar } from "@/composables/useNotificationBar.js"
 import { useEntryStore } from "@/stores/useEntryStore.js"
+import { ref } from "vue"
 
 const entryStore = useEntryStore()
 const { trigger } = useNotificationBar()
 const text = ref("")
 const textareaRef = ref(null)
+const entryType = ref("achievement")
 
 const submit = () => {
   const content = text.value.trim()
   if (!content) {
-    trigger("達成内容を入力してください", "error")
+    trigger("記録内容を入力してください", "error")
     return
   }
   const result = entryStore.addAchievement({ content, date: new Date() })
   if (result) {
     text.value = ""
-    trigger("達成内容を記録しました！", "success")
+    trigger("記録しました！", "success")
   } else {
     trigger("記録に失敗しました。時間をおいて再度お試しください", "error")
   }
@@ -27,14 +28,28 @@ const submit = () => {
 <template>
   <form @submit.prevent="submit">
     <label
-      ><span class="message">達成内容</span>
+      ><span class="message">記録内容</span>
       <textarea
         ref="textareaRef"
         v-model="text"
         @keydown.ctrl.enter="submit"
-        placeholder="できたことを教えてください"
+        placeholder="どんなことがありましたか？"
       ></textarea>
     </label>
+    <div>
+      <label>
+        <input type="radio" name="entryType" value="achievement" v-model="entryType" selected />
+        <span class="entry-type-label">よかったこと</span>
+      </label>
+      <label>
+        <input type="radio" name="entryType" value="incomplete" v-model="entryType" />
+        <span class="entry-type-label">ふりかえりたいこと</span>
+      </label>
+      <label>
+        <input type="radio" name="entryType" value="accepted" v-model="entryType" />
+        <span class="entry-type-label">受け入れたこと</span>
+      </label>
+    </div>
     <div class="actions">
       <button class="primary-button" type="submit">記録する</button>
     </div>
