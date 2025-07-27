@@ -103,6 +103,7 @@ fieldset {
   display: flex;
   gap: 8px;
   margin: 8px 0;
+  flex-wrap: wrap;
 }
 
 .entry-type-option {
@@ -152,21 +153,6 @@ fieldset {
 
 .entry-type-option:focus-within {
   outline: none;
-}
-
-.visually-hidden {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 1px;
-  height: 1px;
-  opacity: 0;
-  overflow: hidden;
-  border: none;
-  margin: 0;
-  padding: 0;
-  display: block;
-  white-space: nowrap;
 }
 
 .entry-type-hint {

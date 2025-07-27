@@ -197,3 +197,18 @@ button {
   outline: 1px solid var(--color-tag-focus);
   outline-offset: 1px;
 }
+
+.visually-hidden {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  overflow: hidden;
+  border: none;
+  margin: 0;
+  padding: 0;
+  display: block;
+  white-space: nowrap;
+}
