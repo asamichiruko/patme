@@ -27,8 +27,8 @@ export class EntryRepository {
     this.storage.save(this.starKey, stars)
   }
 
-  add({ id, content, date, stars }) {
-    this.addAchievement({ id, content, date })
+  add({ id, content, date, entryType, stars }) {
+    this.addAchievement({ id, content, date, entryType })
 
     stars.forEach((star) => {
       this.addStar({
@@ -40,15 +40,15 @@ export class EntryRepository {
     })
   }
 
-  addAchievement({ id, content, date }) {
+  addAchievement(achievement) {
     const storageAchievements = this._loadAchievements()
-    storageAchievements.push({ id, content, date })
+    storageAchievements.push(achievement)
     this._saveAchievements(storageAchievements)
   }
 
-  addStar({ id, achievementId, content, date }) {
+  addStar(star) {
     const storageStars = this._loadStar()
-    storageStars.push({ id, achievementId, content, date })
+    storageStars.push(star)
     this._saveStar(storageStars)
   }
 
@@ -81,15 +81,17 @@ export class EntryRepository {
     }))
   }
 
-  updateAchievement({ id, content, date }) {
+  updateAchievement(achievement) {
     let storageAchievements = this._loadAchievements()
-    storageAchievements = storageAchievements.map((a) => (a.id === id ? { id, content, date } : a))
+    storageAchievements = storageAchievements.map((a) =>
+      a.id === achievement.id ? achievement : a,
+    )
     this._saveAchievements(storageAchievements)
   }
 
-  updateStar({ id, achievementId, content, date }) {
+  updateStar(star) {
     let storageStars = this._loadStar()
-    storageStars = storageStars.map((a) => (a.id === id ? { id, achievementId, content, date } : a))
+    storageStars = storageStars.map((a) => (a.id === star.id ? star : a))
     this._loadStar(storageStars)
   }
 }

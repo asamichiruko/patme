@@ -14,11 +14,11 @@ export const useEntryStore = defineStore("entry", {
       }
       return localEntryService.getEntriesWithTags({ sortFn })
     },
-    addAchievement({ content, date }) {
+    addAchievement({ content, date, entryType }) {
       if (!localEntryService) {
         throw new Error("EntryService not set")
       }
-      const result = localEntryService.addAchievement({ content, date })
+      const result = localEntryService.addAchievement({ content, date, entryType })
       if (result) {
         notify()
       }

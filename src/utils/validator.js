@@ -1,11 +1,12 @@
 import { isValidId } from "@/utils/idUtils.js"
 
-export function isValidAchievement({ id, content, date }) {
+export function isValidAchievement({ id, content, date, entryType }) {
   return (
     isValidId(id) &&
     typeof content === "string" &&
     content.trim() !== "" &&
-    new Date(date).toString() !== "Invalid Date"
+    new Date(date).toString() !== "Invalid Date" &&
+    ["achievement", "incomplete", "accepted"].includes(entryType ?? "achievement")
   )
 }
 

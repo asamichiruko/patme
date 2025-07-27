@@ -30,7 +30,7 @@ export class EntryService {
     }
   }
 
-  addAchievement({ id = null, content, date }) {
+  addAchievement({ id = null, content, date, entryType = "achievement" }) {
     const achievementId = id || generateId()
 
     if (this.entryRepos.hasAchievement(achievementId)) {
@@ -41,6 +41,7 @@ export class EntryService {
       id: achievementId,
       content,
       date,
+      entryType,
     }
 
     if (!isValidAchievement(achievement)) {

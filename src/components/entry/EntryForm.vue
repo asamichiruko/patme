@@ -15,7 +15,11 @@ const submit = () => {
     trigger("記録内容を入力してください", "error")
     return
   }
-  const result = entryStore.addAchievement({ content, date: new Date() })
+  const result = entryStore.addAchievement({
+    content,
+    date: new Date(),
+    entryType: entryType.value,
+  })
   if (result) {
     text.value = ""
     trigger("記録しました！", "success")
