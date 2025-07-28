@@ -85,7 +85,7 @@ export class EntryService {
     return this.entryRepos.getStars()
   }
 
-  getEntriesWithTags({ sortFn = null } = {}) {
+  getEntriesWithTags({ sortFn = null, filterFn = null } = {}) {
     const entries = this.entryRepos.getAll()
     const taggings = this.taggingRepos.getAll()
     const tags = this.tagRepos.getAll()
@@ -99,11 +99,13 @@ export class EntryService {
     }))
     const taggingMap = Map.groupBy(resolvedTaggings, (t) => t.achievementId)
 
-    const resolvedEntries = entries.map((entry) => ({
+    let resolvedEntries = entries.map((entry) => ({
       ...entry,
       tags: taggingMap.get(entry.id)?.toSorted((a, b) => a.order - b.order) || [],
     }))
-
+    if (filterFn) {
+      resolvedEntries = resolvedEntries.filter(filterFn)
+    }
     if (sortFn) {
       resolvedEntries.sort(sortFn)
     }

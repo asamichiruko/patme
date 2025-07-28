@@ -11,6 +11,16 @@ const viewMode = ref("all")
 const reload = () => {
   entries.value = entryStore.getEntriesWithTags({
     sortFn: (a, b) => new Date(b.date) - new Date(a.date),
+    filterFn: (a) => {
+      switch (viewMode.value) {
+        case "all":
+          return true
+        case "reviewed":
+          return a.entryType === "achievement" || a.entryType === "accepted"
+        default:
+          return a.entryType === viewMode.value
+      }
+    },
   })
 }
 
@@ -19,12 +29,9 @@ onMounted(() => {
   reload()
 })
 
-watch(
-  () => viewMode,
-  (val) => {
-    console.log(val)
-  },
-)
+watch(viewMode, () => {
+  reload()
+})
 
 const options = [
   { value: "all", label: "すべて" },
