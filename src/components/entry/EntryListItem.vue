@@ -1,7 +1,5 @@
 <script setup>
-import blankStarImg from "@/assets/blank-star.svg"
 import commentImg from "@/assets/comment.svg"
-import starImg from "@/assets/star.svg"
 import tagImg from "@/assets/tag.svg"
 
 import StarList from "@/components/entry/StarList.vue"
@@ -60,20 +58,11 @@ const handleUpdateTagging = async () => {
 </script>
 
 <template>
-  <div class="entry-container">
+  <div class="entry-container" :class="props.entry.entryType">
     <div class="achievement-header">
-      <div class="star-count">
-        <template v-if="props.entry.stars.length === 0">
-          <img :src="blankStarImg" alt="" class="star-icon" width="20px" height="20px" />
-        </template>
-        <template v-else>
-          <img :src="starImg" alt="star" class="star-icon" width="20px" height="20px" />
-          <span class="star-count-text">{{ props.entry.stars.length }}</span>
-        </template>
-      </div>
       <div class="achievement-date">{{ formatRelativeDate(props.entry.date) }}</div>
     </div>
-    <div>記録のタイプ: {{ props.entry.entryType }}</div>
+
     <div class="achievement-content">
       {{ props.entry.content }}
     </div>
@@ -95,6 +84,23 @@ const handleUpdateTagging = async () => {
 </template>
 
 <style scoped>
+.entry-container {
+  background-color: #f8f8f8;
+  border: 1px solid #888888;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  padding: 16px;
+  border-radius: 4px;
+}
+.entry-container.achievement {
+  border-color: hsl(36, 100%, 65%);
+}
+.entry-container.incomplete {
+  border-color: hsl(207, 89%, 68%);
+}
+.entry-container.accepted {
+  border-color: hsl(123, 38%, 64%);
+}
+
 .achievement-header {
   display: flex;
 }
@@ -102,25 +108,6 @@ const handleUpdateTagging = async () => {
   color: var(--color-subtext);
   font-size: 15px;
   margin-left: auto;
-}
-.star-count {
-  font-family: "Franklin Gothic", "Arial Bold", Arial, sans-serif;
-  color: var(--color-primary);
-  font-size: 20px;
-  display: inline-flex;
-  vertical-align: middle;
-  align-items: center;
-  gap: 8px;
-}
-.star-icon {
-  width: 20px;
-  height: 20px;
-  padding-bottom: 0.1em;
-  display: inline-block;
-}
-.star-count-text {
-  font-weight: bold;
-  display: inline-block;
 }
 
 .achievement-content {

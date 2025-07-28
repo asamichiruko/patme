@@ -58,7 +58,7 @@ const options = [
       </label>
     </div>
     <ul class="entries">
-      <li class="entry-item" v-for="entry in entries" :key="entry.id">
+      <li v-for="entry in entries" :key="entry.id">
         <EntryListItem :entry="entry" />
       </li>
     </ul>
@@ -103,12 +103,5 @@ const options = [
   display: flex;
   flex-direction: column;
   gap: 32px;
-}
-.entry-item {
-  background-color: var(--color-card);
-  border: 1px solid var(--color-card-border);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-  padding: 16px;
-  border-radius: 4px;
 }
 </style>
