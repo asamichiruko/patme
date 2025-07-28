@@ -47,18 +47,9 @@ describe("useEntryStore.js", () => {
 
   test("getEntryWithTags で entry のリストが取得される", () => {
     mockEntryService.getEntriesWithTags.mockReturnValue([])
-    const sortFn = vi.fn()
-    const result = entryStore.getEntriesWithTags({ sortFn })
-
-    expect(mockEntryService.getEntriesWithTags).toHaveBeenCalledWith({ sortFn })
-    expect(result).toEqual([])
-  })
-
-  test("getEntryWithTags の引数を省略できる", () => {
-    mockEntryService.getEntriesWithTags.mockReturnValue([])
     const result = entryStore.getEntriesWithTags()
 
-    expect(mockEntryService.getEntriesWithTags).toHaveBeenCalled()
+    expect(mockEntryService.getEntriesWithTags).toHaveBeenCalledWith()
     expect(result).toEqual([])
   })
 

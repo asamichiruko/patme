@@ -225,30 +225,4 @@ describe("EntryService.js", () => {
       },
     ])
   })
-
-  test("getEntriesWithTags で sortFn が使用される", () => {
-    mockEntryRepository.getAll.mockReturnValue([
-      { ...testAchievements[1], stars: [] },
-      { ...testAchievements[0], stars: [testStars[0]] },
-    ])
-    mockTagRepository.getAll.mockReturnValue([testTags[0]])
-    mockTaggingRepository.getAll.mockReturnValue([testTaggings[0]])
-    const mockSortFn = vi.fn((a, b) => new Date(a.date) - new Date(b.date))
-
-    const result = entryService.getEntriesWithTags({
-      sortFn: mockSortFn,
-    })
-    expect(mockEntryRepository.getAll).toHaveBeenCalled()
-    expect(mockTagRepository.getAll).toHaveBeenCalled()
-    expect(mockTaggingRepository.getAll).toHaveBeenCalled()
-    expect(mockSortFn).toHaveBeenCalled()
-    expect(result).toEqual([
-      {
-        ...testAchievements[0],
-        stars: [testStars[0]],
-        tags: [{ achievementId: testAchievements[0].id, ...testTags[0] }],
-      },
-      { ...testAchievements[1], stars: [], tags: [] },
-    ])
-  })
 })

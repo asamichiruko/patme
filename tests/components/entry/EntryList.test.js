@@ -49,8 +49,8 @@ describe("EntryList.vue", () => {
         date: "2025-04-02",
       },
     ]
-    getEntriesWithTagsMock.mockImplementation(({ sortFn }) => {
-      return [...testEntries].sort(sortFn)
+    getEntriesWithTagsMock.mockImplementation(() => {
+      return [...testEntries].toSorted((a, b) => new Date(b.date) - new Date(a.date))
     })
 
     render(EntryList, {
