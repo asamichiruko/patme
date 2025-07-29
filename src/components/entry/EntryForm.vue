@@ -37,8 +37,8 @@ const options = [
 
 <template>
   <form @submit.prevent="submit">
-    <fieldset class="entry-type-selector">
-      <legend class="header-label">記録のタイプ</legend>
+    <div class="header-label">記録のタイプ</div>
+    <div class="entry-type-selector">
       <label
         v-for="option in options"
         :key="option.value"
@@ -56,7 +56,7 @@ const options = [
           <small class="entry-type-hint">{{ option.hint }}</small>
         </div>
       </label>
-    </fieldset>
+    </div>
     <label>
       <div class="header-label">記録する内容</div>
       <textarea
@@ -64,6 +64,7 @@ const options = [
         v-model="text"
         @keydown.ctrl.enter="submit"
         placeholder="どんなことがありましたか？"
+        :class="['entry-content', entryType]"
       ></textarea>
     </label>
     <div class="actions">
@@ -78,7 +79,7 @@ const options = [
   margin-bottom: 8px;
   font-size: 18px;
 }
-textarea {
+.entry-content {
   width: 100%;
   box-sizing: border-box;
   padding: 16px;
@@ -89,16 +90,21 @@ textarea {
   margin-bottom: 8px;
   line-height: 1.6;
 }
+.entry-content.achievement {
+  box-shadow: inset 5px 0 var(--color-entry-type-achievement-border);
+}
+.entry-content.incomplete {
+  box-shadow: inset 5px 0 var(--color-entry-type-incomplete-border);
+}
+.entry-content.accepted {
+  box-shadow: inset 5px 0 var(--color-entry-type-accepted-border);
+}
+
 .actions {
   display: flex;
   justify-content: flex-end;
 }
 
-fieldset {
-  border: none;
-  margin: 0;
-  padding: 0;
-}
 .entry-type-selector {
   display: flex;
   gap: 8px;
@@ -110,54 +116,56 @@ fieldset {
   padding: 6px 12px;
   border: 2px solid transparent;
   border-radius: 6px;
-  background-color: hsl(0, 0%, 97%);
+  background-color: var(--color-bg);
   cursor: pointer;
   font-size: 16px;
 }
 
 .entry-type-option.achievement {
-  background-color: hsl(36, 100%, 94%);
-  border-color: hsl(36, 100%, 85%);
-  color: hsl(36, 100%, 38%);
+  background-color: var(--color-entry-type-achievement-bg);
+  border-color: var(--color-entry-type-achievement-border);
+  color: var(--color-entry-type-achievement-text);
 }
 .entry-type-option.achievement.selected {
-  border-color: hsl(36, 100%, 40%);
+  border-color: var(--color-entry-type-achievement-text);
 }
 .entry-type-option.achievement:focus-within {
-  box-shadow: 0 0 0 3px hsla(36, 100%, 50%, 0.4);
+  outline: 2px solid var(--color-entry-type-achievement-border);
+  outline-offset: 2px;
+  border-radius: 4px;
 }
 
 .entry-type-option.incomplete {
-  background-color: hsl(207, 80%, 94%);
-  border-color: hsl(207, 80%, 85%);
-  color: hsl(207, 80%, 38%);
+  background-color: var(--color-entry-type-incomplete-bg);
+  border-color: var(--color-entry-type-incomplete-border);
+  color: var(--color-entry-type-incomplete-text);
 }
 .entry-type-option.incomplete.selected {
-  border: 2px solid hsl(207, 80%, 40%);
+  border: 2px solid var(--color-entry-type-incomplete-text);
 }
 .entry-type-option.incomplete:focus-within {
-  box-shadow: 0 0 0 3px hsla(207, 80%, 50%, 0.4);
+  outline: 2px solid var(--color-entry-type-incomplete-border);
+  outline-offset: 2px;
+  border-radius: 4px;
 }
 
 .entry-type-option.accepted {
-  background-color: hsl(123, 40%, 94%);
-  border-color: hsl(123, 40%, 85%);
-  color: hsl(123, 40%, 38%);
+  background-color: var(--color-entry-type-accepted-bg);
+  border-color: var(--color-entry-type-accepted-border);
+  color: var(--color-entry-type-accepted-text);
 }
 .entry-type-option.accepted.selected {
-  border: 2px solid hsl(123, 40%, 40%);
+  border: 2px solid var(--color-entry-type-accepted-text);
 }
 .entry-type-option.accepted:focus-within {
-  box-shadow: 0 0 0 3px hsla(123, 40%, 50%, 0.4);
-}
-
-.entry-type-option:focus-within {
-  outline: none;
+  outline: 2px solid var(--color-entry-type-accepted-border);
+  outline-offset: 2px;
+  border-radius: 4px;
 }
 
 .entry-type-hint {
   display: block;
   font-size: 12px;
-  color: #666;
+  color: var(--color-subtext);
 }
 </style>

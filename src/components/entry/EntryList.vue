@@ -1,6 +1,6 @@
 <script setup>
+import EntryListFilterSelector from "@/components/entry/EntryListFilterSelector.vue"
 import EntryListItem from "@/components/entry/EntryListItem.vue"
-import EntryListTypeSelector from "@/components/entry/EntryListTypeSelector.vue"
 import { useEntryStore } from "@/stores/useEntryStore"
 import { subscribe } from "@/utils/storageNotifier.js"
 import { onMounted, ref, watch } from "vue"
@@ -36,7 +36,7 @@ watch(viewEntryType, () => {
 </script>
 
 <template>
-  <EntryListTypeSelector v-model="viewEntryType" />
+  <EntryListFilterSelector v-model="viewEntryType" />
   <p class="empty-state" v-if="!entries || entries.length === 0">
     できたことを記録してみましょう！
   </p>

@@ -55,18 +55,20 @@ watch(
   padding: 6px 12px;
   border-radius: 20px;
   font-size: 14px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--color-entry-type-filter-border);
   cursor: pointer;
-  background-color: #f8f8f8;
-  color: #444;
+  background-color: var(--color-entry-type-filter-bg);
+  color: var(--color-entry-type-filter-text);
 }
 .entry-type-option.selected {
-  border-color: hsl(123, 40%, 50%);
-  background-color: hsl(123, 40%, 94%);
-  color: hsl(123, 40%, 34%);
+  border-color: var(--color-entry-type-filter-selected-border);
+  background-color: var(--color-entry-type-filter-selected-bg);
+  color: var(--color-entry-type-filter-selected-text);
   font-weight: 600;
 }
 .entry-type-option:focus-within {
-  box-shadow: 0 0 0 3px hsla(123, 40%, 50%, 0.4);
+  outline: 1px solid var(--color-entry-type-filter-selected-border);
+  outline-offset: 2px;
+  border-radius: 20px;
 }
 </style>

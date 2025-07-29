@@ -85,20 +85,20 @@ const handleUpdateTagging = async () => {
 
 <style scoped>
 .entry-container {
-  background-color: #f8f8f8;
-  border: 1px solid #888888;
+  background-color: var(--color-entry-bg);
+  border: 1px solid var(--color-entry-border);
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   padding: 16px;
   border-radius: 4px;
 }
 .entry-container.achievement {
-  border-color: hsl(36, 100%, 65%);
+  border-color: var(--color-entry-type-achievement-border);
 }
 .entry-container.incomplete {
-  border-color: hsl(207, 89%, 68%);
+  border-color: var(--color-entry-type-incomplete-border);
 }
 .entry-container.accepted {
-  border-color: hsl(123, 38%, 64%);
+  border-color: var(--color-entry-type-accepted-border);
 }
 
 .achievement-header {
