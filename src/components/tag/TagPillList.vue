@@ -5,8 +5,8 @@ const props = defineProps({
 </script>
 
 <template>
-  <ul class="tags">
-    <li class="tag selected" v-for="tag in props.tags" :key="tag.id">{{ tag.title }}</li>
+  <ul class="tags" v-if="props.tags.length !== 0">
+    <li class="tag-label" v-for="tag in props.tags" :key="tag.id"># {{ tag.title }}</li>
   </ul>
 </template>
 
@@ -18,5 +18,14 @@ const props = defineProps({
   flex-wrap: wrap;
   gap: 8px;
   margin-bottom: 24px;
+}
+.tag-label {
+  color: var(--color-tag-text);
+  background-color: var(--color-tag-selected);
+  padding: 4px 16px;
+  font-size: 14px;
+  border-radius: 8px;
+  white-space: nowrap;
+  overflow: hidden;
 }
 </style>

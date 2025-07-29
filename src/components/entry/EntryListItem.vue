@@ -55,11 +55,18 @@ const handleUpdateTagging = async () => {
 
   taggingStore.updateTaggings({ achievementId: props.entry.id, tagIds })
 }
+
+const entryTypeLabel = {
+  achievement: "よかったこと",
+  incomplete: "ふりかえりたいこと",
+  accepted: "受け入れたこと",
+}
 </script>
 
 <template>
   <div class="entry-container" :class="props.entry.entryType">
     <div class="achievement-header">
+      <div class="entry-type-label">{{ entryTypeLabel[props.entry.entryType] }}</div>
       <div class="achievement-date">{{ formatRelativeDate(props.entry.date) }}</div>
     </div>
 
@@ -86,8 +93,8 @@ const handleUpdateTagging = async () => {
 <style scoped>
 .entry-container {
   background-color: var(--color-entry-bg);
-  border: 1px solid var(--color-entry-border);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  border: 2px solid var(--color-entry-border);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
   padding: 16px;
   border-radius: 4px;
 }
@@ -108,6 +115,15 @@ const handleUpdateTagging = async () => {
   color: var(--color-subtext);
   font-size: 15px;
   margin-left: auto;
+}
+.entry-container.achievement .entry-type-label {
+  color: var(--color-entry-type-achievement-text);
+}
+.entry-container.incomplete .entry-type-label {
+  color: var(--color-entry-type-incomplete-text);
+}
+.entry-container.accepted .entry-type-label {
+  color: var(--color-entry-type-accepted-text);
 }
 
 .achievement-content {

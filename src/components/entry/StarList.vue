@@ -10,8 +10,8 @@ const props = defineProps({
   <template v-if="props.stars.length !== 0">
     <ul class="stars">
       <li class="star-comment" v-for="star in props.stars" :key="star.id">
-        <span class="star-content">{{ star.content }}</span>
-        <span class="star-date">{{ formatRelativeDate(star.date) }}</span>
+        <div class="star-content">{{ star.content }}</div>
+        <div class="star-date">{{ formatRelativeDate(star.date) }}</div>
       </li>
     </ul>
   </template>
@@ -23,16 +23,27 @@ const props = defineProps({
   padding: 0;
   font-size: 15px;
   color: var(--color-text);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
 }
+
 .star-comment {
-  margin: 16px 0;
+  display: block;
+  width: fit-content;
+  padding: 16px;
+  border: 1px solid hsl(150, 50%, 40%);
+  border-radius: 15px 15px 15px 0;
+  background-color: #ffffff;
+  color: var(--color-text);
 }
+
 .star-content {
   white-space: pre-wrap;
 }
 .star-date {
+  text-align: right;
   color: var(--color-subtext);
-  margin-left: 16px;
   font-size: 14px;
 }
 </style>

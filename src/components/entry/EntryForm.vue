@@ -53,7 +53,9 @@ const options = [
         />
         <div class="entry-type-label">
           {{ option.label }}
-          <small class="entry-type-hint">{{ option.hint }}</small>
+        </div>
+        <div class="entry-type-hint">
+          {{ option.hint }}
         </div>
       </label>
     </div>

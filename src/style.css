@@ -2,7 +2,7 @@
   --color-bg: hsl(40, 100%, 99%);
   --color-surface: hsl(0, 0%, 100%);
   --color-text: hsl(0, 0%, 20%);
-  --color-subtext: hsl(0, 0%, 40%);
+  --color-subtext: hsl(0, 0%, 36%);
   --color-border: hsl(0, 0%, 85%);
   --color-header: hsl(40, 10%, 30%);
 
@@ -48,25 +48,25 @@
   --color-error: #e74c3c;
   --color-note-text: #ffffff;
 
-  --color-entry-type-achievement-bg: hsl(36, 100%, 94%);
-  --color-entry-type-achievement-text: hsl(36, 100%, 40%);
-  --color-entry-type-achievement-border: hsl(36, 100%, 80%);
+  --color-entry-type-achievement-bg: hsl(36, 100%, 90%);
+  --color-entry-type-achievement-text: hsl(36, 100%, 34%);
+  --color-entry-type-achievement-border: hsl(36, 100%, 72%);
 
-  --color-entry-type-incomplete-bg: hsl(207, 80%, 94%);
-  --color-entry-type-incomplete-text: hsl(207, 80%, 40%);
-  --color-entry-type-incomplete-border: hsl(207, 80%, 80%);
+  --color-entry-type-incomplete-bg: hsl(207, 80%, 90%);
+  --color-entry-type-incomplete-text: hsl(207, 80%, 34%);
+  --color-entry-type-incomplete-border: hsl(207, 80%, 72%);
 
-  --color-entry-type-accepted-bg: hsl(123, 40%, 94%);
-  --color-entry-type-accepted-text: hsl(123, 40%, 40%);
-  --color-entry-type-accepted-border: hsl(123, 40%, 80%);
+  --color-entry-type-accepted-bg: hsl(123, 40%, 90%);
+  --color-entry-type-accepted-text: hsl(123, 40%, 34%);
+  --color-entry-type-accepted-border: hsl(123, 40%, 72%);
 
   --color-entry-type-filter-bg: hsl(0, 0%, 97%);
   --color-entry-type-filter-text: hsl(0, 0%, 27%);
-  --color-entry-type-filter-border: hsl(0, 0%, 80%);
+  --color-entry-type-filter-border: hsl(0, 0%, 75%);
 
-  --color-entry-type-filter-selected-bg: hsl(123, 40%, 94%);
+  --color-entry-type-filter-selected-bg: hsl(123, 40%, 90%);
   --color-entry-type-filter-selected-text: hsl(123, 40%, 34%);
-  --color-entry-type-filter-selected-border: hsl(123, 40%, 50%);
+  --color-entry-type-filter-selected-border: hsl(123, 40%, 45%);
 }
 
 body {
