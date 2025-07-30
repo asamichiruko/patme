@@ -32,7 +32,7 @@ const submit = () => {
 
 <template>
   <form @submit.prevent="submit">
-    <div class="header-label">記録のタイプ</div>
+    <div class="header-label">記録の評価（種類）</div>
     <EntryFormTypeSelector v-model="entryType" />
     <label>
       <div class="header-label">記録する内容</div>

@@ -25,18 +25,12 @@ const options = [
       :key="option.value"
       :class="['entry-type-option', { selected: localValue === option.value }, option.value]"
     >
-      <input
-        type="radio"
-        name="entryType"
-        :value="option.value"
-        v-model="localValue"
-        class="visually-hidden"
-      />
+      <input type="radio" name="entryType" :value="option.value" v-model="localValue" />
       <div class="entry-type-label">
         {{ option.label }}
-      </div>
-      <div class="entry-type-hint">
-        {{ option.hint }}
+        <div class="entry-type-hint">
+          {{ option.hint }}
+        </div>
       </div>
     </label>
   </div>
@@ -50,7 +44,14 @@ const options = [
   flex-wrap: wrap;
 }
 
+input[type="radio"] {
+  margin: 0;
+  padding: 0;
+}
 .entry-type-option {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
   padding: 6px 12px;
   border: 2px solid transparent;
   border-radius: 6px;
