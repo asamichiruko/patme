@@ -25,6 +25,7 @@ const props = defineProps({
 const handleAddComment = async () => {
   const content = await openPrompt({
     defaultValue: "",
+    entryType: props.entry.entryType,
   })
 
   if (!content) {

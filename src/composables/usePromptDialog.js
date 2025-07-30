@@ -5,9 +5,9 @@ const params = ref({})
 let resolver = null
 
 export function usePromptDialog() {
-  const openPrompt = ({ defaultValue = "" } = {}) => {
+  const openPrompt = ({ defaultValue = "", entryType = null } = {}) => {
     return new Promise((resolve) => {
-      params.value = { defaultValue }
+      params.value = { defaultValue, entryType }
       isOpen.value = true
       resolver = resolve
     })
