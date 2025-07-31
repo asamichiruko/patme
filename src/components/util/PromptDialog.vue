@@ -30,7 +30,7 @@ watch(showTypeReset, (val) => {
 })
 
 const submit = () => {
-  const result = { content: inputValue.value, reviewedType: selectedType.value }
+  const result = { content: inputValue.value, reviewType: selectedType.value }
   emit("submit", result)
   closePrompt(result)
 }

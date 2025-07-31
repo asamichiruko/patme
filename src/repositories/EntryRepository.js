@@ -35,7 +35,7 @@ export class EntryRepository {
         id: star.id,
         achievementId: id,
         content: star.content,
-        reviewedType: star.reviewedType,
+        reviewType: star.reviewType,
         date: star.date,
       })
     })

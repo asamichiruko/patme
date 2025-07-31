@@ -35,7 +35,7 @@ const handleAddComment = async () => {
   const star = entryStore.addStar({
     achievementId: props.entry.id,
     content: result.content,
-    reviewedType: result.reviewedType,
+    reviewType: result.reviewType,
     date: new Date(),
   })
 

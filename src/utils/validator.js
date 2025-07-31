@@ -11,13 +11,13 @@ export function isValidAchievement({ id, content, date, isReviewed, entryType })
   )
 }
 
-export function isValidStar({ id, achievementId, content, reviewedType, date }) {
+export function isValidStar({ id, achievementId, content, reviewType, date }) {
   return (
     isValidId(id) &&
     isValidId(achievementId) &&
     typeof content === "string" &&
     content.trim() !== "" &&
-    ["achievement", "incomplete", "accepted", null].includes(reviewedType) &&
+    ["achievement", "incomplete", "accepted", null].includes(reviewType) &&
     new Date(date).toString() !== "Invalid Date"
   )
 }

@@ -53,7 +53,7 @@ export class EntryService {
     return achievement
   }
 
-  addStar({ id = null, achievementId, content, reviewedType, date }) {
+  addStar({ id = null, achievementId, content, reviewType, date }) {
     const starId = id || generateId()
 
     if (!this.entryRepos.hasAchievement(achievementId)) {
@@ -66,7 +66,7 @@ export class EntryService {
     const star = {
       id: starId,
       content,
-      reviewedType,
+      reviewType,
       date,
       achievementId,
     }
@@ -74,7 +74,7 @@ export class EntryService {
     if (!isValidStar(star)) {
       return null
     }
-    if (reviewedType) {
+    if (reviewType) {
       const achievement = this.entryRepos.getAchievement(achievementId)
       achievement.isReviewed = true
       this.entryRepos.updateAchievement(achievement)
