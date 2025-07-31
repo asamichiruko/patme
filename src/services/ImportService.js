@@ -57,9 +57,9 @@ export class ImportService {
   _validateAchievements(data) {
     const validated = []
     data.forEach((dat) => {
-      const { id, content, date } = dat
-      if (isValidAchievement({ id, content, date })) {
-        validated.push({ id, content, date })
+      const { id, content, entryType, isReviewed, date } = dat
+      if (isValidAchievement({ id, content, entryType, isReviewed, date })) {
+        validated.push({ id, content, entryType, isReviewed, date })
       }
     })
     return validated
@@ -71,12 +71,12 @@ export class ImportService {
     const existingIdSet = new Set(this.entryService.getAchievements().map((a) => a.id))
 
     data.forEach((dat) => {
-      const { id, content, date } = dat
+      const { id, content, entryType, isReviewed, date } = dat
       if (existingIdSet.has(id)) {
-        toReject.push({ id, content, date })
+        toReject.push({ id, content, entryType, isReviewed, date })
       } else {
         existingIdSet.add(id)
-        toAdd.push({ id, content, date })
+        toAdd.push({ id, content, entryType, isReviewed, date })
       }
     })
 
@@ -96,9 +96,9 @@ export class ImportService {
   _validateStars(data) {
     const validated = []
     data.forEach((dat) => {
-      const { id, achievementId, content, date } = dat
-      if (isValidStar({ id, achievementId, content, date })) {
-        validated.push({ id, achievementId, content, date })
+      const { id, achievementId, content, reviewType, date } = dat
+      if (isValidStar({ id, achievementId, content, reviewType, date })) {
+        validated.push({ id, achievementId, content, reviewType, date })
       }
     })
     return validated
@@ -112,13 +112,13 @@ export class ImportService {
     const existingStarIdSet = new Set(this.entryService.getStars().map((a) => a.id))
 
     data.forEach((dat) => {
-      const { id, achievementId, content, date } = dat
+      const { id, achievementId, content, reviewType, date } = dat
       if (existingStarIdSet.has(id) || !existingAchievementIdSet.has(achievementId)) {
-        toReject.push({ id, achievementId, content, date })
+        toReject.push({ id, achievementId, content, reviewType, date })
       } else {
         existingStarIdSet.add(id)
         existingAchievementIdSet.add(achievementId)
-        toAdd.push({ id, achievementId, content, date })
+        toAdd.push({ id, achievementId, content, reviewType, date })
       }
     })
 

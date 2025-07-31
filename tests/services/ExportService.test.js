@@ -8,6 +8,8 @@ describe("ExportService.js", () => {
     {
       id: "achievenemt1",
       content: "achievement 1",
+      entryType: "achievement",
+      isReviewed: false,
       date: new Date("2025-04-01"),
     },
   ]
@@ -17,6 +19,7 @@ describe("ExportService.js", () => {
       id: "star1",
       achievementId: "achievement1",
       content: "star 1",
+      reviewType: null,
       date: new Date("2025-04-01"),
     },
   ]

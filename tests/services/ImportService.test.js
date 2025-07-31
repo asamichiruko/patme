@@ -8,11 +8,15 @@ describe("ImportService.js", () => {
     {
       id: "89bd5913-48f2-4156-8357-7997086471ac",
       content: "achievement 1",
+      entryType: "achievement",
+      isReviewed: false,
       date: new Date("2025-04-01T15:00:00"),
     },
     {
       id: "c642d255-7837-41e9-80d2-13e4f203fd3b",
       content: "achievement 2",
+      entryType: "achievement",
+      isReviewed: false,
       date: new Date("2025-04-01T14:00:00"),
     },
   ]
@@ -21,12 +25,14 @@ describe("ImportService.js", () => {
       id: "d0a7ae51-8f44-4b59-b97e-0a6a3fdf3ab5",
       achievementId: "89bd5913-48f2-4156-8357-7997086471ac",
       content: "star 1 (for achievement 1)",
+      reviewType: null,
       date: new Date("2025-04-01T15:10:00"),
     },
     {
       id: "faaf37db-401d-46df-80d0-54b4257bbb16",
       achievementId: "89bd5913-48f2-4156-8357-7997086471ac",
       content: "star 2 (for achievement 1)",
+      reviewType: null,
       date: new Date("2025-04-01T15:20:00"),
     },
   ]
