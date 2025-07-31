@@ -26,7 +26,7 @@ describe("EntryForm.vue", () => {
     cleanup()
   })
 
-  test("達成内容を書いて記録ボタンを押すと達成事項が追加される", async () => {
+  test("記録内容を書いて記録ボタンを押すと記録が追加される", async () => {
     render(EntryForm, {
       global: {
         plugins: [
@@ -40,25 +40,31 @@ describe("EntryForm.vue", () => {
     const testAchievement = {
       id: "achievement1",
       content: "achievement 1",
+      entryType: "achievement",
       date: new Date("2025-04-01"),
     }
     addAchievementMock.mockReturnValue(testAchievement)
 
-    const textarea = screen.getByLabelText("達成内容")
+    const textarea = screen.getByLabelText(/記録する内容/i)
     await fireEvent.update(textarea, testAchievement.content)
+
+    const achievementRadio = screen.getByRole("radio", { name: /よかったこと/i })
+    await fireEvent.click(achievementRadio)
 
     const button = screen.getByRole("button", { name: /記録する/i })
     await fireEvent.click(button)
 
     expect(addAchievementMock).toHaveBeenCalledWith({
       content: testAchievement.content,
+      entryType: testAchievement.entryType,
       date: expect.any(Date),
     })
     expect(triggerMock).toHaveBeenCalledWith(expect.any(String), "success")
+    expect(achievementRadio).toBeChecked()
     expect(textarea.value).toBe("")
   })
 
-  test("達成内容を書いて Ctrl+Enter キーを押すと達成事項が追加される", async () => {
+  test("記録内容を書いて Ctrl+Enter キーを押すと記録が追加される", async () => {
     render(EntryForm, {
       global: {
         plugins: [
@@ -72,12 +78,16 @@ describe("EntryForm.vue", () => {
     const testAchievement = {
       id: "achievement1",
       content: "achievement 1",
+      entryType: "achievement",
       date: new Date("2025-04-01"),
     }
     addAchievementMock.mockReturnValue(testAchievement)
 
-    const textarea = screen.getByLabelText("達成内容")
+    const textarea = screen.getByLabelText(/記録する内容/i)
     await fireEvent.update(textarea, testAchievement.content)
+
+    const achievementRadio = screen.getByRole("radio", { name: /よかったこと/i })
+    await fireEvent.click(achievementRadio)
 
     await fireEvent.keyDown(textarea, {
       key: "Enter",
@@ -88,12 +98,14 @@ describe("EntryForm.vue", () => {
     expect(addAchievementMock).toHaveBeenCalled({
       content: testAchievement.content,
       date: expect.any(Date),
+      entryType: testAchievement.entryType,
     })
     expect(triggerMock).toHaveBeenCalledWith(expect.any(String), "success")
+    expect(achievementRadio).toBeChecked()
     expect(textarea.value).toBe("")
   })
 
-  test("達成内容を書かずに記録ボタンを押した場合はエラー通知が表示される", async () => {
+  test("記録内容を書かずに記録ボタンを押した場合はエラー通知が表示される", async () => {
     render(EntryForm, {
       global: {
         plugins: [
@@ -125,21 +137,66 @@ describe("EntryForm.vue", () => {
     const testAchievement = {
       id: "achievement1",
       content: "achievement 1",
+      entryType: "achievement",
       date: new Date("2025-04-01"),
     }
     addAchievementMock.mockReturnValue(null)
 
-    const textarea = screen.getByLabelText("達成内容")
+    const textarea = screen.getByLabelText(/記録する内容/i)
     await fireEvent.update(textarea, testAchievement.content)
+
+    const achievementRadio = screen.getByRole("radio", { name: /よかったこと/i })
+    await fireEvent.click(achievementRadio)
 
     const button = screen.getByRole("button", { name: /記録する/i })
     await fireEvent.click(button)
 
     expect(addAchievementMock).toHaveBeenCalled({
       content: testAchievement.content,
+      entryType: testAchievement.entryType,
       date: expect.any(Date),
     })
     expect(triggerMock).toHaveBeenCalledWith(expect.any(String), "error")
+    expect(achievementRadio).toBeChecked()
     expect(textarea.value).toBe(testAchievement.content)
+  })
+
+  test("記録の種類を選択して記録すると entryType に反映される", async () => {
+    render(EntryForm, {
+      global: {
+        plugins: [
+          createTestingPinia({
+            stubActions: true,
+          }),
+        ],
+      },
+    })
+
+    const testAchievement = {
+      id: "incomplete1",
+      content: "incomplete 1",
+      entryType: "incomplete",
+      date: new Date("2025-04-01"),
+    }
+    addAchievementMock.mockReturnValue(testAchievement)
+
+    const textarea = screen.getByLabelText(/記録する内容/i)
+    await fireEvent.update(textarea, testAchievement.content)
+
+    const achievementRadio = screen.getByRole("radio", { name: /よかったこと/i })
+    const incompleteRadio = screen.getByRole("radio", { name: /ふりかえりたいこと/i })
+    await fireEvent.click(incompleteRadio)
+
+    const button = screen.getByRole("button", { name: /記録する/i })
+    await fireEvent.click(button)
+
+    expect(addAchievementMock).toHaveBeenCalledWith({
+      content: testAchievement.content,
+      entryType: testAchievement.entryType,
+      date: expect.any(Date),
+    })
+    expect(triggerMock).toHaveBeenCalledWith(expect.any(String), "success")
+    expect(achievementRadio).toBeChecked()
+    expect(textarea.value).toBe("")
   })
 })

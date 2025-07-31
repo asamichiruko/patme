@@ -23,6 +23,7 @@ const submit = () => {
   })
   if (result) {
     text.value = ""
+    entryType.value = "achievement"
     trigger("記録しました！", "success")
   } else {
     trigger("記録に失敗しました。時間をおいて再度お試しください", "error")
