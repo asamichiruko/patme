@@ -16,6 +16,8 @@ describe("EntryListItem.vue", () => {
   const testEntry = {
     id: "achievement1",
     content: "achievement 1",
+    entryType: "achievement",
+    isReviewed: false,
     date: new Date("2025-04-01"),
     stars: [],
     tags: [],
@@ -26,7 +28,7 @@ describe("EntryListItem.vue", () => {
 
     openTaggingDialogMock = vi.fn()
     vi.spyOn(taggingDialog, "useTaggingDialog").mockReturnValue({
-      open: openTaggingDialogMock,
+      openTaggingDialog: openTaggingDialogMock,
     })
 
     openPromptMock = vi.fn()
@@ -71,9 +73,11 @@ describe("EntryListItem.vue", () => {
     const testStar = {
       achievementId: testEntry.id,
       content: "star 1",
+      reviewType: null,
+      date: new Date("2025-04-01"),
     }
 
-    openPromptMock.mockResolvedValue(testStar.content)
+    openPromptMock.mockResolvedValue({ content: testStar.content, reviewType: null })
     addStarMock.mockReturnValue(testStar)
 
     const commentButton = screen.getByRole("button", { name: /コメント/i })
@@ -81,10 +85,12 @@ describe("EntryListItem.vue", () => {
 
     expect(openPromptMock).toHaveBeenCalledWith({
       defaultValue: "",
+      entryType: "achievement",
     })
     expect(addStarMock).toHaveBeenCalledWith({
       achievementId: testStar.achievementId,
       content: testStar.content,
+      reviewType: null,
       date: expect.any(Date),
     })
     expect(triggerMock).toHaveBeenCalledWith(expect.any(String), "success")
@@ -134,7 +140,7 @@ describe("EntryListItem.vue", () => {
     const taggingButton = screen.getByRole("button", { name: /タグ/i })
     await fireEvent.click(taggingButton)
 
-    expect(openTaggingDialogMock).toHaveBeenCalledWith("tagging", {
+    expect(openTaggingDialogMock).toHaveBeenCalledWith({
       initialTagIds: [],
     })
     expect(updateTaggingsMock).toHaveBeenCalledWith({
