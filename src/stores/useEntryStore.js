@@ -18,17 +18,22 @@ export const useEntryStore = defineStore("entry", {
       if (!localEntryService) {
         throw new Error("EntryService not set")
       }
-      const result = localEntryService.addAchievement({ content, date, entryType })
+      const result = localEntryService.addAchievement({
+        content,
+        date,
+        isReviewed: false,
+        entryType,
+      })
       if (result) {
         notify()
       }
       return result
     },
-    addStar({ achievementId, content, date }) {
+    addStar({ achievementId, content, reviewedType, date }) {
       if (!localEntryService) {
         throw new Error("EntryService not set")
       }
-      const result = localEntryService.addStar({ achievementId, content, date })
+      const result = localEntryService.addStar({ achievementId, content, reviewedType, date })
       if (result) {
         notify()
       }

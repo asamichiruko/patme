@@ -23,22 +23,23 @@ const props = defineProps({
 })
 
 const handleAddComment = async () => {
-  const content = await openPrompt({
+  const result = await openPrompt({
     defaultValue: "",
     entryType: props.entry.entryType,
   })
 
-  if (!content) {
+  if (!result) {
     return
   }
 
-  const result = entryStore.addStar({
+  const star = entryStore.addStar({
     achievementId: props.entry.id,
-    content,
+    content: result.content,
+    reviewedType: result.reviewedType,
     date: new Date(),
   })
 
-  if (result) {
+  if (star) {
     trigger("コメントを記録しました！", "success")
   } else {
     trigger("記録に失敗しました。時間をおいて再度お試しください", "error")

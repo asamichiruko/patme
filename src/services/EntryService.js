@@ -30,7 +30,7 @@ export class EntryService {
     }
   }
 
-  addAchievement({ id = null, content, date, entryType = "achievement" }) {
+  addAchievement({ id = null, content, date, isReviewed = false, entryType = "achievement" }) {
     const achievementId = id || generateId()
 
     if (this.entryRepos.hasAchievement(achievementId)) {
@@ -41,6 +41,7 @@ export class EntryService {
       id: achievementId,
       content,
       date,
+      isReviewed,
       entryType,
     }
 
@@ -52,7 +53,7 @@ export class EntryService {
     return achievement
   }
 
-  addStar({ id = null, achievementId, content, date }) {
+  addStar({ id = null, achievementId, content, reviewedType, date }) {
     const starId = id || generateId()
 
     if (!this.entryRepos.hasAchievement(achievementId)) {
@@ -65,12 +66,18 @@ export class EntryService {
     const star = {
       id: starId,
       content,
+      reviewedType,
       date,
       achievementId,
     }
 
     if (!isValidStar(star)) {
       return null
+    }
+    if (reviewedType) {
+      const achievement = this.entryRepos.getAchievement(achievementId)
+      achievement.isReviewed = true
+      this.entryRepos.updateAchievement(achievement)
     }
 
     this.entryRepos.addStar(star)

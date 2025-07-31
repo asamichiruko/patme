@@ -30,8 +30,9 @@ watch(showTypeReset, (val) => {
 })
 
 const submit = () => {
-  emit("submit", inputValue.value)
-  closePrompt(inputValue.value)
+  const result = { content: inputValue.value, reviewedType: selectedType.value }
+  emit("submit", result)
+  closePrompt(result)
 }
 
 const cancel = () => {

@@ -27,14 +27,15 @@ export class EntryRepository {
     this.storage.save(this.starKey, stars)
   }
 
-  add({ id, content, date, entryType, stars }) {
-    this.addAchievement({ id, content, date, entryType })
+  add({ id, content, date, isReviewed, entryType, stars }) {
+    this.addAchievement({ id, content, date, isReviewed, entryType })
 
     stars.forEach((star) => {
       this.addStar({
         id: star.id,
         achievementId: id,
         content: star.content,
+        reviewedType: star.reviewedType,
         date: star.date,
       })
     })
@@ -58,6 +59,10 @@ export class EntryRepository {
 
   hasStar(starId) {
     return this._loadStar().some((a) => a.id === starId)
+  }
+
+  getAchievement(achievementId) {
+    return this._loadAchievements().find((a) => a.id === achievementId)
   }
 
   getAchievements() {
