@@ -67,7 +67,6 @@ input[type="radio"] {
 }
 .entry-type-option.achievement.selected {
   border-color: var(--color-entry-type-achievement-text);
-  font-weight: bold;
 }
 .entry-type-option.achievement:focus-within {
   outline: 2px solid var(--color-entry-type-achievement-border);
@@ -82,7 +81,6 @@ input[type="radio"] {
 }
 .entry-type-option.incomplete.selected {
   border: 2px solid var(--color-entry-type-incomplete-text);
-  font-weight: bold;
 }
 .entry-type-option.incomplete:focus-within {
   outline: 2px solid var(--color-entry-type-incomplete-border);
@@ -97,7 +95,6 @@ input[type="radio"] {
 }
 .entry-type-option.accepted.selected {
   border: 2px solid var(--color-entry-type-accepted-text);
-  font-weight: bold;
 }
 .entry-type-option.accepted:focus-within {
   outline: 2px solid var(--color-entry-type-accepted-border);

@@ -8,6 +8,7 @@
 
   --color-entry-bg: hsl(0, 0%, 99%);
   --color-entry-border: hsl(0, 0%, 53%);
+  --color-entry-text: hsl(0, 0%, 40%);
 
   --color-tab-active: hsl(34, 45%, 66%);
   --color-tab-focus: hsl(34, 45%, 61%);
@@ -48,25 +49,41 @@
   --color-error: #e74c3c;
   --color-note-text: #ffffff;
 
-  --color-entry-type-achievement-bg: hsl(36, 100%, 90%);
-  --color-entry-type-achievement-text: hsl(36, 100%, 34%);
-  --color-entry-type-achievement-border: hsl(36, 100%, 72%);
+  --color-entry-type-achievement-bg: hsl(36, 100%, 94%);
+  --color-entry-type-achievement-text: hsl(36, 100%, 32%);
+  --color-entry-type-achievement-border: hsl(36, 100%, 82%);
 
-  --color-entry-type-incomplete-bg: hsl(207, 80%, 90%);
-  --color-entry-type-incomplete-text: hsl(207, 80%, 34%);
-  --color-entry-type-incomplete-border: hsl(207, 80%, 72%);
+  --color-entry-type-incomplete-bg: hsl(207, 80%, 94%);
+  --color-entry-type-incomplete-text: hsl(207, 80%, 32%);
+  --color-entry-type-incomplete-border: hsl(207, 80%, 82%);
 
-  --color-entry-type-accepted-bg: hsl(123, 40%, 90%);
-  --color-entry-type-accepted-text: hsl(123, 40%, 34%);
-  --color-entry-type-accepted-border: hsl(123, 40%, 72%);
+  --color-entry-type-accepted-bg: hsl(123, 40%, 94%);
+  --color-entry-type-accepted-text: hsl(123, 40%, 32%);
+  --color-entry-type-accepted-border: hsl(123, 40%, 82%);
 
   --color-entry-type-filter-bg: hsl(0, 0%, 97%);
   --color-entry-type-filter-text: hsl(0, 0%, 27%);
   --color-entry-type-filter-border: hsl(0, 0%, 75%);
 
-  --color-entry-type-filter-selected-bg: hsl(123, 40%, 90%);
-  --color-entry-type-filter-selected-text: hsl(123, 40%, 34%);
+  --color-entry-type-filter-selected-bg: hsl(123, 40%, 94%);
+  --color-entry-type-filter-selected-text: hsl(123, 40%, 32%);
   --color-entry-type-filter-selected-border: hsl(123, 40%, 45%);
+
+  --color-comment-bg: hsl(0, 0%, 100%);
+  --color-comment-text: hsl(0, 0%, 20%);
+  --color-comment-border: hsl(0, 0%, 40%);
+
+  --color-comment-achievement-bg: hsl(36, 100%, 94%);
+  --color-comment-achievement-text: hsl(36, 100%, 20%);
+  --color-comment-achievement-border: hsl(36, 100%, 40%);
+
+  --color-comment-incomplete-bg: hsl(207, 80%, 94%);
+  --color-comment-incomplete-text: hsl(207, 80%, 20%);
+  --color-comment-incomplete-border: hsl(207, 80%, 40%);
+
+  --color-comment-accepted-bg: hsl(123, 40%, 94%);
+  --color-comment-accepted-text: hsl(123, 40%, 20%);
+  --color-comment-accepted-border: hsl(123, 40%, 40%);
 }
 
 body {

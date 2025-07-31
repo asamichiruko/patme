@@ -68,7 +68,10 @@ const entryTypeLabel = {
 <template>
   <div class="entry-container" :class="props.entry.entryType">
     <div class="achievement-header">
-      <div class="entry-type-label">{{ entryTypeLabel[props.entry.entryType] }}</div>
+      <div class="entry-type-label">
+        <span class="entry-type">{{ entryTypeLabel[props.entry.entryType] }}</span>
+        <small v-if="props.entry.isReviewed">（再評価済み）</small>
+      </div>
       <div class="achievement-date">{{ formatRelativeDate(props.entry.date) }}</div>
     </div>
 
@@ -117,7 +120,9 @@ const entryTypeLabel = {
   color: var(--color-subtext);
   font-size: 15px;
   margin-left: auto;
+  white-space: nowrap;
 }
+
 .entry-container.achievement .entry-type-label {
   color: var(--color-entry-type-achievement-text);
 }
@@ -126,6 +131,18 @@ const entryTypeLabel = {
 }
 .entry-container.accepted .entry-type-label {
   color: var(--color-entry-type-accepted-text);
+}
+.entry-type-label {
+  display: flex;
+  flex-wrap: wrap;
+}
+.entry-container .entry-type-label .entry-type {
+  display: inline-block;
+}
+.entry-container .entry-type-label small {
+  font-size: 14px;
+  color: var(--color-subtext);
+  display: inline-block;
 }
 
 .achievement-content {
