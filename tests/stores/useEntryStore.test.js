@@ -56,6 +56,8 @@ describe("useEntryStore.js", () => {
   test("addAchievement で achievement が追加される", () => {
     const testAchievement = {
       content: "achievement1",
+      entryType: "achievement",
+      isReviewed: false,
       date: new Date("2025-04-01").toISOString(),
     }
     const addedAchievement = { ...testAchievement, id: "id1" }
@@ -69,9 +71,14 @@ describe("useEntryStore.js", () => {
 
   test("achievement が追加されなかった場合は notify が呼び出されない", () => {
     mockEntryService.addAchievement.mockReturnValue(null)
-    const result = entryStore.addAchievement({ content: "", date: null })
+    const result = entryStore.addAchievement({ content: "", entryType: "", date: null })
 
-    expect(mockEntryService.addAchievement).toHaveBeenCalledWith({ content: "", date: null })
+    expect(mockEntryService.addAchievement).toHaveBeenCalledWith({
+      content: "",
+      entryType: "",
+      isReviewed: false,
+      date: null,
+    })
     expect(result).toBeNull()
     expect(notifySpy).not.toHaveBeenCalled()
   })
@@ -80,6 +87,7 @@ describe("useEntryStore.js", () => {
     const testStar = {
       achievementId: "achievement1",
       content: "star1",
+      reviewType: null,
       date: new Date("2025-04-01").toISOString(),
     }
     const addedStar = { ...testStar, id: "id1" }
@@ -93,11 +101,17 @@ describe("useEntryStore.js", () => {
 
   test("star が追加されなかった場合は notify が呼び出されない", () => {
     mockEntryService.addStar.mockReturnValue(null)
-    const result = entryStore.addStar({ achievementId: "", content: "", date: null })
+    const result = entryStore.addStar({
+      achievementId: "",
+      content: "",
+      reviewType: null,
+      date: null,
+    })
 
     expect(mockEntryService.addStar).toHaveBeenCalledWith({
       achievementId: "",
       content: "",
+      reviewType: null,
       date: null,
     })
     expect(result).toBeNull()
