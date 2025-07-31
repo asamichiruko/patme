@@ -15,11 +15,15 @@ describe("EntryService.js", () => {
     {
       id: "0b3df1d5-eb66-4dd4-b9c9-08f01555bcf1",
       content: "achievement 1",
+      entryType: "achievement",
+      isReviewed: false,
       date: new Date("2025-04-01"),
     },
     {
       id: "5b9a5917-43a8-47a0-8f34-bc3bba96bb01",
       content: "achievement 2",
+      entryType: "achievement",
+      isReviewed: false,
       date: new Date("2025-04-02"),
     },
   ]
@@ -28,6 +32,7 @@ describe("EntryService.js", () => {
       id: "e2bd92e0-5b57-4b84-9307-a49ec5518bce",
       achievementId: "0b3df1d5-eb66-4dd4-b9c9-08f01555bcf1",
       content: "star 1",
+      reviewType: null,
       date: new Date("2025-04-01"),
     },
   ]
@@ -104,14 +109,23 @@ describe("EntryService.js", () => {
   })
 
   test("addEntry で id, stars を省略できる", () => {
-    mockEntryRepository.addAchievement.mockImplementation(({ content, date }) => ({
-      id: testIds[0],
-      content,
-      date,
-    }))
+    mockEntryRepository.addAchievement.mockImplementation(
+      ({ content, entryType, isReviewed, date }) => ({
+        id: testIds[0],
+        content,
+        entryType,
+        isReviewed,
+        date,
+      }),
+    )
     mockEntryRepository.hasAchievement.mockReturnValue(true).mockReturnValueOnce(false)
 
-    const achievement = { content: testAchievements[0].content, date: testAchievements[0].date }
+    const achievement = {
+      content: testAchievements[0].content,
+      entryType: testAchievements[0].entryType,
+      isReviewed: testAchievements[0].isReviewed,
+      date: testAchievements[0].date,
+    }
     const result = entryService.addEntry(achievement)
     expect(mockEntryRepository.addAchievement).toHaveBeenCalledWith({
       id: testIds[0],
@@ -135,6 +149,8 @@ describe("EntryService.js", () => {
   test("addAchievement で id を省略した際に UUID が生成される", () => {
     const result = entryService.addAchievement({
       content: testAchievements[0].content,
+      entryType: testAchievements[0].entryType,
+      isReviewed: testAchievements[0].isReviewed,
       date: testAchievements[0].date,
     })
 
@@ -142,12 +158,16 @@ describe("EntryService.js", () => {
     expect(result).toEqual({
       id: testIds[0],
       content: testAchievements[0].content,
+      entryType: testAchievements[0].entryType,
+      isReviewed: testAchievements[0].isReviewed,
       date: testAchievements[0].date,
     })
 
     expect(mockEntryRepository.addAchievement).toHaveBeenCalledWith({
       id: testIds[0],
       content: testAchievements[0].content,
+      entryType: testAchievements[0].entryType,
+      isReviewed: testAchievements[0].isReviewed,
       date: testAchievements[0].date,
     })
   })
@@ -169,6 +189,7 @@ describe("EntryService.js", () => {
     const result = entryService.addStar({
       achievementId: testStars[0].achievementId,
       content: testStars[0].content,
+      reviewType: testStars[0].reviewType,
       date: testStars[0].date,
     })
 
@@ -177,6 +198,7 @@ describe("EntryService.js", () => {
       id: testIds[0],
       achievementId: testStars[0].achievementId,
       content: testStars[0].content,
+      reviewType: testStars[0].reviewType,
       date: testStars[0].date,
     })
 
@@ -184,6 +206,7 @@ describe("EntryService.js", () => {
       id: testIds[0],
       achievementId: testStars[0].achievementId,
       content: testStars[0].content,
+      reviewType: testStars[0].reviewType,
       date: testStars[0].date,
     })
   })
