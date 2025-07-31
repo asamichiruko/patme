@@ -17,7 +17,7 @@ const reload = () => {
         case "all":
           return true
         case "reviewed":
-          return a.entryType === "achievement" || a.entryType === "accepted"
+          return a.isReviewed
         default:
           return a.entryType === viewEntryType.value
       }

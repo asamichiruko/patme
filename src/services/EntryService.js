@@ -8,8 +8,15 @@ export class EntryService {
     this.tagRepos = tagRepository
   }
 
-  addEntry({ id = null, content, date, stars = [] }) {
-    const addedAchievement = this.addAchievement({ id, content, date })
+  addEntry({
+    id = null,
+    content,
+    date,
+    entryType = "achievement",
+    isReviewed = false,
+    stars = [],
+  }) {
+    const addedAchievement = this.addAchievement({ id, content, entryType, isReviewed, date })
     if (!addedAchievement) {
       return null
     }
@@ -25,6 +32,8 @@ export class EntryService {
     return {
       id: addedAchievement.id,
       content,
+      entryType,
+      isReviewed,
       date,
       stars: addedStars,
     }

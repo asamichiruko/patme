@@ -78,12 +78,9 @@ export class EntryRepository {
     const stars = this._loadStar()
 
     const starMap = Map.groupBy(stars, (s) => s.achievementId)
-    return achievements.map((a) => ({
-      id: a.id,
-      content: a.content,
-      date: a.date,
-      entryType: a.entryType,
-      stars: starMap.get(a.id) || [],
+    return achievements.map((entry) => ({
+      ...entry,
+      stars: starMap.get(entry.id) || [],
     }))
   }
 
