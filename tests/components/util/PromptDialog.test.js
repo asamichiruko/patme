@@ -27,6 +27,7 @@ describe("PromptDialog.vue", () => {
 
     params.value = {
       defaultValue: "",
+      entryType: "achievement",
     }
     isOpen.value = false
   })
@@ -84,14 +85,52 @@ describe("PromptDialog.vue", () => {
     const dialog = screen.getByRole("dialog", { hidden: true })
     dialog.open = true
 
-    const textInput = screen.getByRole("textbox", { name: /振り返り/i })
+    const textInput = screen.getByRole("textbox", { name: /ふりかえりコメント/i })
     await fireEvent.update(textInput, "text")
 
     const submitButton = screen.getByRole("button", { name: /記録する/i })
     await fireEvent.click(submitButton)
 
     expect(emitted()).toHaveProperty("submit")
-    expect(emitted().submit[0]).toEqual(["text"])
-    expect(closePromptMock).toHaveBeenCalledWith("text")
+    expect(emitted().submit[0]).toEqual([{ content: "text", reviewType: "achievement" }])
+    expect(closePromptMock).toHaveBeenCalledWith({ content: "text", reviewType: "achievement" })
+  })
+
+  test("チェックボックスを使って再評価欄を開閉できる", async () => {
+    render(PromptDialog)
+
+    isOpen.value = true
+    await nextTick()
+
+    const reviewCheck = screen.getByLabelText(/記録の再評価/i)
+    await fireEvent.click(reviewCheck)
+
+    const reviewFormLabel = screen.getByText(/新しい評価/i)
+    expect(reviewFormLabel).toBeInTheDocument()
+  })
+
+  test("入力後にダイアログを閉じて再び開くと以前の入力がクリアされる", async () => {
+    render(PromptDialog)
+
+    isOpen.value = true
+    await nextTick()
+
+    const reviewCheck = screen.getByLabelText(/記録の再評価/i)
+    await fireEvent.click(reviewCheck)
+
+    let achievementRadio = screen.getByLabelText(/よかったこと/i)
+    let incompleteRadio = screen.getByLabelText(/ふりかえりたいこと/i)
+    await fireEvent.click(incompleteRadio)
+    expect(achievementRadio).not.toBeChecked()
+    expect(incompleteRadio).toBeChecked()
+
+    // 新しい評価フォームを閉じて開く
+    await fireEvent.click(reviewCheck)
+    await fireEvent.click(reviewCheck)
+
+    achievementRadio = screen.getByLabelText(/よかったこと/i)
+    incompleteRadio = screen.getByLabelText(/ふりかえりたいこと/i)
+    expect(achievementRadio).toBeChecked()
+    expect(incompleteRadio).not.toBeChecked()
   })
 })

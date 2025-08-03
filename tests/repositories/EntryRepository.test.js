@@ -8,6 +8,8 @@ describe("EntryRepository.js", () => {
     {
       id: "achievement1",
       content: "achievement 1",
+      entryType: "achievement",
+      isReviewed: false,
       date: new Date("2025-04-01"),
     },
   ]
@@ -17,12 +19,14 @@ describe("EntryRepository.js", () => {
       id: "star1",
       achievementId: "achievement1",
       content: "star 1",
+      reviewType: null,
       date: new Date("2025-04-01"),
     },
     {
       id: "star2",
       achievementId: "achievement1",
       content: "star 2",
+      reviewType: null,
       date: new Date("2025-04-01"),
     },
   ]
@@ -107,5 +111,19 @@ describe("EntryRepository.js", () => {
 
   test("storage が空のとき getAll で空の配列を取得する", () => {
     expect(entryRepos.getAll()).toEqual([])
+  })
+
+  test("getAchievement で achievement を取得できる", () => {
+    mockStorage.load.mockReturnValue(testAchievements)
+    const achievement = entryRepos.getAchievement(testAchievements[0].id)
+    expect(achievement).toEqual(testAchievements[0])
+  })
+
+  test("updateAchievement で achievement の内容を上書きできる", async () => {
+    mockStorage.load.mockReturnValue([testAchievements[0]])
+    const a = testAchievements[0]
+    a.isReviewed = true
+    entryRepos.updateAchievement(a)
+    expect(mockStorage.save).toHaveBeenCalledWith(entryRepos.achievementKey, [a])
   })
 })
