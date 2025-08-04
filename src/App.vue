@@ -1,15 +1,15 @@
-<script setup>
-import TabNavigation from "@/components/util/TabNavigation.vue"
-import NotificationBar from "@/components/util/NotificationBar.vue"
-import PromptDialog from "@/components/util/PromptDialog.vue"
+<script setup lang="ts">
 import TaggingDialog from "@/components/tag/TaggingDialog.vue"
 import ConfirmDialog from "@/components/util/ConfirmDialog.vue"
+import NotificationBar from "@/components/util/NotificationBar.vue"
+import PromptDialog from "@/components/util/PromptDialog.vue"
+import TabNavigation from "@/components/util/TabNavigation.vue"
 
 import { LocalStorageAdapter } from "@/adapters/LocalStorageAdapter.js"
 import { createServices } from "./utils/createServices"
 
-import { useEntryStore } from "@/stores/useEntryStore.js"
 import { useDataTransferStore } from "@/stores/useDataTransferStore.js"
+import { useEntryStore } from "@/stores/useEntryStore.js"
 import { useTagStore } from "@/stores/useTagStore.js"
 import { useTaggingStore } from "@/stores/useTaggingStore.js"
 
