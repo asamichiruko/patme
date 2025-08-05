@@ -22,3 +22,18 @@ export interface Tag {
   title: string
   sortOrder: number
 }
+
+export type Identifiable = { id: string }
+export type WithId<T extends Identifiable> = Omit<T, "id"> & { id: string }
+export type WithoutId<T extends Identifiable> = Omit<T, "id">
+export type Updatable<T extends Identifiable> = { id: string } & Partial<WithoutId<T>>
+
+export interface Adapter<T extends Identifiable> {
+  generateId(): string
+  getAll(): Promise<T[]>
+  get(id: string): Promise<T | null>
+  set(item: T): Promise<void>
+  add(item: WithoutId<T>): Promise<WithId<T>>
+  update(item: Updatable<T>): Promise<void>
+  delete(id: string): Promise<void>
+}
