@@ -1,7 +1,15 @@
-import type { Identifiable, Adapter, WithId, WithoutId, Updatable } from "@/types"
-import { loadFromLocalStorage, saveToLocalStorage } from "./storageUtils"
+import type { Identifiable, DataStoreAdapter, WithoutId } from "@/types"
 
-export class LocalStorageAdapter<T extends Identifiable> implements Adapter<T> {
+function loadFromLocalStorage<T>(key: string): Record<string, T> {
+  const data = localStorage.getItem(key)
+  return data ? JSON.parse(data) : {}
+}
+
+function saveToLocalStorage<T>(key: string, data: Record<string, T>): void {
+  localStorage.setItem(key, JSON.stringify(data))
+}
+
+export class LocalStorageAdapter<T extends Identifiable> implements DataStoreAdapter<T> {
   constructor(public storageKey: string) {}
 
   generateId(): string {
@@ -18,31 +26,24 @@ export class LocalStorageAdapter<T extends Identifiable> implements Adapter<T> {
     return Object.values(data)
   }
 
-  async set(item: T): Promise<void> {
-    const data = loadFromLocalStorage<T>(this.storageKey)
-    data[item.id] = item
-    saveToLocalStorage(this.storageKey, data)
-  }
-
-  async add(item: WithoutId<T>): Promise<WithId<T>> {
-    const data = loadFromLocalStorage<WithId<T>>(this.storageKey)
-    const id = this.generateId()
+  async add(item: WithoutId<T>): Promise<string> {
+    const data = loadFromLocalStorage<{ id: string } & WithoutId<T>>(this.storageKey)
+    const id: string = this.generateId()
 
     if (data[id]) throw new Error(`Item ${id} already exists`)
 
-    const fullItem: WithId<T> = { ...item, id }
-    data[id] = fullItem
+    data[id] = { ...item, id }
     saveToLocalStorage(this.storageKey, data)
-    return fullItem
+    return id
   }
 
-  async update(item: Updatable<T>): Promise<void> {
+  async update(id: string, item: Partial<WithoutId<T>>): Promise<void> {
     const data = loadFromLocalStorage<T>(this.storageKey)
 
-    const existing = data[item.id]
-    if (!existing) throw new Error(`Item ${item.id} not found`)
+    const existing = data[id]
+    if (!existing) throw new Error(`Item ${id} not found`)
 
-    data[item.id] = { ...existing, ...item }
+    data[id] = { ...existing, ...item }
     saveToLocalStorage(this.storageKey, data)
   }
 

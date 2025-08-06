@@ -11,61 +11,52 @@ describe("LocalStorageAdapter", () => {
     adapter = new LocalStorageAdapter<DummyItem>(storageKey)
   })
 
-  test("item を get/set できる", async () => {
-    const item = { id: "id1", value: "value 1" }
-    await adapter.set(item)
-    const result = await adapter.get("id1")
-
-    expect(result).toEqual(item)
-  })
-
   test("全 item を取得できる", async () => {
-    await adapter.set({ id: "id1", value: "value 1" })
-    await adapter.set({ id: "id2", value: "value 2" })
-    const result = await adapter.getAll()
-    expect(result).toHaveLength(2)
-    expect(result.map((i) => i.id).sort()).toEqual(["id1", "id2"])
+    await adapter.add({ value: "value 1" })
+    await adapter.add({ value: "value 2" })
+    const gotItems = await adapter.getAll()
+    expect(gotItems).toHaveLength(2)
+    expect(gotItems.map((i) => i.value).sort()).toEqual(["value 1", "value 2"])
   })
 
-  test("新規 item を add できる", async () => {
+  test("新規 item を追加できる", async () => {
     const item = { value: "value 1" }
-    const result = await adapter.add(item)
-    const added = await adapter.get(result.id)
-
-    expect(added).toEqual(result)
+    const id = await adapter.add(item)
+    const gotItem = await adapter.get(id)
+    expect(gotItem).not.toBeNull()
+    expect(gotItem?.value).toEqual(item.value)
   })
 
-  test("id が重複する item を add できない", async () => {
-    await adapter.set({ id: "id1", value: "old value" })
-    vi.spyOn(adapter, "generateId").mockReturnValueOnce("id1")
+  test("id が重複する item は追加できない", async () => {
+    const spy = vi.spyOn(adapter, "generateId").mockReturnValue("id1")
+    await adapter.add({ value: "old value" })
     await expect(async () => {
       await adapter.add({ value: "new value" })
     }).rejects.toThrow()
+    spy.mockRestore()
   })
 
-  test("既存 item を update できる", async () => {
-    await adapter.set({ id: "id1", value: "old value" })
-    const updatable = { id: "id1", value: "new value" }
-    await adapter.update(updatable)
-    const updated = await adapter.get("id1")
-    expect(updated).toEqual(updatable)
+  test("存在する item を更新できる", async () => {
+    const id = await adapter.add({ value: "old value" })
+    await adapter.update(id, { value: "new value" })
+    const updated = await adapter.get(id)
+    expect(updated).not.toBeNull()
+    expect(updated?.value).toEqual("new value")
   })
 
-  test("存在しない id の item を update できない", async () => {
-    const updatable = { id: "id1", value: "new value" }
-
+  test("存在しない item は更新できない", async () => {
     await expect(async () => {
-      await adapter.update(updatable)
+      await adapter.update("dummyId", { value: "new value" })
     }).rejects.toThrow()
   })
 
   test("item を削除できる", async () => {
-    await adapter.set({ id: "id1", value: "value 1" })
-    let result = await adapter.get("id1")
-    expect(result).not.toBeNull()
+    const id = await adapter.add({ value: "value 1" })
+    let gotItem = await adapter.get(id)
+    expect(gotItem).not.toBeNull()
 
-    await adapter.delete("id1")
-    result = await adapter.get("id1")
-    expect(result).toBeNull()
+    await adapter.delete(id)
+    gotItem = await adapter.get(id)
+    expect(gotItem).toBeNull()
   })
 })
