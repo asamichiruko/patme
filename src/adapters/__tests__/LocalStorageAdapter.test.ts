@@ -1,14 +1,12 @@
 import { LocalStorageAdapter } from "../LocalStorageAdapter"
 
-type DummyItem = { id: string; value: string }
-
 describe("LocalStorageAdapter", () => {
   const storageKey = "dummy"
-  let adapter: LocalStorageAdapter<DummyItem>
+  let adapter: LocalStorageAdapter
 
   beforeEach(() => {
     localStorage.clear()
-    adapter = new LocalStorageAdapter<DummyItem>(storageKey)
+    adapter = new LocalStorageAdapter(storageKey)
   })
 
   test("全 item を取得できる", async () => {
@@ -17,6 +15,16 @@ describe("LocalStorageAdapter", () => {
     const gotItems = await adapter.getAll()
     expect(gotItems).toHaveLength(2)
     expect(gotItems.map((i) => i.value).sort()).toEqual(["value 1", "value 2"])
+  })
+
+  test("item が存在しないとき全 item を取得しようとすると空配列が返る", async () => {
+    const gotItems = await adapter.getAll()
+    expect(gotItems).toEqual([])
+  })
+
+  test("存在しない item を取得しようとすると null が返る", async () => {
+    const gotItem = await adapter.get("dummy")
+    expect(gotItem).toBeNull()
   })
 
   test("新規 item を追加できる", async () => {
@@ -58,5 +66,15 @@ describe("LocalStorageAdapter", () => {
     await adapter.delete(id)
     gotItem = await adapter.get(id)
     expect(gotItem).toBeNull()
+  })
+
+  test("item を追加すると createdAt 属性が ISOString 形式で付加される", async () => {
+    vi.useFakeTimers()
+    const datetime = new Date("2025-04-01 09:00:00")
+    vi.setSystemTime(datetime)
+    const id = await adapter.add({ value: "value 1" })
+    const gotItem = await adapter.get(id)
+    expect(gotItem?.createdAt).toBe(datetime.toISOString())
+    vi.useRealTimers()
   })
 })

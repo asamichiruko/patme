@@ -1,55 +1,74 @@
-import type { Identifiable, DataStoreAdapter, WithoutId } from "@/types"
+import type { DataStoreAdapter } from "@/types"
 
-function loadFromLocalStorage<T>(key: string): Record<string, T> {
-  const data = localStorage.getItem(key)
-  return data ? JSON.parse(data) : {}
-}
+export class LocalStorageAdapter implements DataStoreAdapter {
+  constructor(private storageKey: string) {}
 
-function saveToLocalStorage<T>(key: string, data: Record<string, T>): void {
-  localStorage.setItem(key, JSON.stringify(data))
-}
+  private loadFromLocalStorage(): Record<string, unknown>[] {
+    const raw = localStorage.getItem(this.storageKey)
+    if (!raw) return []
+    return JSON.parse(raw)
+  }
 
-export class LocalStorageAdapter<T extends Identifiable> implements DataStoreAdapter<T> {
-  constructor(public storageKey: string) {}
+  private saveToLocalStorage(data: Record<string, unknown>[]): void {
+    localStorage.setItem(this.storageKey, JSON.stringify(data))
+  }
+
+  async get(id: string): Promise<Record<string, unknown> | null> {
+    const data = this.loadFromLocalStorage()
+    const result = data.find((dat) => dat.id === id)
+    if (!result) return null
+    return result
+  }
+
+  async getAll(): Promise<Record<string, unknown>[]> {
+    const data = this.loadFromLocalStorage()
+    return data
+  }
+
+  async add(body: Record<string, unknown>): Promise<string> {
+    const data = this.loadFromLocalStorage()
+    const id = this.generateId()
+    const createdAt = this.serializeDate(new Date())
+
+    const exists = data.some((dat) => dat.id === id)
+    if (exists) throw new Error(`Item ${id} already exists`)
+
+    data.push({ ...body, id, createdAt })
+    this.saveToLocalStorage(data)
+    return id
+  }
+
+  async update(id: string, body: Record<string, unknown>): Promise<void> {
+    const data = this.loadFromLocalStorage()
+
+    let exists = false
+    const updatedData = data.map((dat) => {
+      if (dat.id === id) {
+        exists = true
+        return { ...dat, ...body }
+      }
+      return dat
+    })
+    if (!exists) throw new Error(`Item ${id} not found`)
+
+    this.saveToLocalStorage(updatedData)
+  }
+
+  async delete(id: string): Promise<void> {
+    const data = this.loadFromLocalStorage()
+    const filtered = data.filter((dat) => dat.id !== id)
+    this.saveToLocalStorage(filtered)
+  }
 
   generateId(): string {
     return crypto.randomUUID()
   }
 
-  async get(id: string): Promise<T | null> {
-    const data = loadFromLocalStorage<T>(this.storageKey)
-    return data[id] ?? null
+  serializeDate(date: Date): string {
+    return date.toISOString()
   }
 
-  async getAll(): Promise<T[]> {
-    const data = loadFromLocalStorage<T>(this.storageKey)
-    return Object.values(data)
-  }
-
-  async add(item: WithoutId<T>): Promise<string> {
-    const data = loadFromLocalStorage<{ id: string } & WithoutId<T>>(this.storageKey)
-    const id: string = this.generateId()
-
-    if (data[id]) throw new Error(`Item ${id} already exists`)
-
-    data[id] = { ...item, id }
-    saveToLocalStorage(this.storageKey, data)
-    return id
-  }
-
-  async update(id: string, item: Partial<WithoutId<T>>): Promise<void> {
-    const data = loadFromLocalStorage<T>(this.storageKey)
-
-    const existing = data[id]
-    if (!existing) throw new Error(`Item ${id} not found`)
-
-    data[id] = { ...existing, ...item }
-    saveToLocalStorage(this.storageKey, data)
-  }
-
-  async delete(id: string): Promise<void> {
-    const data = loadFromLocalStorage<T>(this.storageKey)
-    delete data[id]
-    saveToLocalStorage(this.storageKey, data)
+  deserializeDate(rawDate: unknown): Date {
+    return new Date(rawDate as string)
   }
 }

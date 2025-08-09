@@ -1,42 +1,48 @@
 export type EntryType = "achievement" | "incomplete" | "accepted"
 
-export type Entry = {
-  id: string
-  createdAt: string
+// Entry
+export interface EntryBody {
   content: string
   entryType: EntryType
   isReviewed: boolean
   tagIds: string[]
 }
-
-export type Comment = {
+export interface EntryMetadata {
   id: string
-  entryId: string
-  createdAt: string
+  createdAt: Date
+}
+export interface Entry extends EntryBody, EntryMetadata {}
+
+// Comment
+export interface CommentBody {
   content: string
   reviewType: EntryType | null
 }
-
-export type Tag = {
+export interface CommentMetadata {
   id: string
+  entryId: string
+  createdAt: Date
+}
+export interface Comment extends CommentBody, CommentMetadata {}
+
+// Tag
+export interface TagBody {
   title: string
+}
+export interface TagMetadata {
+  id: string
+  createdAt: Date
   sortOrder: number
 }
+export interface Tag extends TagBody, TagMetadata {}
 
-export type Identifiable = { id: string }
-export type WithoutId<T extends Identifiable> = Omit<T, "id">
-
-export interface DataStoreAdapter<T extends Identifiable> {
-  generateId(): string
-  getAll(): Promise<T[]>
-  get(id: string): Promise<T | null>
-  add(item: WithoutId<T>): Promise<string>
-  update(id: string, item: Partial<WithoutId<T>>): Promise<void>
+export interface DataStoreAdapter {
+  getAll(): Promise<Record<string, unknown>[]>
+  get(id: string): Promise<Record<string, unknown> | null>
+  add(item: Record<string, unknown>): Promise<string>
+  update(id: string, item: Record<string, unknown>): Promise<void>
   delete(id: string): Promise<void>
-}
-
-export interface EntryRepository {
-  getAll(): Promise<Entry[]>
-  get(id: string): Promise<Entry>
-  add(item: WithoutId<Entry>): Promise<string>
+  generateId(): string
+  serializeDate(date: Date): unknown
+  deserializeDate(rawDate: unknown): Date
 }
