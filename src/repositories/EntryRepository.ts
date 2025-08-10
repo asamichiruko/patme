@@ -18,12 +18,14 @@ export class EntryRepository {
     }
   }
 
-  private toStorageObject(entry: EntryBody): Record<string, unknown> {
+  private toStorageObject(body: EntryBody): Record<string, unknown> {
+    if (!body) throw new Error("Data is null or undefined")
+
     return {
-      content: entry.content,
-      entryType: entry.entryType,
-      isReviewed: entry.isReviewed,
-      tagIds: entry.tagIds,
+      content: body.content ? body.content.toString() : "",
+      entryType: parseEntryType(body.entryType),
+      isReviewed: Boolean(body.isReviewed),
+      tagIds: Array.isArray(body.tagIds) ? body.tagIds : [],
     }
   }
 
@@ -39,14 +41,14 @@ export class EntryRepository {
   }
 
   async add(entryBody: EntryBody): Promise<string> {
-    return await this.adapter.add(this.toStorageObject(entryBody))
+    return this.adapter.add(this.toStorageObject(entryBody))
   }
 
   async update(id: string, entryBody: EntryBody): Promise<void> {
-    await this.adapter.update(id, this.toStorageObject(entryBody))
+    this.adapter.update(id, this.toStorageObject(entryBody))
   }
 
   async delete(id: string): Promise<void> {
-    await this.adapter.delete(id)
+    this.adapter.delete(id)
   }
 }
