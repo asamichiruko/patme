@@ -2,7 +2,7 @@ import { LocalStorageAdapter } from "../LocalStorageAdapter"
 
 describe("LocalStorageAdapter", () => {
   const storageKey = "dummy"
-  let adapter: LocalStorageAdapter
+  let adapter: LocalStorageAdapter<{ id: string; value: string }>
 
   beforeEach(() => {
     localStorage.clear()
@@ -32,7 +32,7 @@ describe("LocalStorageAdapter", () => {
     const id = await adapter.add(item)
     const gotItem = await adapter.get(id)
     expect(gotItem).not.toBeNull()
-    expect(gotItem?.value).toEqual(item.value)
+    expect(gotItem!.value).toEqual(item.value)
   })
 
   test("id が重複する item は追加できない", async () => {
@@ -46,15 +46,15 @@ describe("LocalStorageAdapter", () => {
 
   test("存在する item を更新できる", async () => {
     const id = await adapter.add({ value: "old value" })
-    await adapter.update(id, { value: "new value" })
+    await adapter.update({ id: id, value: "new value" })
     const updated = await adapter.get(id)
     expect(updated).not.toBeNull()
-    expect(updated?.value).toEqual("new value")
+    expect(updated!.value).toEqual("new value")
   })
 
   test("存在しない item は更新できない", async () => {
     await expect(async () => {
-      await adapter.update("dummyId", { value: "new value" })
+      await adapter.update({ id: "dummyId", value: "new value" })
     }).rejects.toThrow()
   })
 
@@ -68,13 +68,49 @@ describe("LocalStorageAdapter", () => {
     expect(gotItem).toBeNull()
   })
 
-  test("item を追加すると createdAt 属性が ISOString 形式で付加される", async () => {
-    vi.useFakeTimers()
-    const datetime = new Date("2025-04-01 09:00:00")
-    vi.setSystemTime(datetime)
-    const id = await adapter.add({ value: "value 1" })
-    const gotItem = await adapter.get(id)
-    expect(gotItem?.createdAt).toBe(datetime.toISOString())
-    vi.useRealTimers()
+  test("複数の item を一度に更新できる", async () => {
+    const id1 = await adapter.add({ value: "old value 1" })
+    const id2 = await adapter.add({ value: "old value 2" })
+    await adapter.updateAll([
+      { id: id1, value: "new value 1" },
+      { id: id2, value: "new value 2" },
+    ])
+    const newData1 = await adapter.get(id1)
+    expect(newData1!.value).toBe("new value 1")
+    const newData2 = await adapter.get(id2)
+    expect(newData2!.value).toBe("new value 2")
+  })
+
+  test("updateAll で指定した ids に重複があってはならない", async () => {
+    const id1 = await adapter.add({ value: "old value 1" })
+    await adapter.add({ value: "old value 2" })
+
+    await expect(async () => {
+      await adapter.updateAll([
+        { id: id1, value: "new value 1" },
+        { id: id1, value: "new value 2" },
+      ])
+    }).rejects.toThrow()
+  })
+
+  test("updateAll で指定した ids と bodies の数は等しくなければならない", async () => {
+    const id1 = await adapter.add({ value: "old value 1" })
+    await adapter.add({ value: "old value 2" })
+
+    await expect(async () => {
+      await adapter.updateAll([{ id: id1, value: "new value 1" }])
+    }).rejects.toThrow()
+  })
+
+  test("updateAll で指定した ids はすべて存在しなければならない", async () => {
+    const id1 = await adapter.add({ value: "old value 1" })
+    await adapter.add({ value: "old value 2" })
+
+    await expect(async () => {
+      await adapter.updateAll([
+        { id: id1, value: "new value 1" },
+        { id: "dummy-id", value: "new value 2" },
+      ])
+    }).rejects.toThrow()
   })
 })

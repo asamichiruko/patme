@@ -1,74 +1,73 @@
 import type { DataStoreAdapter } from "@/types"
 
-export class LocalStorageAdapter implements DataStoreAdapter {
+export class LocalStorageAdapter<T extends { id: string }> implements DataStoreAdapter<T> {
   constructor(private storageKey: string) {}
 
-  private loadFromLocalStorage(): Record<string, unknown>[] {
-    const raw = localStorage.getItem(this.storageKey)
-    if (!raw) return []
-    return JSON.parse(raw)
+  private read(): T[] {
+    const json = localStorage.getItem(this.storageKey)
+    return json ? (JSON.parse(json) as T[]) : []
   }
 
-  private saveToLocalStorage(data: Record<string, unknown>[]): void {
+  private write(data: T[]): void {
     localStorage.setItem(this.storageKey, JSON.stringify(data))
   }
 
-  async get(id: string): Promise<Record<string, unknown> | null> {
-    const data = this.loadFromLocalStorage()
-    const result = data.find((dat) => dat.id === id)
-    if (!result) return null
-    return result
+  async get(id: string): Promise<T | null> {
+    return this.read().find((item) => item.id === id) || null
   }
 
-  async getAll(): Promise<Record<string, unknown>[]> {
-    const data = this.loadFromLocalStorage()
-    return data
+  async getAll(): Promise<T[]> {
+    return this.read()
   }
 
-  async add(body: Record<string, unknown>): Promise<string> {
-    const data = this.loadFromLocalStorage()
+  async add(itemBody: Omit<T, "id">): Promise<string> {
+    const data = this.read()
     const id = this.generateId()
-    const createdAt = this.serializeDate(new Date())
 
-    const exists = data.some((dat) => dat.id === id)
-    if (exists) throw new Error(`Item ${id} already exists`)
+    if (data.some((existing) => existing.id === id)) {
+      throw new Error(`Item ${id} already exists`)
+    }
 
-    data.push({ ...body, id, createdAt })
-    this.saveToLocalStorage(data)
+    data.push({ ...itemBody, id } as T)
+    this.write(data)
     return id
   }
 
-  async update(id: string, body: Record<string, unknown>): Promise<void> {
-    const data = this.loadFromLocalStorage()
+  async update(item: T): Promise<void> {
+    const data = this.read()
 
     let exists = false
-    const updatedData = data.map((dat) => {
-      if (dat.id === id) {
+    const updatedData = data.map((existing) => {
+      if (existing.id === item.id) {
         exists = true
-        return { ...dat, ...body }
+        return item
       }
-      return dat
+      return existing
     })
-    if (!exists) throw new Error(`Item ${id} not found`)
+    if (!exists) throw new Error(`Item ${item.id} not found`)
 
-    this.saveToLocalStorage(updatedData)
+    this.write(updatedData)
+  }
+
+  async updateAll(items: T[]): Promise<void> {
+    const data = this.read()
+    const dataIdSet = new Set<string>(data.map((dat) => dat.id))
+    const itemsIdSet = new Set<string>(items.map((item) => item.id))
+
+    if (items.length !== itemsIdSet.size) throw new Error("duplicate id in items")
+    if (!itemsIdSet.isSubsetOf(dataIdSet) || !dataIdSet.isSubsetOf(itemsIdSet))
+      throw new Error("id set is not equal to existing id set")
+
+    this.write(items)
   }
 
   async delete(id: string): Promise<void> {
-    const data = this.loadFromLocalStorage()
+    const data = this.read()
     const filtered = data.filter((dat) => dat.id !== id)
-    this.saveToLocalStorage(filtered)
+    this.write(filtered)
   }
 
   generateId(): string {
     return crypto.randomUUID()
-  }
-
-  serializeDate(date: Date): string {
-    return date.toISOString()
-  }
-
-  deserializeDate(rawDate: unknown): Date {
-    return new Date(rawDate as string)
   }
 }
