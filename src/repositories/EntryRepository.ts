@@ -14,8 +14,12 @@ export class EntryRepository {
     return rawDataArray.map((rawData) => EntrySchema.parse(rawData))
   }
 
-  async add(entryBody: Omit<Entry, "id">): Promise<string> {
-    return this.adapter.add(EntrySchema.omit({ id: true }).parse(entryBody))
+  async add(entryBody: Omit<Entry, "id" | "createdAt">): Promise<string> {
+    const newEntry: Omit<Entry, "id"> = {
+      ...entryBody,
+      createdAt: new Date().toISOString(),
+    }
+    return this.adapter.add(EntrySchema.omit({ id: true }).parse(newEntry))
   }
 
   async update(entry: Entry): Promise<void> {
