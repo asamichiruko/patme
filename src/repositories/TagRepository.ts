@@ -26,14 +26,14 @@ export class TagRepository {
       createdAt: new Date().toISOString(),
       sortOrder: maxSortOrder + 1,
     }
-    return this.adapter.add(newTag)
+    return await this.adapter.add(newTag)
   }
 
   async update(tag: Tag): Promise<void> {
     const allTags = await this.adapter.getAll()
     if (allTags.some((existing) => existing.title === tag.title && existing.id !== tag.id))
       throw new Error(`Tag title ${tag.title} already exists`)
-    this.adapter.update(TagSchema.parse(tag))
+    await this.adapter.update(TagSchema.parse(tag))
   }
 
   async updateSortOrders(sortedTags: Tag[]): Promise<void> {
@@ -44,7 +44,7 @@ export class TagRepository {
 
     updatedTags.forEach((tag) => TagSchema.parse(tag))
 
-    this.adapter.updateAll(updatedTags)
+    await this.adapter.updateAll(updatedTags)
   }
 
   async delete(id: string): Promise<void> {
@@ -52,6 +52,6 @@ export class TagRepository {
 
     const allTags = await this.getAll()
     allTags.sort((a, b) => a.sortOrder - b.sortOrder)
-    this.updateSortOrders(allTags)
+    await this.updateSortOrders(allTags)
   }
 }

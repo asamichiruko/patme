@@ -19,14 +19,14 @@ export class EntryRepository {
       ...entryBody,
       createdAt: new Date().toISOString(),
     }
-    return this.adapter.add(EntrySchema.omit({ id: true }).parse(newEntry))
+    return await this.adapter.add(EntrySchema.omit({ id: true }).parse(newEntry))
   }
 
   async update(entry: Entry): Promise<void> {
-    this.adapter.update(EntrySchema.parse(entry))
+    await this.adapter.update(EntrySchema.parse(entry))
   }
 
   async delete(id: string): Promise<void> {
-    this.adapter.delete(id)
+    await this.adapter.delete(id)
   }
 }

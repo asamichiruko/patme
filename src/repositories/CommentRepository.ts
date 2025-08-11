@@ -19,11 +19,11 @@ export class CommentRepository {
       ...commentBody,
       createdAt: new Date().toISOString(),
     }
-    return this.adapter.add(CommentSchema.omit({ id: true }).parse(newComment))
+    return await this.adapter.add(CommentSchema.omit({ id: true }).parse(newComment))
   }
 
   async update(comment: Comment): Promise<void> {
-    this.adapter.update(CommentSchema.parse(comment))
+    await this.adapter.update(CommentSchema.parse(comment))
   }
 
   async delete(id: string): Promise<void> {
