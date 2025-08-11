@@ -36,16 +36,18 @@ export class StorageService {
     })
   }
 
-  async markEntryReviewed(id: string): Promise<void> {
+  async updateEntryReviewedState(id: string, isReviewed: boolean): Promise<void> {
     const entry = await this.entryRepo.get(id)
     if (!entry) throw new Error(`Entry ${id} not found`)
-    await this.entryRepo.update({ ...entry, isReviewed: true })
+    await this.entryRepo.update({ ...entry, isReviewed })
   }
 
   async addCommentToEntry(
     entryId: string,
     commentBody: Omit<Comment, "id" | "entryId" | "createdAt">,
   ): Promise<string> {
+    const entry = await this.entryRepo.get(entryId)
+    if (!entry) throw new Error(`entry ${entryId} not found`)
     return await this.commentRepo.create({ ...commentBody, entryId })
   }
 
