@@ -6,7 +6,7 @@ describe("CommentRepository", async () => {
   const mockAdapter = {
     get: vi.fn(),
     getAll: vi.fn(),
-    add: vi.fn(),
+    create: vi.fn(),
     update: vi.fn(),
     updateAll: vi.fn(),
     delete: vi.fn(),
@@ -64,14 +64,14 @@ describe("CommentRepository", async () => {
   })
 
   test("新規 comment を追加できる", async () => {
-    mockAdapter.add.mockResolvedValue("id1")
+    mockAdapter.create.mockResolvedValue("id1")
     const commentBody: Omit<Comment, "id" | "createdAt"> = {
       entryId: "entryId1",
       content: "content 1",
       reviewType: "achievement",
     }
-    const id = await repo.add(commentBody)
-    expect(mockAdapter.add).toHaveBeenCalledWith({
+    const id = await repo.create(commentBody)
+    expect(mockAdapter.create).toHaveBeenCalledWith({
       ...commentBody,
       createdAt: expect.any(String),
     })

@@ -14,7 +14,7 @@ export class StorageService {
   ) {}
 
   async createEntry(entryBody: Omit<Entry, "id" | "createdAt">): Promise<string> {
-    return await this.entryRepo.add(entryBody)
+    return await this.entryRepo.create(entryBody)
   }
 
   async getAllEntriesWithRelations(): Promise<EntryWithRelations[]> {
@@ -46,7 +46,7 @@ export class StorageService {
     entryId: string,
     commentBody: Omit<Comment, "id" | "entryId" | "createdAt">,
   ): Promise<string> {
-    return await this.commentRepo.add({ ...commentBody, entryId })
+    return await this.commentRepo.create({ ...commentBody, entryId })
   }
 
   async getAllTags(): Promise<Tag[]> {
@@ -54,7 +54,7 @@ export class StorageService {
   }
 
   async createTag(tagBody: Omit<Tag, "id" | "createdAt" | "sortOrder">): Promise<string> {
-    return await this.tagRepo.add(tagBody)
+    return await this.tagRepo.create(tagBody)
   }
 
   async deleteTag(tagId: string): Promise<void> {

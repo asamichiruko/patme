@@ -14,12 +14,12 @@ export class EntryRepository {
     return rawDataArray.map((rawData) => EntrySchema.parse(rawData))
   }
 
-  async add(entryBody: Omit<Entry, "id" | "createdAt">): Promise<string> {
+  async create(entryBody: Omit<Entry, "id" | "createdAt">): Promise<string> {
     const newEntry: Omit<Entry, "id"> = {
       ...entryBody,
       createdAt: new Date().toISOString(),
     }
-    return await this.adapter.add(EntrySchema.omit({ id: true }).parse(newEntry))
+    return await this.adapter.create(EntrySchema.omit({ id: true }).parse(newEntry))
   }
 
   async update(entry: Entry): Promise<void> {

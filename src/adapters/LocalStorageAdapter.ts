@@ -20,7 +20,7 @@ export class LocalStorageAdapter<T extends { id: string }> implements DataStoreA
     return this.read()
   }
 
-  async add(itemBody: Omit<T, "id">): Promise<string> {
+  async create(itemBody: Omit<T, "id">): Promise<string> {
     const data = this.read()
     const id = this.generateId()
 

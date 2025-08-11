@@ -14,7 +14,7 @@ export class TagRepository {
     return rawDataArray.map((rawData) => TagSchema.parse(rawData))
   }
 
-  async add(tagBody: Omit<Tag, "id" | "createdAt" | "sortOrder">): Promise<string> {
+  async create(tagBody: Omit<Tag, "id" | "createdAt" | "sortOrder">): Promise<string> {
     const allTags = await this.adapter.getAll()
     if (allTags.some((t) => t.title === tagBody.title))
       throw new Error(`Tag title ${tagBody.title} already exists`)
@@ -26,7 +26,7 @@ export class TagRepository {
       createdAt: new Date().toISOString(),
       sortOrder: maxSortOrder + 1,
     }
-    return await this.adapter.add(newTag)
+    return await this.adapter.create(newTag)
   }
 
   async update(tag: Tag): Promise<void> {

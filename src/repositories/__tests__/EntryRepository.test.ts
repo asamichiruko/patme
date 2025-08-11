@@ -6,7 +6,7 @@ describe("EntryRepository", () => {
   const mockAdapter = {
     get: vi.fn(),
     getAll: vi.fn(),
-    add: vi.fn(),
+    create: vi.fn(),
     update: vi.fn(),
     updateAll: vi.fn(),
     delete: vi.fn(),
@@ -68,15 +68,15 @@ describe("EntryRepository", () => {
   })
 
   test("新規 entry を追加できる", async () => {
-    mockAdapter.add.mockResolvedValue("id1")
+    mockAdapter.create.mockResolvedValue("id1")
     const entryBody: Omit<Entry, "id" | "createdAt"> = {
       content: "content 1",
       entryType: "achievement",
       isReviewed: false,
       tagIds: [],
     }
-    const id = await repo.add(entryBody)
-    expect(mockAdapter.add).toHaveBeenCalledWith({
+    const id = await repo.create(entryBody)
+    expect(mockAdapter.create).toHaveBeenCalledWith({
       ...entryBody,
       createdAt: expect.any(String),
     })

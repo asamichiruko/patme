@@ -14,12 +14,12 @@ export class CommentRepository {
     return rawDataArray.map((rawData) => CommentSchema.parse(rawData))
   }
 
-  async add(commentBody: Omit<Comment, "id" | "createdAt">): Promise<string> {
+  async create(commentBody: Omit<Comment, "id" | "createdAt">): Promise<string> {
     const newComment: Omit<Comment, "id"> = {
       ...commentBody,
       createdAt: new Date().toISOString(),
     }
-    return await this.adapter.add(CommentSchema.omit({ id: true }).parse(newComment))
+    return await this.adapter.create(CommentSchema.omit({ id: true }).parse(newComment))
   }
 
   async update(comment: Comment): Promise<void> {

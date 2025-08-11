@@ -6,7 +6,7 @@ describe("TagRepository", () => {
   const mockAdapter = {
     get: vi.fn(),
     getAll: vi.fn(),
-    add: vi.fn(),
+    create: vi.fn(),
     update: vi.fn(),
     updateAll: vi.fn(),
     delete: vi.fn(),
@@ -69,12 +69,12 @@ describe("TagRepository", () => {
       },
     ])
 
-    mockAdapter.add.mockResolvedValue("id2")
+    mockAdapter.create.mockResolvedValue("id2")
     const tagBody: Omit<Tag, "id" | "createdAt" | "sortOrder"> = {
       title: "title 2",
     }
-    const id = await repo.add(tagBody)
-    expect(mockAdapter.add).toHaveBeenCalledWith({
+    const id = await repo.create(tagBody)
+    expect(mockAdapter.create).toHaveBeenCalledWith({
       ...tagBody,
       createdAt: expect.any(String),
       sortOrder: 1,

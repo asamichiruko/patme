@@ -10,8 +10,8 @@ describe("LocalStorageAdapter", () => {
   })
 
   test("全 item を取得できる", async () => {
-    await adapter.add({ value: "value 1" })
-    await adapter.add({ value: "value 2" })
+    await adapter.create({ value: "value 1" })
+    await adapter.create({ value: "value 2" })
     const gotItems = await adapter.getAll()
     expect(gotItems).toHaveLength(2)
     expect(gotItems.map((i) => i.value).sort()).toEqual(["value 1", "value 2"])
@@ -29,7 +29,7 @@ describe("LocalStorageAdapter", () => {
 
   test("新規 item を追加できる", async () => {
     const item = { value: "value 1" }
-    const id = await adapter.add(item)
+    const id = await adapter.create(item)
     const gotItem = await adapter.get(id)
     expect(gotItem).not.toBeNull()
     expect(gotItem!.value).toEqual(item.value)
@@ -37,15 +37,15 @@ describe("LocalStorageAdapter", () => {
 
   test("id が重複する item は追加できない", async () => {
     const spy = vi.spyOn(adapter, "generateId").mockReturnValue("id1")
-    await adapter.add({ value: "old value" })
+    await adapter.create({ value: "old value" })
     await expect(async () => {
-      await adapter.add({ value: "new value" })
+      await adapter.create({ value: "new value" })
     }).rejects.toThrow()
     spy.mockRestore()
   })
 
   test("存在する item を更新できる", async () => {
-    const id = await adapter.add({ value: "old value" })
+    const id = await adapter.create({ value: "old value" })
     await adapter.update({ id: id, value: "new value" })
     const updated = await adapter.get(id)
     expect(updated).not.toBeNull()
@@ -59,7 +59,7 @@ describe("LocalStorageAdapter", () => {
   })
 
   test("item を削除できる", async () => {
-    const id = await adapter.add({ value: "value 1" })
+    const id = await adapter.create({ value: "value 1" })
     let gotItem = await adapter.get(id)
     expect(gotItem).not.toBeNull()
 
@@ -69,8 +69,8 @@ describe("LocalStorageAdapter", () => {
   })
 
   test("複数の item を一度に更新できる", async () => {
-    const id1 = await adapter.add({ value: "old value 1" })
-    const id2 = await adapter.add({ value: "old value 2" })
+    const id1 = await adapter.create({ value: "old value 1" })
+    const id2 = await adapter.create({ value: "old value 2" })
     await adapter.updateAll([
       { id: id1, value: "new value 1" },
       { id: id2, value: "new value 2" },
@@ -82,8 +82,8 @@ describe("LocalStorageAdapter", () => {
   })
 
   test("updateAll で指定した ids に重複があってはならない", async () => {
-    const id1 = await adapter.add({ value: "old value 1" })
-    await adapter.add({ value: "old value 2" })
+    const id1 = await adapter.create({ value: "old value 1" })
+    await adapter.create({ value: "old value 2" })
 
     await expect(async () => {
       await adapter.updateAll([
@@ -94,8 +94,8 @@ describe("LocalStorageAdapter", () => {
   })
 
   test("updateAll で指定した ids と bodies の数は等しくなければならない", async () => {
-    const id1 = await adapter.add({ value: "old value 1" })
-    await adapter.add({ value: "old value 2" })
+    const id1 = await adapter.create({ value: "old value 1" })
+    await adapter.create({ value: "old value 2" })
 
     await expect(async () => {
       await adapter.updateAll([{ id: id1, value: "new value 1" }])
@@ -103,8 +103,8 @@ describe("LocalStorageAdapter", () => {
   })
 
   test("updateAll で指定した ids はすべて存在しなければならない", async () => {
-    const id1 = await adapter.add({ value: "old value 1" })
-    await adapter.add({ value: "old value 2" })
+    const id1 = await adapter.create({ value: "old value 1" })
+    await adapter.create({ value: "old value 2" })
 
     await expect(async () => {
       await adapter.updateAll([
