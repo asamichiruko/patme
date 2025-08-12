@@ -1,9 +1,10 @@
-<script setup>
+<script setup lang="ts">
+import type { Comment } from "@/schemas/Comment"
 import { formatRelativeDate } from "@/utils/formatDate.js"
 
-const props = defineProps({
-  stars: Array,
-})
+const props = defineProps<{
+  comments: Comment[]
+}>()
 
 const reviewTypeLabels = {
   achievement: "よかったこと",
@@ -13,14 +14,18 @@ const reviewTypeLabels = {
 </script>
 
 <template>
-  <template v-if="props.stars.length !== 0">
+  <template v-if="props.comments.length !== 0">
     <ul class="stars">
-      <li :class="['star-comment', star.reviewType]" v-for="star in props.stars" :key="star.id">
-        <div v-if="star.reviewType" class="reviewed-message">
-          {{ reviewTypeLabels[star.reviewType] }} として再評価
+      <li
+        :class="['star-comment', comment.reviewType]"
+        v-for="comment in props.comments"
+        :key="comment.id"
+      >
+        <div v-if="comment.reviewType" class="reviewed-message">
+          {{ reviewTypeLabels[comment.reviewType] }} として再評価
         </div>
-        <div class="star-content">{{ star.content }}</div>
-        <div class="star-date">{{ formatRelativeDate(star.date) }}</div>
+        <div class="star-content">{{ comment.content }}</div>
+        <div class="star-date">{{ formatRelativeDate(comment.createdAt) }}</div>
       </li>
     </ul>
   </template>

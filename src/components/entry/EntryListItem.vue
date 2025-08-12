@@ -1,45 +1,41 @@
-<script setup>
+<script setup lang="ts">
 import commentImg from "@/assets/comment.svg"
 import tagImg from "@/assets/tag.svg"
 
 import StarList from "@/components/entry/StarList.vue"
 import TagPillList from "@/components/tag/TagPillList.vue"
 
-import { useAddCommentDialog } from "@/composables/useAddCommentDialog.js"
+import { useAddCommentDialog } from "@/composables/useAddCommentDialog"
 import { useNotificationBar } from "@/composables/useNotificationBar.js"
 import { useTaggingDialog } from "@/composables/useTaggingDialog.js"
-import { useEntryStore } from "@/stores/useEntryStore.js"
-import { useTaggingStore } from "@/stores/useTaggingStore.js"
+import type { EntryWithRelations } from "@/schemas/EntryWithRelations"
+import { useCommentStore } from "@/stores/useCommentStore"
+import { useEntryStore } from "@/stores/useEntryStore"
 import { formatRelativeDate } from "@/utils/formatDate.js"
 
 const { trigger } = useNotificationBar()
 const { openTaggingDialog } = useTaggingDialog()
 const { openAddComment } = useAddCommentDialog()
 const entryStore = useEntryStore()
-const taggingStore = useTaggingStore()
+const commentStore = useCommentStore()
 
-const props = defineProps({
-  entry: Object,
-})
+const props = defineProps<{
+  entry: EntryWithRelations
+}>()
 
 const handleAddComment = async () => {
-  const result = await openAddComment({
-    defaultValue: "",
-    entryType: props.entry.entryType,
-  })
+  const result = await openAddComment(props.entry.entryType)
 
   if (!result) {
     return
   }
 
-  const star = entryStore.addStar({
-    achievementId: props.entry.id,
+  const comment = await commentStore.addComment(props.entry.id, {
     content: result.content,
     reviewType: result.reviewType,
-    date: new Date(),
   })
 
-  if (star) {
+  if (comment) {
     trigger("コメントを記録しました！", "success")
   } else {
     trigger("記録に失敗しました。時間をおいて再度お試しください", "error")
@@ -48,14 +44,14 @@ const handleAddComment = async () => {
 
 const handleUpdateTagging = async () => {
   const tagIds = await openTaggingDialog({
-    initialTagIds: props.entry.tags.map((t) => t.id),
+    initialTagIds: props.entry.tagIds,
   })
 
   if (!tagIds) {
     return
   }
 
-  taggingStore.updateTaggings({ achievementId: props.entry.id, tagIds })
+  await entryStore.updateEntryTags(props.entry.id, tagIds)
 }
 
 const entryTypeLabel = {
@@ -72,15 +68,15 @@ const entryTypeLabel = {
         <span class="entry-type">{{ entryTypeLabel[props.entry.entryType] }}</span>
         <small v-if="props.entry.isReviewed">（再評価済み）</small>
       </div>
-      <div class="achievement-date">{{ formatRelativeDate(props.entry.date) }}</div>
+      <div class="achievement-date">{{ formatRelativeDate(props.entry.createdAt) }}</div>
     </div>
 
     <div class="achievement-content">
       {{ props.entry.content }}
     </div>
 
-    <TagPillList :tags="props.entry.tags" />
-    <StarList :stars="props.entry.stars" />
+    <TagPillList :tags="props.entry.tagIds" />
+    <StarList :stars="props.entry.comments" />
 
     <div class="entry-actions">
       <button class="action-button" @click="handleAddComment">

@@ -1,21 +1,21 @@
-<script setup>
+<script setup lang="ts">
 import { useAddCommentDialog } from "@/composables/useAddCommentDialog.js"
+import type { Comment } from "@/schemas/Comment"
+import type { EntryType } from "@/schemas/EntryType"
 import { ref, watch } from "vue"
 
 const emit = defineEmits(["submit", "cancel"])
 
-const { isOpen, params, closeAddComment } = useAddCommentDialog()
+const { isOpen, originalEntryType, closeAddComment } = useAddCommentDialog()
 
-const dialogRef = ref(null)
+const dialogRef = ref<HTMLDialogElement | null>(null)
 const inputValue = ref("")
-const entryType = ref(null)
 const showTypeReset = ref(false)
-const selectedType = ref("achievement")
+const selectedType = ref<EntryType | null>("achievement")
 
 watch(isOpen, (val) => {
   if (val) {
-    inputValue.value = params.value.defaultValue
-    entryType.value = params.value.entryType
+    inputValue.value = ""
     showTypeReset.value = false
     dialogRef.value?.showModal()
   } else {
@@ -30,7 +30,10 @@ watch(showTypeReset, (val) => {
 })
 
 const submit = () => {
-  const result = { content: inputValue.value, reviewType: selectedType.value }
+  const result: Omit<Comment, "id" | "entryId" | "createdAt"> | null = {
+    content: inputValue.value,
+    reviewType: selectedType.value,
+  }
   emit("submit", result)
   closeAddComment(result)
 }
@@ -85,7 +88,7 @@ const options = [
               />
               <div class="entry-type-label">
                 {{ option.label }}
-                <small v-if="entryType === option.value"> （以前と同じ評価） </small>
+                <small v-if="originalEntryType === option.value"> （以前と同じ評価） </small>
               </div>
             </label>
           </fieldset>

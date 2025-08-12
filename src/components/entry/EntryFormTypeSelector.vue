@@ -1,9 +1,9 @@
-<script setup>
+<script setup lang="ts">
 import { computed } from "vue"
 
-const props = defineProps({
-  modelValue: String,
-})
+const props = defineProps<{
+  modelValue: string
+}>()
 const emit = defineEmits(["update:modelValue"])
 
 const localValue = computed({

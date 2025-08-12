@@ -1,25 +1,27 @@
-<script setup>
+<script setup lang="ts">
 import EntryFormTypeSelector from "@/components/entry/EntryFormTypeSelector.vue"
 import { useNotificationBar } from "@/composables/useNotificationBar.js"
-import { useEntryStore } from "@/stores/useEntryStore.js"
+import type { EntryType } from "@/schemas/EntryType"
+import { useEntryStore } from "@/stores/useEntryStore"
 import { ref } from "vue"
 
 const entryStore = useEntryStore()
 const { trigger } = useNotificationBar()
-const text = ref("")
+const text = ref<string>("")
 const textareaRef = ref(null)
-const entryType = ref("achievement")
+const entryType = ref<EntryType>("achievement")
 
-const submit = () => {
+const submit = async () => {
   const content = text.value.trim()
   if (!content) {
     trigger("記録内容を入力してください", "error")
     return
   }
-  const result = entryStore.addAchievement({
+  const result = await entryStore.createEntry({
     content,
-    date: new Date(),
     entryType: entryType.value,
+    isReviewed: false,
+    tagIds: [],
   })
   if (result) {
     text.value = ""

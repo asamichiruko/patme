@@ -1,17 +1,17 @@
-<script setup>
+<script setup lang="ts">
 import EntryListFilterSelector from "@/components/entry/EntryListFilterSelector.vue"
 import EntryListItem from "@/components/entry/EntryListItem.vue"
+import type { EntryType } from "@/schemas/EntryType"
+import type { EntryWithRelations } from "@/schemas/EntryWithRelations"
 import { useEntryStore } from "@/stores/useEntryStore"
-import { subscribe } from "@/utils/storageNotifier.js"
 import { onMounted, ref, watch } from "vue"
 
 const entryStore = useEntryStore()
-const entries = ref([])
-const viewEntryType = ref("all")
+const entries = ref<EntryWithRelations[]>([])
+const viewEntryType = ref<EntryType | "all" | "reviewed">("all")
 
 const reload = () => {
-  entries.value = entryStore
-    .getEntriesWithTags()
+  entries.value = entryStore.entriesWithRelations
     .filter((a) => {
       switch (viewEntryType.value) {
         case "all":
@@ -22,11 +22,10 @@ const reload = () => {
           return a.entryType === viewEntryType.value
       }
     })
-    .toSorted((a, b) => new Date(b.date) - new Date(a.date))
+    .toSorted((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
 }
 
 onMounted(() => {
-  subscribe(reload)
   reload()
 })
 
