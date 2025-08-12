@@ -46,7 +46,25 @@ export const useEntryStore = defineStore("entry", () => {
     }
   }
 
-  return { entriesWithRelations, fetchEntriesWithRelations, createEntry, updateReviewedState }
+  async function updateEntryTags(id: string, tagIds: string[]): Promise<void> {
+    if (!instance) {
+      throw new Error("StorageService has not been initialized")
+    }
+    try {
+      await instance.updateEntryTags(id, tagIds)
+      await fetchEntriesWithRelations()
+    } catch (err) {
+      console.error("Failed to update entry tags", err)
+    }
+  }
+
+  return {
+    entriesWithRelations,
+    fetchEntriesWithRelations,
+    createEntry,
+    updateReviewedState,
+    updateEntryTags,
+  }
 })
 
 export function initializeEntryService(service: StorageService) {

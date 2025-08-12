@@ -42,6 +42,12 @@ export class StorageService {
     await this.entryRepo.update({ ...entry, isReviewed })
   }
 
+  async updateEntryTags(id: string, tagIds: string[]): Promise<void> {
+    const entry = await this.entryRepo.get(id)
+    if (!entry) throw new Error(`Entry ${id} not found`)
+    await this.entryRepo.update({ ...entry, tagIds })
+  }
+
   async addCommentToEntry(
     entryId: string,
     commentBody: Omit<Comment, "id" | "entryId" | "createdAt">,
