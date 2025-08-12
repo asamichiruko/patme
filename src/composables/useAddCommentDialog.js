@@ -4,8 +4,8 @@ const isOpen = ref(false)
 const params = ref({})
 let resolver = null
 
-export function usePromptDialog() {
-  const openPrompt = ({ defaultValue = "", entryType = null } = {}) => {
+export function useAddCommentDialog() {
+  const openAddComment = ({ defaultValue = "", entryType = null } = {}) => {
     return new Promise((resolve) => {
       params.value = { defaultValue, entryType }
       isOpen.value = true
@@ -13,7 +13,7 @@ export function usePromptDialog() {
     })
   }
 
-  const closePrompt = (result = null) => {
+  const closeAddComment = (result = null) => {
     if (resolver) {
       resolver(result)
     }
@@ -24,7 +24,7 @@ export function usePromptDialog() {
   return {
     isOpen,
     params,
-    openPrompt,
-    closePrompt,
+    openAddComment,
+    closeAddComment,
   }
 }

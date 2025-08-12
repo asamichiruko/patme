@@ -5,8 +5,8 @@ import tagImg from "@/assets/tag.svg"
 import StarList from "@/components/entry/StarList.vue"
 import TagPillList from "@/components/tag/TagPillList.vue"
 
+import { useAddCommentDialog } from "@/composables/useAddCommentDialog.js"
 import { useNotificationBar } from "@/composables/useNotificationBar.js"
-import { usePromptDialog } from "@/composables/usePromptDialog.js"
 import { useTaggingDialog } from "@/composables/useTaggingDialog.js"
 import { useEntryStore } from "@/stores/useEntryStore.js"
 import { useTaggingStore } from "@/stores/useTaggingStore.js"
@@ -14,7 +14,7 @@ import { formatRelativeDate } from "@/utils/formatDate.js"
 
 const { trigger } = useNotificationBar()
 const { openTaggingDialog } = useTaggingDialog()
-const { openPrompt } = usePromptDialog()
+const { openAddComment } = useAddCommentDialog()
 const entryStore = useEntryStore()
 const taggingStore = useTaggingStore()
 
@@ -23,7 +23,7 @@ const props = defineProps({
 })
 
 const handleAddComment = async () => {
-  const result = await openPrompt({
+  const result = await openAddComment({
     defaultValue: "",
     entryType: props.entry.entryType,
   })

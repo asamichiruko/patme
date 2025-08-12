@@ -1,10 +1,10 @@
 <script setup>
-import { usePromptDialog } from "@/composables/usePromptDialog.js"
+import { useAddCommentDialog } from "@/composables/useAddCommentDialog.js"
 import { ref, watch } from "vue"
 
 const emit = defineEmits(["submit", "cancel"])
 
-const { isOpen, params, closePrompt } = usePromptDialog()
+const { isOpen, params, closeAddComment } = useAddCommentDialog()
 
 const dialogRef = ref(null)
 const inputValue = ref("")
@@ -32,12 +32,12 @@ watch(showTypeReset, (val) => {
 const submit = () => {
   const result = { content: inputValue.value, reviewType: selectedType.value }
   emit("submit", result)
-  closePrompt(result)
+  closeAddComment(result)
 }
 
 const cancel = () => {
   emit("cancel")
-  closePrompt(null)
+  closeAddComment(null)
 }
 
 const options = [
