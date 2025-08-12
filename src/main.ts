@@ -1,7 +1,9 @@
 import { createApp } from "vue"
 import { createPinia } from "pinia"
-import { storagePlugin } from "./plugins/storagePlugin"
 import { createStorageService } from "./services/createStorageService"
+import { initializeEntryService } from "./stores/useEntryStore"
+import { initializeCommentService } from "./stores/useCommentStore"
+import { initializeTagService } from "./stores/useTagStore"
 import router from "./router"
 import App from "./App.vue"
 
@@ -11,8 +13,9 @@ const pinia = createPinia()
 const storageService = createStorageService({
   backend: import.meta.env.VITE_STORAGE_BACKEND as "local" | "firestore",
 })
-
-pinia.use(storagePlugin(storageService))
+initializeEntryService(storageService)
+initializeCommentService(storageService)
+initializeTagService(storageService)
 
 app.use(pinia)
 app.use(router)

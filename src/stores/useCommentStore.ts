@@ -1,11 +1,29 @@
 import { defineStore } from "pinia"
 import type { Comment } from "@/schemas/Comment"
+import type { StorageService } from "@/services/StorageService"
 
-export const useCommentStore = defineStore("comment", {
-  actions: {
-    async addComment(entryId: string, commentBody: Omit<Comment, "id" | "entryId" | "createdAt">) {
-      const id = await this.$storage.addCommentToEntry(entryId, commentBody)
+let instance: StorageService | null = null
+
+export const useCommentStore = defineStore("comment", () => {
+  async function addComment(
+    entryId: string,
+    commentBody: Omit<Comment, "id" | "entryId" | "createdAt">,
+  ): Promise<string | null> {
+    if (!instance) {
+      throw new Error("StorageService has not been initialized")
+    }
+    try {
+      const id = await instance.addCommentToEntry(entryId, commentBody)
       return id
-    },
-  },
+    } catch (err) {
+      console.error("Failed to create comment", err)
+      return null
+    }
+  }
+
+  return { addComment }
 })
+
+export function initializeCommentService(service: StorageService) {
+  instance = service
+}
