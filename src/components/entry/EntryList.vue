@@ -11,8 +11,24 @@ const entryStore = useEntryStore()
 const entries = ref<EntryWithRelations[]>([])
 const viewEntryType = ref<EntryType | "all" | "reviewed">("all")
 
+const filterEntries = () => {
+  entries.value = entryStore.entriesWithRelations
+    .filter((a) => {
+      switch (viewEntryType.value) {
+        case "all":
+          return true
+        case "reviewed":
+          return a.isReviewed
+        default:
+          return a.entryType === viewEntryType.value
+      }
+    })
+    .toSorted((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+}
+
 const reload = async () => {
   await entryStore.fetchEntriesWithRelations()
+  filterEntries()
 }
 
 onMounted(async () => {
@@ -22,18 +38,7 @@ onMounted(async () => {
 watch(
   viewEntryType,
   () => {
-    entries.value = entryStore.entriesWithRelations
-      .filter((a) => {
-        switch (viewEntryType.value) {
-          case "all":
-            return true
-          case "reviewed":
-            return a.isReviewed
-          default:
-            return a.entryType === viewEntryType.value
-        }
-      })
-      .toSorted((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+    filterEntries()
   },
   { immediate: true },
 )
