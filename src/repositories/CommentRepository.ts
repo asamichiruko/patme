@@ -29,4 +29,8 @@ export class CommentRepository {
   async delete(id: string): Promise<void> {
     await this.adapter.delete(id)
   }
+
+  async restoreAll(comments: Comment[]) {
+    await this.adapter.restoreAll(comments)
+  }
 }

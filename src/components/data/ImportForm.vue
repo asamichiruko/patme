@@ -1,14 +1,14 @@
-<script setup>
-import { ref } from "vue"
+<script setup lang="ts">
 import { useNotificationBar } from "@/composables/useNotificationBar.js"
-import { useDataTransferStore } from "@/stores/useDataTransferStore.js"
+import { useDataTransferStore } from "@/stores/useDataTransferStore"
+import { ref } from "vue"
 
 const { trigger } = useNotificationBar()
 const dataTransferStore = useDataTransferStore()
-const fileInput = ref(null)
+const fileInput = ref<HTMLInputElement | null>(null)
 
-const importData = async (e) => {
-  const file = e.target.files[0]
+const importData = async (e: Event) => {
+  const file = (e.target as HTMLInputElement).files?.[0]
   if (!file) {
     return
   } else if (file.type !== "application/json") {
@@ -16,11 +16,13 @@ const importData = async (e) => {
     return
   }
   try {
-    await dataTransferStore.importFromFile(file)
-    trigger("データを復元しました", "success")
+    const text = await file.text()
+    const data = JSON.parse(text)
+    await dataTransferStore.restoreAll(data)
+    trigger("データをリストアしました", "success")
   } catch (err) {
     trigger(
-      `データの復元に失敗しました。選択したデータの内容を確認し、時間をおいて再度お試しください`,
+      `データのリストアに失敗しました。選択したデータの内容を確認し、時間をおいて再度お試しください`,
       "error",
     )
     console.error(err)
@@ -35,13 +37,7 @@ const selectFile = () => {
 <template>
   <form @submit.prevent="selectFile">
     <button type="submit" class="primary-button">記録をインポートする...</button>
-    <input
-      ref="fileInput"
-      type="file"
-      data-testid="import-file"
-      accept=".json"
-      @change="importData"
-    />
+    <input ref="fileInput" type="file" accept=".json" @change="importData" />
   </form>
 </template>
 

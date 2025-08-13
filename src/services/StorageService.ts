@@ -5,6 +5,7 @@ import type { Comment } from "@/schemas/Comment"
 import type { Entry } from "@/schemas/Entry"
 import type { EntryWithRelations } from "@/schemas/EntryWithRelations"
 import type { Tag } from "@/schemas/Tag"
+import type { ExportedData } from "@/types"
 
 export class StorageService {
   constructor(
@@ -75,5 +76,40 @@ export class StorageService {
 
   async reorderTags(orderedTags: Tag[]): Promise<void> {
     await this.tagRepo.updateSortOrders(orderedTags)
+  }
+
+  async exportAllData(): Promise<ExportedData> {
+    const [entries, comments, tags] = await Promise.all([
+      this.entryRepo.getAll(),
+      this.commentRepo.getAll(),
+      this.tagRepo.getAll(),
+    ])
+
+    return {
+      version: 1,
+      entries,
+      comments,
+      tags,
+    }
+  }
+
+  async restoreAllData(data: ExportedData): Promise<void> {
+    if (data.version !== 1) {
+      throw new Error("Unsupported export data version")
+    }
+
+    if (
+      !Array.isArray(data.entries) ||
+      !Array.isArray(data.comments) ||
+      !Array.isArray(data.tags)
+    ) {
+      throw new Error("Invalid data format")
+    }
+
+    await Promise.all([
+      this.entryRepo.restoreAll(data.entries),
+      this.commentRepo.restoreAll(data.comments),
+      this.tagRepo.restoreAll(data.tags),
+    ])
   }
 }

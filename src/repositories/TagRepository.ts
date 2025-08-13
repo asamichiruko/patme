@@ -60,4 +60,8 @@ export class TagRepository {
     allTags.sort((a, b) => a.sortOrder - b.sortOrder)
     await this.updateSortOrders(allTags)
   }
+
+  async restoreAll(tags: Tag[]) {
+    await this.adapter.restoreAll(tags)
+  }
 }

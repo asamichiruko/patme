@@ -1,7 +1,7 @@
-<script setup>
-import TagManager from "@/components/tag/TagManager.vue"
-import ImportForm from "@/components/data/ImportForm.vue"
+<script setup lang="ts">
 import ExportForm from "@/components/data/ExportForm.vue"
+import ImportForm from "@/components/data/ImportForm.vue"
+import TagManager from "@/components/tag/TagManager.vue"
 </script>
 
 <template>
@@ -13,20 +13,20 @@ import ExportForm from "@/components/data/ExportForm.vue"
 
     <section>
       <h2>エクスポート</h2>
+      <ExportForm />
       <p>
         記録を JSON
         ファイルとしてエクスポートします。エクスポートファイルは記録の復元に利用できます。
       </p>
-      <ExportForm />
     </section>
 
     <section>
       <h2>インポート</h2>
+      <ImportForm />
       <p>
         保存した JSON
-        ファイルをアップロードして記録をインポートします。差分の記録だけを追加し、既存の記録は上書きしません。
+        アップロードしたファイルの内容で記録をリストアします。<strong>既存の記録を上書き</strong>します。
       </p>
-      <ImportForm />
     </section>
   </div>
 </template>

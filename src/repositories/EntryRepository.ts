@@ -29,4 +29,8 @@ export class EntryRepository {
   async delete(id: string): Promise<void> {
     await this.adapter.delete(id)
   }
+
+  async restoreAll(entries: Entry[]) {
+    await this.adapter.restoreAll(entries)
+  }
 }

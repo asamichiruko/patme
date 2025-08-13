@@ -70,4 +70,8 @@ export class LocalStorageAdapter<T extends { id: string }> implements DataStoreA
   generateId(): string {
     return crypto.randomUUID()
   }
+
+  async restoreAll(items: T[]): Promise<void> {
+    this.write(items)
+  }
 }

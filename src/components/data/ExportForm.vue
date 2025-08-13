@@ -1,6 +1,6 @@
-<script setup>
+<script setup lang="ts">
 import { useNotificationBar } from "@/composables/useNotificationBar.js"
-import { useDataTransferStore } from "@/stores/useDataTransferStore.js"
+import { useDataTransferStore } from "@/stores/useDataTransferStore"
 
 const { trigger } = useNotificationBar()
 const dataTransferStore = useDataTransferStore()
@@ -10,9 +10,14 @@ const filenameFromDate = () => {
   return `entries-${dateString}.json`
 }
 
-const exportData = () => {
-  const file = dataTransferStore.exportToFile()
-  const url = URL.createObjectURL(file)
+const exportData = async () => {
+  const exported = await dataTransferStore.exportAll()
+  if (!exported) {
+    trigger("データのエクスポートに失敗しました。時間をおいて再度お試しください")
+    return
+  }
+  const blob = new Blob([JSON.stringify(exported, null, 2)], { type: "application/json" })
+  const url = URL.createObjectURL(blob)
   const a = document.createElement("a")
   a.href = url
   a.download = filenameFromDate()
