@@ -5,14 +5,11 @@ import type { EntryType } from "@/schemas/EntryType"
 import type { EntryWithRelations } from "@/schemas/EntryWithRelations"
 import { useEntryStore } from "@/stores/useEntryStore"
 import { subscribe } from "@/utils/storageNotifier"
-import { onMounted, ref, watch } from "vue"
+import { computed, onMounted, ref } from "vue"
 
 const entryStore = useEntryStore()
-const entries = ref<EntryWithRelations[]>([])
-const viewEntryType = ref<EntryType | "all" | "reviewed">("all")
-
-const filterEntries = () => {
-  entries.value = entryStore.entriesWithRelations
+const entries = computed<EntryWithRelations[]>(() =>
+  entryStore.entriesWithRelations
     .filter((a) => {
       switch (viewEntryType.value) {
         case "all":
@@ -23,25 +20,17 @@ const filterEntries = () => {
           return a.entryType === viewEntryType.value
       }
     })
-    .toSorted((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-}
+    .toSorted((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
+)
+const viewEntryType = ref<EntryType | "all" | "reviewed">("all")
 
 const reload = async () => {
   await entryStore.fetchEntriesWithRelations()
-  filterEntries()
 }
 
 onMounted(async () => {
   subscribe(reload)
 })
-
-watch(
-  viewEntryType,
-  () => {
-    filterEntries()
-  },
-  { immediate: true },
-)
 </script>
 
 <template>
