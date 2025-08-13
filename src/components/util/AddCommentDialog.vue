@@ -11,12 +11,13 @@ const { isOpen, originalEntryType, closeAddComment } = useAddCommentDialog()
 const dialogRef = ref<HTMLDialogElement | null>(null)
 const inputValue = ref("")
 const showTypeReset = ref(false)
-const selectedType = ref<EntryType | null>("achievement")
+const selectedType = ref<EntryType | null>(null)
 
 watch(isOpen, (val) => {
   if (val) {
     inputValue.value = ""
     showTypeReset.value = false
+    selectedType.value = null
     dialogRef.value?.showModal()
   } else {
     dialogRef.value?.close()
@@ -24,8 +25,10 @@ watch(isOpen, (val) => {
 })
 
 watch(showTypeReset, (val) => {
-  if (!val) {
+  if (val) {
     selectedType.value = "achievement"
+  } else {
+    selectedType.value = null
   }
 })
 

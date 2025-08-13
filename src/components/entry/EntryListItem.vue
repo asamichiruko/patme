@@ -2,12 +2,12 @@
 import commentImg from "@/assets/comment.svg"
 import tagImg from "@/assets/tag.svg"
 
-import StarList from "@/components/entry/StarList.vue"
 import TagPillList from "@/components/tag/TagPillList.vue"
+import CommentList from "./CommentList.vue"
 
 import { useAddCommentDialog } from "@/composables/useAddCommentDialog"
 import { useNotificationBar } from "@/composables/useNotificationBar.js"
-import { useTaggingDialog } from "@/composables/useTaggingDialog.js"
+import { useTaggingDialog } from "@/composables/useTaggingDialog"
 import type { EntryWithRelations } from "@/schemas/EntryWithRelations"
 import { useCommentStore } from "@/stores/useCommentStore"
 import { useEntryStore } from "@/stores/useEntryStore"
@@ -43,9 +43,7 @@ const handleAddComment = async () => {
 }
 
 const handleUpdateTagging = async () => {
-  const tagIds = await openTaggingDialog({
-    initialTagIds: props.entry.tagIds,
-  })
+  const tagIds = await openTaggingDialog(props.entry.tagIds)
 
   if (!tagIds) {
     return
@@ -76,7 +74,7 @@ const entryTypeLabel = {
     </div>
 
     <TagPillList :tags="props.entry.tagIds" />
-    <StarList :stars="props.entry.comments" />
+    <CommentList :comments="props.entry.comments" />
 
     <div class="entry-actions">
       <button class="action-button" @click="handleAddComment">

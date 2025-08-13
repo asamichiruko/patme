@@ -25,7 +25,8 @@ const reload = () => {
     .toSorted((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
 }
 
-onMounted(() => {
+onMounted(async () => {
+  await entryStore.fetchEntriesWithRelations()
   reload()
 })
 

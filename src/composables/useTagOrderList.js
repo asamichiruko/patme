@@ -46,7 +46,11 @@ export function useTagOrderList(tags, getHandleElementById) {
     }
 
     if (event.key === "Enter" || event.key === " ") {
-      isActive(tagId) ? deactivate() : activate(tagId)
+      if (isActive(tagId)) {
+        deactivated()
+      } else {
+        activate(tagId)
+      }
       event.preventDefault()
       return
     }

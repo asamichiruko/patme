@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import TaggingDialog from "@/components/tag/TaggingDialog.vue"
+import AddCommentDialog from "@/components/util/AddCommentDialog.vue"
 import ConfirmDialog from "@/components/util/ConfirmDialog.vue"
 import NotificationBar from "@/components/util/NotificationBar.vue"
-import PromptDialog from "@/components/util/PromptDialog.vue"
 import TabNavigation from "@/components/util/TabNavigation.vue"
 </script>
 
@@ -12,7 +12,7 @@ import TabNavigation from "@/components/util/TabNavigation.vue"
   <div class="container">
     <RouterView />
   </div>
-  <PromptDialog />
+  <AddCommentDialog />
   <TaggingDialog />
   <ConfirmDialog />
 </template>

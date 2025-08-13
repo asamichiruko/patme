@@ -1,24 +1,21 @@
-<script setup>
-import { computed, nextTick, ref, watch } from "vue"
+<script setup lang="ts">
 import TagCreateInlineForm from "@/components/tag/TagCreateInlineForm.vue"
-import { useTaggingDialog } from "@/composables/useTaggingDialog.js"
+import { useTaggingDialog } from "@/composables/useTaggingDialog"
+import type { Tag } from "@/schemas/Tag"
 import { useTagStore } from "@/stores/useTagStore.js"
+import { nextTick, ref, watch } from "vue"
 
 const emit = defineEmits(["submit", "cancel"])
 
-const { isOpen, params, closeTaggingDialog } = useTaggingDialog()
+const { isOpen, initialTagIds, closeTaggingDialog } = useTaggingDialog()
 const tagStore = useTagStore()
-const allTags = ref(tagStore.getTagsOrdered())
 
-const dialogRef = ref(null)
-const tagListRef = ref(null)
-
-const selectedTagIds = ref([])
-const initialTagIds = computed(() => params.value?.initialTagIds ?? [])
+const dialogRef = ref<HTMLDialogElement | null>(null)
+const tagListRef = ref<HTMLUListElement | null>(null)
+const selectedTagIds = ref<string[]>([])
 
 watch(isOpen, (val) => {
   if (val) {
-    allTags.value = tagStore.getTagsOrdered()
     selectedTagIds.value = [...initialTagIds.value]
     dialogRef.value?.showModal()
   } else {
@@ -26,11 +23,10 @@ watch(isOpen, (val) => {
   }
 })
 
-const handleTagCreated = async (tag) => {
+const handleTagCreated = async (tag: Tag) => {
   if (!tag) {
     return
   }
-  allTags.value = tagStore.getTagsOrdered()
   if (!selectedTagIds.value.includes(tag.id)) {
     selectedTagIds.value.push(tag.id)
   }
@@ -55,7 +51,7 @@ const cancel = () => {
   closeTaggingDialog(null)
 }
 
-const toggleSelectedState = (id) => {
+const toggleSelectedState = (id: string) => {
   const idx = selectedTagIds.value.indexOf(id)
   if (idx === -1) {
     selectedTagIds.value.push(id)
@@ -71,7 +67,7 @@ const toggleSelectedState = (id) => {
       <p class="message">割り当てるタグを選んでください</p>
       <form @submit.prevent="submit">
         <ul class="tag-list" ref="tagListRef">
-          <li v-for="tag in allTags" :key="tag.id">
+          <li v-for="tag in tagStore.tags" :key="tag.id">
             <button
               :class="['tag', { selected: selectedTagIds.includes(tag.id) }]"
               :aria-pressed="selectedTagIds.includes(tag.id)"
