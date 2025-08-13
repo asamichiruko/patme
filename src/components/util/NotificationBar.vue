@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { useNotificationBar } from "@/composables/useNotificationBar.js"
 
 const { notification } = useNotificationBar()

@@ -1,12 +1,12 @@
-<script setup>
-import { ref, watch } from "vue"
+<script setup lang="ts">
 import { useConfirmDialog } from "@/composables/useConfirmDialog.js"
+import { ref, watch } from "vue"
 
 const emit = defineEmits(["submit", "cancel"])
 
-const { isOpen, params, closeConfirm } = useConfirmDialog()
+const { isOpen, confirmTitle, confirmMessage, closeConfirm } = useConfirmDialog()
 
-const dialogRef = ref(null)
+const dialogRef = ref<HTMLDialogElement | null>(null)
 
 watch(isOpen, (val) => {
   if (val) {
@@ -31,8 +31,8 @@ const cancel = () => {
   <Teleport to="body">
     <dialog ref="dialogRef" @cancel="cancel">
       <form @submit.prevent="submit">
-        <h2 class="title">{{ params.title }}</h2>
-        <div class="message">{{ params.message }}</div>
+        <h2 class="title">{{ confirmTitle }}</h2>
+        <div class="message">{{ confirmMessage }}</div>
         <div class="actions">
           <button class="cancel-button" type="button" @click="cancel">キャンセル</button>
           <button class="warning-button" type="submit">削除する</button>

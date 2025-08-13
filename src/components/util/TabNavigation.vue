@@ -1,8 +1,8 @@
-<script setup>
+<script setup lang="ts">
 import { useRoute } from "vue-router"
 
 const route = useRoute()
-const isActive = (path) => route.path === path
+const isActive = (path: string) => route.path === path
 </script>
 
 <template>
