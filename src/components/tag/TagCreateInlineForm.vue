@@ -1,29 +1,31 @@
-<script setup>
+<script setup lang="ts">
+import { useTagStore } from "@/stores/useTagStore"
 import { computed, ref } from "vue"
-import { useTagStore } from "@/stores/useTagStore.js"
 
-const props = defineProps({
-  labeltext: {
-    type: String,
-    default: "",
-  },
-})
+const props = defineProps<{
+  labeltext: string
+}>()
 const emit = defineEmits(["tag-created"])
 const newTagTitle = ref("")
 const tagStore = useTagStore()
 
 const isVisibleLabel = computed(() => props.labeltext.trim() !== "")
 
-const handleCreateTag = () => {
+const handleCreateTag = async () => {
   const trimmed = newTagTitle.value.trim()
   if (!trimmed) {
     return
   }
 
-  let result = tagStore.addTag(trimmed)
-  if (!result) {
-    result = tagStore.findByTitle(trimmed)
+  let result = null
+  const existing = await tagStore.getTagByTitle(trimmed)
+  if (existing) {
+    result = existing.id
+  } else {
+    result = tagStore.createTag({ title: trimmed })
   }
+  if (!result) return
+
   emit("tag-created", result)
   newTagTitle.value = ""
 }

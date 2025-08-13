@@ -1,15 +1,16 @@
-<script setup>
-import draggable from "vuedraggable"
+<script setup lang="ts">
 import TagOrderListItem from "@/components/tag/TagOrderListItem.vue"
 import { useTagOrderList } from "@/composables/useTagOrderList"
+import type { Tag } from "@/schemas/Tag"
+import draggable from "vuedraggable"
 
-const tags = defineModel("tags", { required: true })
+const tags = defineModel<Tag[]>("tags", { required: true })
 
-const getHandleElementById = (tagId) =>
+const getHandleElementById = (tagId: string) =>
   document.querySelector(`.tag-list [tag-list-id="${tagId}"] .drag-handle`)
 const { isActive, handleKeydown } = useTagOrderList(tags, getHandleElementById)
 
-const scrollToTag = (tagId) => {
+const scrollToTag = (tagId: string) => {
   const handle = getHandleElementById(tagId)
   handle?.scrollIntoView({ behavior: "smooth", block: "nearest" })
 }
@@ -32,7 +33,7 @@ defineExpose({ scrollToTag })
         <TagOrderListItem
           :tag="element"
           :is-active="isActive(element.id)"
-          @keydown-on-handle="(e) => handleKeydown(e, element.id)"
+          @keydown-on-handle="(e: KeyboardEvent) => handleKeydown(e, element.id)"
         />
       </li>
     </template>

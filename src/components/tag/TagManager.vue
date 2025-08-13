@@ -1,22 +1,24 @@
-<script setup>
-import { nextTick, onMounted, ref, watch } from "vue"
-import TagOrderList from "@/components/tag/TagOrderList.vue"
-import { useTagStore } from "@/stores/useTagStore.js"
+<script setup lang="ts">
 import TagCreateInlineForm from "@/components/tag/TagCreateInlineForm.vue"
+import TagOrderList from "@/components/tag/TagOrderList.vue"
+import type { Tag } from "@/schemas/Tag"
+import { useTagStore } from "@/stores/useTagStore"
 import { subscribe } from "@/utils/storageNotifier"
+import { nextTick, onMounted, ref, watch } from "vue"
 
 const tagStore = useTagStore()
-const latestTags = ref([...tagStore.getTagsOrdered()])
+const latestTags = ref<Tag[]>([])
 let isExternalUpdate = false
 const tagOrderListRef = ref()
 
-onMounted(() => {
+onMounted(async () => {
+  await tagStore.fetchTags()
   const reload = () => {
     isExternalUpdate = true
-    latestTags.value = tagStore.getTagsOrdered()
+    latestTags.value = tagStore.tags
   }
-
   subscribe(reload)
+  reload()
 })
 
 watch(latestTags, (val) => {
@@ -24,19 +26,19 @@ watch(latestTags, (val) => {
     isExternalUpdate = false
     return
   }
-  tagStore.reorderTagByIds(val.map((t) => t.id))
+  tagStore.reorderTags(val)
 })
 
-const handleTagCreated = async (tag) => {
+const handleTagCreated = async (tagId: string) => {
   await nextTick()
-  tagOrderListRef.value?.scrollToTag(tag.id)
+  tagOrderListRef.value?.scrollToTag(tagId)
 }
 </script>
 
 <template>
   <form class="tag-manager">
     <h3>タグの追加</h3>
-    <TagCreateInlineForm @tag-created="handleTagCreated" />
+    <TagCreateInlineForm labeltext="" @tag-created="handleTagCreated" />
     <h3>並び替え</h3>
     <TagOrderList v-model:tags="latestTags" ref="tagOrderListRef" />
   </form>

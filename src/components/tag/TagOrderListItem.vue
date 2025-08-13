@@ -1,24 +1,25 @@
-<script setup>
+<script setup lang="ts">
 import handleImg from "@/assets/handle.svg"
 import trashImg from "@/assets/trash.svg"
-import { useNotificationBar } from "@/composables/useNotificationBar.js"
-import { useConfirmDialog } from "@/composables/useConfirmDialog.js"
+import { useConfirmDialog } from "@/composables/useConfirmDialog"
+import { useNotificationBar } from "@/composables/useNotificationBar"
+import type { Tag } from "@/schemas/Tag"
 
 const { trigger } = useNotificationBar()
 const { openConfirm } = useConfirmDialog()
 
-const props = defineProps({
-  tag: Object,
-  isActive: Boolean,
-})
+const props = defineProps<{
+  tag: Tag
+  isActive: boolean
+}>()
 
 const emit = defineEmits(["keydown-on-handle"])
 
 const handlePressDelete = async () => {
-  const result = await openConfirm({
-    title: `タグの削除の確認`,
-    message: `タグ「${props.tag.title}」を削除しようとしています。本当に削除してもよろしいですか？`,
-  })
+  const result = await openConfirm(
+    `タグの削除の確認`,
+    `タグ「${props.tag.title}」を削除しようとしています。本当に削除してもよろしいですか？`,
+  )
 
   if (result) {
     trigger(`タグ「${props.tag.title}」を削除しました`, "success")

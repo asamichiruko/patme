@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import TagCreateInlineForm from "@/components/tag/TagCreateInlineForm.vue"
 import { useTaggingDialog } from "@/composables/useTaggingDialog"
-import type { Tag } from "@/schemas/Tag"
-import { useTagStore } from "@/stores/useTagStore.js"
+import { useTagStore } from "@/stores/useTagStore"
 import { nextTick, ref, watch } from "vue"
 
 const emit = defineEmits(["submit", "cancel"])
@@ -23,15 +22,12 @@ watch(isOpen, (val) => {
   }
 })
 
-const handleTagCreated = async (tag: Tag) => {
-  if (!tag) {
-    return
-  }
-  if (!selectedTagIds.value.includes(tag.id)) {
-    selectedTagIds.value.push(tag.id)
+const handleTagCreated = async (tagId: string) => {
+  if (!selectedTagIds.value.includes(tagId)) {
+    selectedTagIds.value.push(tagId)
   }
   await nextTick(() => {
-    const added = document.querySelector(`.tag[tag-id='${tag.id}']`)
+    const added = document.querySelector(`.tag[tag-id='${tagId}']`)
     added?.scrollIntoView({
       behavior: "smooth",
       block: "center",

@@ -59,6 +59,27 @@ describe("TagRepository", () => {
     expect(tag).toBeNull()
   })
 
+  test("tag を title から取得できる", async () => {
+    const existing = {
+      id: "id1",
+      createdAt: new Date().toISOString(),
+      title: "title 1",
+      sortOrder: 0,
+    }
+    mockAdapter.getAll.mockResolvedValue([existing])
+    const tag = await repo.getByTitle("title 1")
+    expect(tag!.id).toBe(existing.id)
+    expect(tag!.createdAt).toBe(existing.createdAt)
+    expect(tag!.title).toBe(existing.title)
+    expect(tag!.sortOrder).toBe(existing.sortOrder)
+  })
+
+  test("tag を title から取得しようとしたとき title が存在しなかった場合 null が返る", async () => {
+    mockAdapter.getAll.mockResolvedValue([])
+    const tag = await repo.getByTitle("dummy-title")
+    expect(tag).toBeNull()
+  })
+
   test("新規 tag を追加できる", async () => {
     mockAdapter.getAll.mockResolvedValue([
       {

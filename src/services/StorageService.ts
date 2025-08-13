@@ -61,6 +61,10 @@ export class StorageService {
     return await this.tagRepo.getAll()
   }
 
+  async getTagByTitle(title: string): Promise<Tag | null> {
+    return await this.tagRepo.getByTitle(title)
+  }
+
   async createTag(tagBody: Omit<Tag, "id" | "createdAt" | "sortOrder">): Promise<string> {
     return await this.tagRepo.create(tagBody)
   }

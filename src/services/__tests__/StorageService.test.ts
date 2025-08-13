@@ -35,6 +35,7 @@ class MockTagRepository extends TagRepository {
   }
   public get = vi.fn()
   public getAll = vi.fn()
+  public getByTitle = vi.fn()
   public create = vi.fn()
   public update = vi.fn()
   public updateSortOrders = vi.fn()
@@ -180,6 +181,18 @@ describe("StorageService", () => {
     mockTagRepo.getAll.mockResolvedValue(tags)
     const allTags = await service.getAllTags()
     expect(allTags).toEqual(tags)
+  })
+
+  test("title から tag を取得できる", async () => {
+    const existing = {
+      id: "id1",
+      title: "tag 1",
+      createdAt: new Date().toISOString(),
+      sortOrder: 0,
+    }
+    mockTagRepo.getByTitle.mockResolvedValue(existing)
+    const tag = await service.getTagByTitle("tag 1")
+    expect(tag).toEqual(existing)
   })
 
   test("新規 tag を作成できる", async () => {

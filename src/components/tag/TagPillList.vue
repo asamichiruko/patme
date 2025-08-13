@@ -1,7 +1,9 @@
-<script setup>
-const props = defineProps({
-  tags: Array,
-})
+<script setup lang="ts">
+import type { Tag } from "@/schemas/Tag"
+
+const props = defineProps<{
+  tags: Tag[]
+}>()
 </script>
 
 <template>

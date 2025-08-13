@@ -19,6 +19,20 @@ export const useTagStore = defineStore("tag", () => {
     }
   }
 
+  async function getTagByTitle(title: string): Promise<Tag | null> {
+    if (!instance) {
+      throw new Error("StorageService has not been initialized")
+    }
+    try {
+      const tag = tags.value.find((t) => t.title === title)
+      if (tag) return tag
+      return await instance.getTagByTitle(title)
+    } catch (err) {
+      console.error("Failed to fetch tag by title", err)
+      return null
+    }
+  }
+
   async function createTag(
     tagBody: Omit<Tag, "id" | "createdAt" | "sortOrder">,
   ): Promise<string | null> {
@@ -59,7 +73,7 @@ export const useTagStore = defineStore("tag", () => {
     }
   }
 
-  return { tags, fetchTags, createTag, deleteTag, reorderTags }
+  return { tags, fetchTags, getTagByTitle, createTag, deleteTag, reorderTags }
 })
 
 export function initializeTagService(service: StorageService) {

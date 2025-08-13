@@ -14,6 +14,12 @@ export class TagRepository {
     return rawDataArray.map((rawData) => TagSchema.parse(rawData))
   }
 
+  async getByTitle(title: string): Promise<Tag | null> {
+    const rawDataArray = await this.adapter.getAll()
+    const tag = rawDataArray.find((tag) => tag.title === title)
+    return tag ? TagSchema.parse(tag) : null
+  }
+
   async create(tagBody: Omit<Tag, "id" | "createdAt" | "sortOrder">): Promise<string> {
     const allTags = await this.adapter.getAll()
     if (allTags.some((t) => t.title === tagBody.title))
