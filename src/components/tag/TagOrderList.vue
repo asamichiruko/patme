@@ -1,14 +1,25 @@
 <script setup lang="ts">
 import TagOrderListItem from "@/components/tag/TagOrderListItem.vue"
 import { useTagOrderList } from "@/composables/useTagOrderList"
-import type { Tag } from "@/schemas/Tag"
+import { useTagStore } from "@/stores/useTagStore"
+import { computed } from "vue"
 import draggable from "vuedraggable"
 
-const tags = defineModel<Tag[]>("tags", { required: true })
+const tagStore = useTagStore()
+
+const tags = computed({
+  get: () => tagStore.tags,
+  set: (newTags) => {
+    tagStore.reorderTags(newTags)
+  },
+})
 
 const getHandleElementById = (tagId: string) =>
   document.querySelector(`.tag-list [tag-list-id="${tagId}"] .drag-handle`)
-const { isActive, handleKeydown } = useTagOrderList(tags, getHandleElementById)
+const { isActive, handleKeydown } = useTagOrderList(
+  tags,
+  getHandleElementById as (tagId: string) => HTMLElement | null,
+)
 
 const scrollToTag = (tagId: string) => {
   const handle = getHandleElementById(tagId)

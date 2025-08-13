@@ -1,17 +1,21 @@
-import { ref, nextTick } from "vue"
+import type { Tag } from "@/schemas/Tag"
+import { ref, nextTick, type Ref } from "vue"
 
-export function useTagOrderList(tags, getHandleElementById) {
-  const activeTagId = ref(null)
+export function useTagOrderList(
+  tags: Ref<Tag[]>,
+  getHandleElementById: (tagId: string) => HTMLElement | null,
+) {
+  const activeTagId = ref<string | null>(null)
 
-  const isValidIndex = (index) => {
+  const isValidIndex = (index: number) => {
     return 0 <= index && index < tags.value.length
   }
 
-  const isActive = (tagId) => {
+  const isActive = (tagId: string) => {
     return activeTagId.value === tagId
   }
 
-  const activate = (tagId) => {
+  const activate = (tagId: string) => {
     activeTagId.value = tagId
   }
 
@@ -19,7 +23,7 @@ export function useTagOrderList(tags, getHandleElementById) {
     activeTagId.value = null
   }
 
-  const moveTagItem = (fromIndex, toIndex) => {
+  const moveTagItem = (fromIndex: number, toIndex: number) => {
     if (fromIndex === toIndex) return
     if (!isValidIndex(fromIndex) || !isValidIndex(toIndex)) return
     const updated = [...tags.value]
@@ -28,16 +32,18 @@ export function useTagOrderList(tags, getHandleElementById) {
     tags.value = updated
   }
 
-  const moveFocus = (toIndex) => {
+  const moveFocus = (toIndex: number) => {
     if (!isValidIndex(toIndex)) return
-    const tagId = tags.value[toIndex].id
-    const handle = getHandleElementById(tagId)
-    handle?.scrollIntoView({ behavior: "smooth", block: "nearest" })
-    handle?.focus()
+    setTimeout(() => {
+      const tagId = tags.value[toIndex].id
+      const handle = getHandleElementById(tagId)
+      handle?.scrollIntoView({ behavior: "smooth", block: "nearest" })
+      handle?.focus()
+    }, 0)
   }
 
-  const handleKeydown = (event, tagId) => {
-    const index = tags.value.findIndex((t) => t.id === tagId)
+  const handleKeydown = async (event: KeyboardEvent, tagId: string) => {
+    const index = tags.value.findIndex((t: Tag) => t.id === tagId)
     if (index === -1) return
 
     if (event.key === "Escape" || event.key === "Tab") {
@@ -47,7 +53,7 @@ export function useTagOrderList(tags, getHandleElementById) {
 
     if (event.key === "Enter" || event.key === " ") {
       if (isActive(tagId)) {
-        deactivated()
+        deactivate()
       } else {
         activate(tagId)
       }
@@ -60,7 +66,8 @@ export function useTagOrderList(tags, getHandleElementById) {
       if (isActive(tagId)) {
         if (isValidIndex(index + dir)) {
           moveTagItem(index, index + dir)
-          nextTick(() => moveFocus(index + dir))
+          await nextTick()
+          moveFocus(index + dir)
         }
       } else {
         if (isValidIndex(index + dir)) {

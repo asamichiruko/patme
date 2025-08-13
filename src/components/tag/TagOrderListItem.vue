@@ -43,7 +43,7 @@ const handlePressDelete = async () => {
         :aria-pressed="props.isActive ? 'true' : 'false'"
       />
     </button>
-    <span class="tag-title">{{ props.tag.title }}</span>
+    <span class="tag-title">{{ props.tag.title }} ({{ props.tag.sortOrder }})</span>
     <button type="button" class="delete-button" @click="handlePressDelete">
       <img :src="trashImg" alt="削除" width="20px" height="20px" />
     </button>
