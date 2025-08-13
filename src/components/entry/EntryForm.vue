@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import EntryFormTypeSelector from "@/components/entry/EntryFormTypeSelector.vue"
-import { useNotificationBar } from "@/composables/useNotificationBar.js"
+import { useNotificationBar } from "@/composables/useNotificationBar"
 import type { EntryType } from "@/schemas/EntryType"
 import { useEntryStore } from "@/stores/useEntryStore"
+import { notify } from "@/utils/storageNotifier"
 import { ref } from "vue"
 
 const entryStore = useEntryStore()
@@ -27,6 +28,7 @@ const submit = async () => {
     text.value = ""
     entryType.value = "achievement"
     trigger("記録しました！", "success")
+    notify()
   } else {
     trigger("記録に失敗しました。時間をおいて再度お試しください", "error")
   }

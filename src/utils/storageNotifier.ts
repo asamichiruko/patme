@@ -1,6 +1,6 @@
-const listeners = []
+const listeners: (() => void)[] = []
 
-export function subscribe(listener) {
+export function subscribe(listener: () => void) {
   listeners.push(listener)
 }
 

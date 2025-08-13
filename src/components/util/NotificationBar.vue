@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useNotificationBar } from "@/composables/useNotificationBar.js"
+import { useNotificationBar } from "@/composables/useNotificationBar"
 
 const { notification } = useNotificationBar()
 </script>

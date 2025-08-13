@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import EntryForm from "@/components/entry/EntryForm.vue"
 import EntryList from "@/components/entry/EntryList.vue"
 </script>

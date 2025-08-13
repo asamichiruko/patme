@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useConfirmDialog } from "@/composables/useConfirmDialog.js"
+import { useConfirmDialog } from "@/composables/useConfirmDialog"
 import { ref, watch } from "vue"
 
 const emit = defineEmits(["submit", "cancel"])

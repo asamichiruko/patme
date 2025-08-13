@@ -6,12 +6,13 @@ import TagPillList from "@/components/tag/TagPillList.vue"
 import CommentList from "./CommentList.vue"
 
 import { useAddCommentDialog } from "@/composables/useAddCommentDialog"
-import { useNotificationBar } from "@/composables/useNotificationBar.js"
+import { useNotificationBar } from "@/composables/useNotificationBar"
 import { useTaggingDialog } from "@/composables/useTaggingDialog"
 import type { EntryWithRelations } from "@/schemas/EntryWithRelations"
 import { useCommentStore } from "@/stores/useCommentStore"
 import { useEntryStore } from "@/stores/useEntryStore"
 import { formatRelativeDate } from "@/utils/formatDate.js"
+import { notify } from "@/utils/storageNotifier"
 
 const { trigger } = useNotificationBar()
 const { openTaggingDialog } = useTaggingDialog()
@@ -37,6 +38,7 @@ const handleAddComment = async () => {
 
   if (comment) {
     trigger("コメントを記録しました！", "success")
+    notify()
   } else {
     trigger("記録に失敗しました。時間をおいて再度お試しください", "error")
   }
@@ -50,6 +52,7 @@ const handleUpdateTagging = async () => {
   }
 
   await entryStore.updateEntryTags(props.entry.id, tagIds)
+  notify()
 }
 
 const entryTypeLabel = {
@@ -73,7 +76,7 @@ const entryTypeLabel = {
       {{ props.entry.content }}
     </div>
 
-    <TagPillList :tags="props.entry.tagIds" />
+    <TagPillList :tags="props.entry.tags" />
     <CommentList :comments="props.entry.comments" />
 
     <div class="entry-actions">

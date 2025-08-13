@@ -4,35 +4,39 @@ import EntryListItem from "@/components/entry/EntryListItem.vue"
 import type { EntryType } from "@/schemas/EntryType"
 import type { EntryWithRelations } from "@/schemas/EntryWithRelations"
 import { useEntryStore } from "@/stores/useEntryStore"
+import { subscribe } from "@/utils/storageNotifier"
 import { onMounted, ref, watch } from "vue"
 
 const entryStore = useEntryStore()
 const entries = ref<EntryWithRelations[]>([])
 const viewEntryType = ref<EntryType | "all" | "reviewed">("all")
 
-const reload = () => {
-  entries.value = entryStore.entriesWithRelations
-    .filter((a) => {
-      switch (viewEntryType.value) {
-        case "all":
-          return true
-        case "reviewed":
-          return a.isReviewed
-        default:
-          return a.entryType === viewEntryType.value
-      }
-    })
-    .toSorted((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+const reload = async () => {
+  await entryStore.fetchEntriesWithRelations()
 }
 
 onMounted(async () => {
-  await entryStore.fetchEntriesWithRelations()
-  reload()
+  subscribe(reload)
 })
 
-watch(viewEntryType, () => {
-  reload()
-})
+watch(
+  viewEntryType,
+  () => {
+    entries.value = entryStore.entriesWithRelations
+      .filter((a) => {
+        switch (viewEntryType.value) {
+          case "all":
+            return true
+          case "reviewed":
+            return a.isReviewed
+          default:
+            return a.entryType === viewEntryType.value
+        }
+      })
+      .toSorted((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+  },
+  { immediate: true },
+)
 </script>
 
 <template>

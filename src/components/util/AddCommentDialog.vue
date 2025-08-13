@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useAddCommentDialog } from "@/composables/useAddCommentDialog.js"
+import { useAddCommentDialog } from "@/composables/useAddCommentDialog"
 import type { Comment } from "@/schemas/Comment"
 import type { EntryType } from "@/schemas/EntryType"
 import { ref, watch } from "vue"
