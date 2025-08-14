@@ -10,6 +10,7 @@ describe("CommentRepository", async () => {
     update: vi.fn(),
     updateAll: vi.fn(),
     delete: vi.fn(),
+    restoreAll: vi.fn(),
   } satisfies DataStoreAdapter<Comment>
 
   let repo: CommentRepository
@@ -98,5 +99,26 @@ describe("CommentRepository", async () => {
   test("comment を削除できる", async () => {
     await repo.delete("id1")
     expect(mockAdapter.delete).toHaveBeenCalledWith("id1")
+  })
+
+  test("データをすべて復元できる", async () => {
+    const data: Comment[] = [
+      {
+        id: "id1",
+        entryId: "entryId1",
+        createdAt: new Date().toISOString(),
+        content: "content 1",
+        reviewType: "achievement",
+      },
+      {
+        id: "id2",
+        entryId: "entryId1",
+        createdAt: new Date().toISOString(),
+        content: "content 2",
+        reviewType: "achievement",
+      },
+    ]
+    await repo.restoreAll(data)
+    expect(mockAdapter.restoreAll).toHaveBeenCalledWith(data)
   })
 })

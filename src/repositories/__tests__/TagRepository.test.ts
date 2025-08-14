@@ -10,6 +10,7 @@ describe("TagRepository", () => {
     update: vi.fn(),
     updateAll: vi.fn(),
     delete: vi.fn(),
+    restoreAll: vi.fn(),
   } satisfies DataStoreAdapter<Tag>
 
   let repo: TagRepository
@@ -163,5 +164,24 @@ describe("TagRepository", () => {
       { ...tag1, sortOrder: 0 },
       { ...tag3, sortOrder: 1 },
     ])
+  })
+
+  test("データをすべて復元できる", async () => {
+    const data: Tag[] = [
+      {
+        id: "id1",
+        createdAt: new Date().toISOString(),
+        title: "title 1",
+        sortOrder: 0,
+      },
+      {
+        id: "id2",
+        createdAt: new Date().toISOString(),
+        title: "title 2",
+        sortOrder: 1,
+      },
+    ]
+    await repo.restoreAll(data)
+    expect(mockAdapter.restoreAll).toHaveBeenCalledWith(data)
   })
 })

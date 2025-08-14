@@ -10,6 +10,7 @@ describe("EntryRepository", () => {
     update: vi.fn(),
     updateAll: vi.fn(),
     delete: vi.fn(),
+    restoreAll: vi.fn(),
   } satisfies DataStoreAdapter<Entry>
 
   let repo: EntryRepository
@@ -104,5 +105,28 @@ describe("EntryRepository", () => {
   test("entry を削除できる", async () => {
     await repo.delete("id1")
     expect(mockAdapter.delete).toHaveBeenCalledWith("id1")
+  })
+
+  test("データをすべて復元できる", async () => {
+    const data: Entry[] = [
+      {
+        id: "id1",
+        createdAt: new Date().toISOString(),
+        content: "content 1",
+        entryType: "achievement",
+        isReviewed: false,
+        tagIds: [],
+      },
+      {
+        id: "id2",
+        createdAt: new Date().toISOString(),
+        content: "content 2",
+        entryType: "achievement",
+        isReviewed: false,
+        tagIds: ["tag1, tag2"],
+      },
+    ]
+    await repo.restoreAll(data)
+    expect(mockAdapter.restoreAll).toHaveBeenCalledWith(data)
   })
 })

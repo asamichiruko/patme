@@ -113,4 +113,15 @@ describe("LocalStorageAdapter", () => {
       ])
     }).rejects.toThrow()
   })
+
+  test("restoreAll ですべてのデータを復元できる", async () => {
+    const data = [
+      { id: "id1", value: "value 1" },
+      { id: "id2", value: "value 2" },
+    ]
+    await adapter.restoreAll(data)
+    const dataAfterRestore = await adapter.getAll()
+    dataAfterRestore.sort((a, b) => a.id.localeCompare(b.id))
+    expect(dataAfterRestore).toEqual(data)
+  })
 })

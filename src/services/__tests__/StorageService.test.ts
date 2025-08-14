@@ -3,9 +3,10 @@ import { StorageService } from "../StorageService"
 import { CommentRepository } from "@/repositories/CommentRepository"
 import { TagRepository } from "@/repositories/TagRepository"
 import type { Entry } from "@/schemas/Entry"
-import type { DataStoreAdapter } from "@/types"
+import type { DataStoreAdapter, ExportedData } from "@/types"
 import type { Comment } from "@/schemas/Comment"
 import type { Tag } from "@/schemas/Tag"
+import type { EntryType } from "@/schemas/EntryType"
 
 class MockEntryRepository extends EntryRepository {
   constructor(adapter: DataStoreAdapter<Entry>) {
@@ -16,6 +17,7 @@ class MockEntryRepository extends EntryRepository {
   public create = vi.fn()
   public update = vi.fn()
   public delete = vi.fn()
+  public restoreAll = vi.fn()
 }
 
 class MockCommentRepository extends CommentRepository {
@@ -27,6 +29,7 @@ class MockCommentRepository extends CommentRepository {
   public create = vi.fn()
   public update = vi.fn()
   public delete = vi.fn()
+  public restoreAll = vi.fn()
 }
 
 class MockTagRepository extends TagRepository {
@@ -40,6 +43,7 @@ class MockTagRepository extends TagRepository {
   public update = vi.fn()
   public updateSortOrders = vi.fn()
   public delete = vi.fn()
+  public restoreAll = vi.fn()
 }
 
 describe("StorageService", () => {
@@ -225,5 +229,43 @@ describe("StorageService", () => {
     ]
     await service.reorderTags(tags)
     expect(mockTagRepo.updateSortOrders).toHaveBeenCalledWith(tags)
+  })
+
+  test("すべてのデータを復元できる", async () => {
+    const data: ExportedData = {
+      version: 1,
+      entries: [
+        {
+          id: "entry1",
+          createdAt: new Date().toISOString(),
+          content: "entry 1",
+          entryType: "achievement" as EntryType,
+          isReviewed: false,
+          tagIds: ["tag1"],
+        },
+      ],
+      comments: [
+        {
+          id: "comment1",
+          entryId: "entry1",
+          createdAt: new Date().toISOString(),
+          content: "comment 1",
+          reviewType: null,
+        },
+      ],
+      tags: [
+        {
+          id: "tag1",
+          title: "tag 1",
+          createdAt: new Date().toISOString(),
+          sortOrder: 0,
+        },
+      ],
+    }
+
+    await service.restoreAllData(data)
+    expect(mockEntryRepo.restoreAll).toHaveBeenCalledWith(data.entries)
+    expect(mockCommentRepo.restoreAll).toHaveBeenCalledWith(data.comments)
+    expect(mockTagRepo.restoreAll).toHaveBeenCalledWith(data.tags)
   })
 })
