@@ -1,4 +1,4 @@
-export const formatDate = (date, locale = "ja-JP") => {
+export const formatDate = (date: string | Date, locale = "ja-JP") => {
   const formatter = new Intl.DateTimeFormat(locale, {
     year: "numeric",
     month: "long",
@@ -12,7 +12,7 @@ export const formatDate = (date, locale = "ja-JP") => {
   return formatter.format(new Date(date))
 }
 
-export const formatRelativeDate = (date, locale = "ja-JP") => {
+export const formatRelativeDate = (date: string | Date, locale = "ja-JP") => {
   const rtf = new Intl.RelativeTimeFormat(locale, { numeric: "auto" })
   const diff = new Date().getTime() - new Date(date).getTime()
   const diffMin = Math.round(diff / 1000 / 60)

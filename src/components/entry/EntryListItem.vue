@@ -11,7 +11,7 @@ import { useTaggingDialog } from "@/composables/useTaggingDialog"
 import type { EntryWithRelations } from "@/schemas/EntryWithRelations"
 import { useCommentStore } from "@/stores/useCommentStore"
 import { useEntryStore } from "@/stores/useEntryStore"
-import { formatRelativeDate } from "@/utils/formatDate.js"
+import { formatRelativeDate } from "@/utils/formatDate"
 import { notify } from "@/utils/storageNotifier"
 
 const { trigger } = useNotificationBar()
