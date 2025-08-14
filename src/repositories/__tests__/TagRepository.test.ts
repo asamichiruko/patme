@@ -1,4 +1,4 @@
-import type { DataStoreAdapter } from "@/types"
+import type { DataStoreAdapter } from "@/adapters/DataStoreAdapter"
 import { TagRepository } from "../TagRepository"
 import { type Tag } from "@/schemas/Tag"
 

@@ -1,7 +1,7 @@
 import type { Entry } from "@/schemas/Entry"
 import type { Comment } from "@/schemas/Comment"
 import type { Tag } from "@/schemas/Tag"
-import type { DataStoreAdapter } from "@/types"
+import type { DataStoreAdapter } from "@/adapters/DataStoreAdapter"
 import { LocalStorageAdapter } from "@/adapters/LocalStorageAdapter"
 import { EntryRepository } from "@/repositories/EntryRepository"
 import { CommentRepository } from "@/repositories/CommentRepository"

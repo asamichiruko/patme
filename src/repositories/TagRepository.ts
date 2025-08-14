@@ -1,4 +1,4 @@
-import type { DataStoreAdapter } from "@/types"
+import type { DataStoreAdapter } from "@/adapters/DataStoreAdapter"
 import { type Tag, TagSchema } from "@/schemas/Tag"
 
 export class TagRepository {

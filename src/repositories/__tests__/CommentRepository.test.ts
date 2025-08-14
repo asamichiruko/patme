@@ -1,4 +1,4 @@
-import type { DataStoreAdapter } from "@/types"
+import type { DataStoreAdapter } from "@/adapters/DataStoreAdapter"
 import { CommentRepository } from "../CommentRepository"
 import { type Comment } from "@/schemas/Comment"
 

@@ -1,4 +1,4 @@
-import type { DataStoreAdapter } from "@/types"
+import type { DataStoreAdapter } from "./DataStoreAdapter"
 
 export class LocalStorageAdapter<T extends { id: string }> implements DataStoreAdapter<T> {
   constructor(private storageKey: string) {}
