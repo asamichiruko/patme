@@ -68,6 +68,53 @@ describe("EntryRepository", () => {
     expect(entry).toBeNull()
   })
 
+  test("tagId を持つ entries の数を取得できる", async () => {
+    mockAdapter.getAll.mockResolvedValue([
+      {
+        id: "id1",
+        createdAt: new Date().toISOString(),
+        content: "content 1",
+        entryType: "achievement",
+        isReviewed: false,
+        tagIds: ["tag1", "tag2"],
+      },
+      {
+        id: "id2",
+        createdAt: new Date().toISOString(),
+        content: "content 2",
+        entryType: "achievement",
+        isReviewed: false,
+        tagIds: [],
+      },
+    ])
+    const count = await repo.countEntriesWithTag("tag2")
+    expect(count).toBe(1)
+  })
+
+  test("tagId を持つ entries を取得できる", async () => {
+    mockAdapter.getAll.mockResolvedValue([
+      {
+        id: "id1",
+        createdAt: new Date().toISOString(),
+        content: "content 1",
+        entryType: "achievement",
+        isReviewed: false,
+        tagIds: ["tag1", "tag2"],
+      },
+      {
+        id: "id2",
+        createdAt: new Date().toISOString(),
+        content: "content 2",
+        entryType: "achievement",
+        isReviewed: false,
+        tagIds: [],
+      },
+    ])
+    const entries = await repo.getEntriesWithTag("tag2")
+    expect(entries).toHaveLength(1)
+    expect(entries[0].id).toBe("id1")
+  })
+
   test("新規 entry を追加できる", async () => {
     mockAdapter.create.mockResolvedValue("id1")
     const entryBody: Omit<Entry, "id" | "createdAt"> = {

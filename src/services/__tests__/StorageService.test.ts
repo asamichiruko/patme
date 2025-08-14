@@ -15,6 +15,8 @@ class MockEntryRepository extends EntryRepository {
   }
   public get = vi.fn()
   public getAll = vi.fn()
+  public countEntriesWithTag = vi.fn()
+  public getEntriesWithTag = vi.fn()
   public create = vi.fn()
   public update = vi.fn()
   public delete = vi.fn()
@@ -183,8 +185,36 @@ describe("StorageService", () => {
     expect(id).toBe("tag1")
   })
 
+  test("tag を持つ Entry の数を取得できる", async () => {
+    await service.countEntriesWithTag("tag1")
+    expect(mockEntryRepo.countEntriesWithTag).toHaveBeenCalledWith("tag1")
+  })
+
   test("tag を 削除できる", async () => {
-    await service.deleteTag("tag1")
+    const entries: Entry[] = [
+      {
+        id: "entry1",
+        createdAt: new Date().toISOString(),
+        content: "entry 1",
+        entryType: "achievement",
+        isReviewed: false,
+        tagIds: ["tag1"],
+      },
+      {
+        id: "entry2",
+        createdAt: new Date().toISOString(),
+        content: "entry 2",
+        entryType: "achievement",
+        isReviewed: false,
+        tagIds: ["tag2"],
+      },
+    ]
+    mockEntryRepo.getEntriesWithTag.mockResolvedValue(entries)
+    await service.deleteTagAndDetachFromEntries("tag1")
+    expect(mockEntryRepo.update).toHaveBeenCalledWith({
+      ...entries[0],
+      tagIds: [],
+    })
     expect(mockTagRepo.delete).toHaveBeenCalledWith("tag1")
   })
 

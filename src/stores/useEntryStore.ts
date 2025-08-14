@@ -34,6 +34,18 @@ export const useEntryStore = defineStore("entry", () => {
     }
   }
 
+  async function countEntriesWithTag(tagId: string): Promise<number> {
+    if (!instance) {
+      throw new Error("StorageService has not been initialized")
+    }
+    try {
+      return await instance.countEntriesWithTag(tagId)
+    } catch (err) {
+      console.error("Failed to get number of entries with tag", err)
+      return 0
+    }
+  }
+
   async function updateEntryTags(id: string, tagIds: string[]): Promise<void> {
     if (!instance) {
       throw new Error("StorageService has not been initialized")
@@ -50,6 +62,7 @@ export const useEntryStore = defineStore("entry", () => {
     entriesWithRelations,
     fetchEntriesWithRelations,
     createEntry,
+    countEntriesWithTag,
     updateEntryTags,
   }
 })

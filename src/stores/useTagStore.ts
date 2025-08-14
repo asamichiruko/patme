@@ -49,12 +49,12 @@ export const useTagStore = defineStore("tag", () => {
     }
   }
 
-  async function deleteTag(tagId: string): Promise<void> {
+  async function deleteTagAndDetachFromEntries(tagId: string): Promise<void> {
     if (!instance) {
       throw new Error("StorageService has not been initialized")
     }
     try {
-      await instance.deleteTag(tagId)
+      await instance.deleteTagAndDetachFromEntries(tagId)
       await fetchTags()
     } catch (err) {
       console.error("Failed to delete tags", err)
@@ -73,7 +73,7 @@ export const useTagStore = defineStore("tag", () => {
     }
   }
 
-  return { tags, fetchTags, getTagByTitle, createTag, deleteTag, reorderTags }
+  return { tags, fetchTags, getTagByTitle, createTag, deleteTagAndDetachFromEntries, reorderTags }
 })
 
 export function initializeTagService(service: StorageService) {

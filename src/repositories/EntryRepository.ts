@@ -14,6 +14,18 @@ export class EntryRepository {
     return rawDataArray.map((rawData) => EntrySchema.parse(rawData))
   }
 
+  async countEntriesWithTag(tagId: string): Promise<number> {
+    const rawDataArray = await this.adapter.getAll()
+    return rawDataArray.filter((rawData) => rawData.tagIds.includes(tagId)).length
+  }
+
+  async getEntriesWithTag(tagId: string): Promise<Entry[]> {
+    const rawDataArray = await this.adapter.getAll()
+    return rawDataArray
+      .filter((rawData) => rawData.tagIds.includes(tagId))
+      .map((rawData) => EntrySchema.parse(rawData))
+  }
+
   async create(entryBody: Omit<Entry, "id" | "createdAt">): Promise<string> {
     const newEntry: Omit<Entry, "id"> = {
       ...entryBody,

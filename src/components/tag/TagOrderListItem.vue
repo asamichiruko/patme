@@ -4,9 +4,13 @@ import trashImg from "@/assets/trash.svg"
 import { useConfirmDialog } from "@/composables/useConfirmDialog"
 import { useNotificationBar } from "@/composables/useNotificationBar"
 import type { Tag } from "@/schemas/Tag"
+import { useEntryStore } from "@/stores/useEntryStore"
+import { useTagStore } from "@/stores/useTagStore"
 
 const { trigger } = useNotificationBar()
 const { openConfirm } = useConfirmDialog()
+const entryStore = useEntryStore()
+const tagStore = useTagStore()
 
 const props = defineProps<{
   tag: Tag
@@ -16,12 +20,16 @@ const props = defineProps<{
 const emit = defineEmits(["keydown-on-handle"])
 
 const handlePressDelete = async () => {
+  const count = await entryStore.countEntriesWithTag(props.tag.id)
+
   const result = await openConfirm(
     `タグの削除の確認`,
-    `タグ「${props.tag.title}」を削除しようとしています。本当に削除してもよろしいですか？`,
+    `タグ「${props.tag.title}」を削除しようとしています。${count} 件の記録からこのタグが取り除かれます。本当に削除してもよろしいですか？`,
   )
 
   if (result) {
+    await tagStore.deleteTagAndDetachFromEntries(props.tag.id)
+    await entryStore.fetchEntriesWithRelations()
     trigger(`タグ「${props.tag.title}」を削除しました`, "success")
   }
 }
@@ -43,7 +51,7 @@ const handlePressDelete = async () => {
         :aria-pressed="props.isActive ? 'true' : 'false'"
       />
     </button>
-    <span class="tag-title">{{ props.tag.title }} ({{ props.tag.sortOrder }})</span>
+    <span class="tag-title">{{ props.tag.title }}</span>
     <button type="button" class="delete-button" @click="handlePressDelete">
       <img :src="trashImg" alt="削除" width="20px" height="20px" />
     </button>

@@ -67,7 +67,20 @@ export class StorageService {
     return await this.tagRepo.create(tagBody)
   }
 
-  async deleteTag(tagId: string): Promise<void> {
+  async countEntriesWithTag(tagId: string): Promise<number> {
+    return await this.entryRepo.countEntriesWithTag(tagId)
+  }
+
+  async deleteTagAndDetachFromEntries(tagId: string): Promise<void> {
+    const entries = await this.entryRepo.getEntriesWithTag(tagId)
+    entries.forEach(async (entry) => {
+      const updated = {
+        ...entry,
+        tagIds: entry.tagIds.filter((id) => id !== tagId),
+      }
+      await this.entryRepo.update(updated)
+    })
+
     await this.tagRepo.delete(tagId)
   }
 
