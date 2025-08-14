@@ -1,6 +1,6 @@
 <script setup lang="ts">
+import AddCommentDialog from "@/components/entry/AddCommentDialog.vue"
 import TaggingDialog from "@/components/tag/TaggingDialog.vue"
-import AddCommentDialog from "@/components/util/AddCommentDialog.vue"
 import ConfirmDialog from "@/components/util/ConfirmDialog.vue"
 import NotificationBar from "@/components/util/NotificationBar.vue"
 import TabNavigation from "@/components/util/TabNavigation.vue"
