@@ -34,18 +34,6 @@ export const useEntryStore = defineStore("entry", () => {
     }
   }
 
-  async function updateReviewedState(id: string, isReviewed: boolean): Promise<void> {
-    if (!instance) {
-      throw new Error("StorageService has not been initialized")
-    }
-    try {
-      await instance.updateEntryReviewedState(id, isReviewed)
-      await fetchEntriesWithRelations()
-    } catch (err) {
-      console.error("Failed to update reviewed state", err)
-    }
-  }
-
   async function updateEntryTags(id: string, tagIds: string[]): Promise<void> {
     if (!instance) {
       throw new Error("StorageService has not been initialized")
@@ -62,7 +50,6 @@ export const useEntryStore = defineStore("entry", () => {
     entriesWithRelations,
     fetchEntriesWithRelations,
     createEntry,
-    updateReviewedState,
     updateEntryTags,
   }
 })

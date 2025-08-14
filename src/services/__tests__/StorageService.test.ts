@@ -130,31 +130,6 @@ describe("StorageService", () => {
     expect(result).toEqual([{ ...entry, comments: [], tags: [] }])
   })
 
-  test("entry のレビュー状態を更新できる", async () => {
-    const entry: Entry = {
-      id: "entry1",
-      createdAt: new Date().toISOString(),
-      content: "entry 1",
-      entryType: "achievement",
-      isReviewed: false,
-      tagIds: [],
-    }
-
-    mockEntryRepo.get.mockResolvedValue(entry)
-    await service.updateEntryReviewedState("entry1", true)
-    expect(mockEntryRepo.update).toHaveBeenCalledWith({
-      ...entry,
-      isReviewed: true,
-    })
-  })
-
-  test("レビュー状態を更新する entry id が存在しないときエラーが出される", async () => {
-    mockEntryRepo.get.mockResolvedValue(null)
-    await expect(async () => {
-      await service.updateEntryReviewedState("entry-dummy", true)
-    }).rejects.toThrow()
-  })
-
   test("entry にコメントを追加できる", async () => {
     mockEntryRepo.get.mockResolvedValue({ id: "entry1" } as Entry)
     mockCommentRepo.create.mockResolvedValue("comment1")

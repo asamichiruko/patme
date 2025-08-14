@@ -37,12 +37,6 @@ export class StorageService {
     })
   }
 
-  async updateEntryReviewedState(id: string, isReviewed: boolean): Promise<void> {
-    const entry = await this.entryRepo.get(id)
-    if (!entry) throw new Error(`Entry ${id} not found`)
-    await this.entryRepo.update({ ...entry, isReviewed })
-  }
-
   async updateEntryTags(id: string, tagIds: string[]): Promise<void> {
     const entry = await this.entryRepo.get(id)
     if (!entry) throw new Error(`Entry ${id} not found`)
