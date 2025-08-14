@@ -1,5 +1,5 @@
 import type { StorageService } from "@/services/StorageService"
-import type { ExportedData } from "@/types"
+import type { ExportedData } from "@/schemas/ExportedData"
 import { defineStore } from "pinia"
 import { useEntryStore } from "./useEntryStore"
 import { useTagStore } from "./useTagStore"

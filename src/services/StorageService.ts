@@ -5,7 +5,7 @@ import type { Comment } from "@/schemas/Comment"
 import type { Entry } from "@/schemas/Entry"
 import type { EntryWithRelations } from "@/schemas/EntryWithRelations"
 import type { Tag } from "@/schemas/Tag"
-import type { ExportedData } from "@/types"
+import type { ExportedData } from "@/schemas/ExportedData"
 
 export class StorageService {
   constructor(
