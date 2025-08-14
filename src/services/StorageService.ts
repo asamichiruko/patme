@@ -55,6 +55,9 @@ export class StorageService {
   ): Promise<string> {
     const entry = await this.entryRepo.get(entryId)
     if (!entry) throw new Error(`entry ${entryId} not found`)
+    if (commentBody.reviewType) {
+      this.entryRepo.update({ ...entry, isReviewed: true })
+    }
     return await this.commentRepo.create({ ...commentBody, entryId })
   }
 
