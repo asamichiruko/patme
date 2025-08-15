@@ -8,19 +8,41 @@ import TabNavigation from "@/components/util/TabNavigation.vue"
 import { auth } from "@/firebase"
 import { useEntryStore } from "@/stores/useEntryStore"
 import { useTagStore } from "@/stores/useTagStore"
-import { GoogleAuthProvider, linkWithPopup, signOut } from "firebase/auth"
-import { computed, onMounted } from "vue"
+import {
+  GoogleAuthProvider,
+  linkWithRedirect,
+  onAuthStateChanged,
+  signOut,
+  type Unsubscribe,
+} from "firebase/auth"
+import { onMounted, onUnmounted, ref } from "vue"
 import { RouterView, useRouter } from "vue-router"
 
 const entryStore = useEntryStore()
 const tagStore = useTagStore()
+const router = useRouter()
+
+const isAnonymous = ref(false)
+
+let unsubscribe: Unsubscribe
 
 onMounted(async () => {
+  unsubscribe = onAuthStateChanged(auth, (user) => {
+    if (user) {
+      isAnonymous.value = user.isAnonymous
+    } else {
+      isAnonymous.value = false
+    }
+  })
+
   await Promise.all([entryStore.fetchEntriesWithRelations(), tagStore.fetchTags()])
 })
 
-const router = useRouter()
-const isAnonymous = computed(() => auth.currentUser?.isAnonymous ?? false)
+onUnmounted(() => {
+  if (unsubscribe) {
+    unsubscribe()
+  }
+})
 
 const logout = async () => {
   try {
@@ -36,7 +58,7 @@ const linkWithGoogle = async () => {
   const user = auth.currentUser
   if (!user) return
   try {
-    await linkWithPopup(user, provider)
+    await linkWithRedirect(user, provider)
   } catch (err) {
     console.error("Failed to link with google account", err)
   }
@@ -52,7 +74,9 @@ const linkWithGoogle = async () => {
       <div v-if="isAnonymous">
         <button class="link-button" @click="linkWithGoogle">Google 連携</button>
       </div>
-      <div><button class="logout-button" @click="logout">ログアウト</button></div>
+      <div v-else>
+        <button class="logout-button" @click="logout">ログアウト</button>
+      </div>
     </div>
   </header>
   <NotificationBar />

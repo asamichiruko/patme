@@ -19,6 +19,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: "/main",
     component: MainView,
+    meta: { requiresAuth: true },
     children: [
       {
         path: "",
@@ -47,25 +48,31 @@ const router = createRouter({
   routes,
 })
 
-let isAuthInitialized = false
-
-router.beforeEach((to, from, next) => {
-  if (!isAuthInitialized) {
-    onAuthStateChanged(auth, () => {
-      isAuthInitialized = true
-      next({ ...to, replace: true })
+let authReady: Promise<void> | null = null
+const ensureAuthReady = () => {
+  if (!authReady) {
+    authReady = new Promise((resolve) => {
+      const unsubscribe = onAuthStateChanged(auth, () => {
+        unsubscribe()
+        resolve()
+      })
     })
-  } else {
-    const user = auth.currentUser
-    const requiresAuth = to.path !== "/login"
+  }
+  return authReady
+}
 
-    if (requiresAuth && !user) {
-      next("/login")
-    } else if (to.path === "/login" && user) {
-      next("/main")
-    } else {
-      next()
-    }
+router.beforeEach(async (to, from, next) => {
+  await ensureAuthReady()
+
+  const user = auth.currentUser
+  const requiresAuth = to.matched.some((record) => record.meta.requiresAuth)
+
+  if (requiresAuth && !user) {
+    next("/login")
+  } else if (to.path === "/login" && user && !user.isAnonymous) {
+    next("/main")
+  } else {
+    next()
   }
 })
 

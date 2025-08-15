@@ -3,9 +3,9 @@ import patmeImg from "@/assets/patme.svg"
 import { auth } from "@/firebase"
 import {
   GoogleAuthProvider,
-  linkWithPopup,
+  linkWithRedirect,
   signInAnonymously,
-  signInWithPopup,
+  signInWithRedirect,
 } from "firebase/auth"
 import { useRouter } from "vue-router"
 
@@ -13,6 +13,11 @@ const router = useRouter()
 
 const signInAsAnonymous = async () => {
   try {
+    if (auth.currentUser && auth.currentUser.isAnonymous) {
+      router.push("/main")
+      return
+    }
+
     await signInAnonymously(auth)
     router.push("/main")
   } catch (err) {
@@ -23,11 +28,14 @@ const signInAsAnonymous = async () => {
 const signInWithGoogleAccount = async () => {
   try {
     const provider = new GoogleAuthProvider()
+
     if (auth.currentUser && auth.currentUser.isAnonymous) {
-      await linkWithPopup(auth.currentUser, provider)
+      await linkWithRedirect(auth.currentUser, provider)
     } else {
-      await signInWithPopup(auth, provider)
+      await signInWithRedirect(auth, provider)
     }
+
+    router.push("/main")
   } catch (err) {
     console.error("Login error:", err)
   }
