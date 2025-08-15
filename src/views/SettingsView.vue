@@ -37,4 +37,8 @@ import TagManager from "@/components/tag/TagManager.vue"
   flex-direction: column;
   gap: 16px;
 }
+
+h2 {
+  color: var(--color-header);
+}
 </style>

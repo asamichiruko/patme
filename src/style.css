@@ -95,45 +95,8 @@ body {
   color: var(--color-text);
   max-width: 800px;
   margin: 0 auto;
-  padding: 24px;
+  padding: 16px;
   background-color: var(--color-bg);
-}
-
-#index-title {
-  color: var(--color-header);
-  text-align: center;
-  margin: 0;
-  padding: 0;
-  white-space: nowrap;
-}
-
-#index-title h1 {
-  font-size: 32px;
-  margin: 0;
-  padding: 0;
-  margin-top: 48px;
-}
-
-#index-title img {
-  margin-right: 8px;
-}
-
-#index-title p {
-  font-size: 18px;
-  margin: 0;
-  padding: 0;
-  margin-bottom: 16px;
-}
-
-h2 {
-  color: var(--color-header);
-  margin-top: 24px;
-  margin-bottom: 8px;
-}
-h3 {
-  color: var(--color-header);
-  margin-top: 24px;
-  margin-bottom: 8px;
 }
 
 input,
@@ -212,27 +175,6 @@ button {
   outline: 2px solid var(--color-warn-focus);
   outline-offset: 2px;
   border-radius: 4px;
-}
-
-.tag {
-  display: inline-block;
-  color: var(--color-tag-text);
-  background-color: var(--color-tag);
-  border: 1px dashed var(--color-tag-border);
-  padding: 4px 16px;
-  font-size: 14px;
-  border-radius: 8px;
-  white-space: nowrap;
-  overflow: hidden;
-}
-.tag.selected {
-  color: var(--color-tag-text);
-  background-color: var(--color-tag-selected);
-  border: 1px solid var(--color-tag-border);
-}
-.tag:focus-visible {
-  outline: 1px solid var(--color-tag-focus);
-  outline-offset: 1px;
 }
 
 .visually-hidden {

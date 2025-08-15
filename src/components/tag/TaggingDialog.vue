@@ -106,6 +106,26 @@ dialog {
   overflow-y: scroll;
 }
 
+.tag {
+  display: inline-block;
+  color: var(--color-tag-text);
+  background-color: var(--color-tag);
+  border: 1px dashed var(--color-tag-border);
+  padding: 4px 16px;
+  font-size: 14px;
+  border-radius: 8px;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.tag.selected {
+  color: var(--color-tag-text);
+  background-color: var(--color-tag-selected);
+  border: 1px solid var(--color-tag-border);
+}
+.tag:focus-visible {
+  outline: 1px solid var(--color-tag-focus);
+  outline-offset: 1px;
+}
 .tag:hover {
   background-color: var(--color-tag-hover);
 }

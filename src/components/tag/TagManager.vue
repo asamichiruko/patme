@@ -24,4 +24,8 @@ const handleTagCreated = async (tagId: string) => {
 .tag-manager {
   max-width: 600px;
 }
+
+h3 {
+  color: var(--color-header);
+}
 </style>
