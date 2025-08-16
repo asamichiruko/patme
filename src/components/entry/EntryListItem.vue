@@ -6,54 +6,23 @@ import TagPillList from "@/components/tag/TagPillList.vue"
 import CommentList from "./CommentList.vue"
 
 import { useAddCommentDialog } from "@/composables/useAddCommentDialog"
-import { useNotificationBar } from "@/composables/useNotificationBar"
 import { useTaggingDialog } from "@/composables/useTaggingDialog"
 import type { EntryWithRelations } from "@/schemas/EntryWithRelations"
-import { useCommentStore } from "@/stores/useCommentStore"
-import { useEntryStore } from "@/stores/useEntryStore"
 import { formatRelativeDate } from "@/utils/formatDate"
-import { notify } from "@/utils/storageNotifier"
 
-const { trigger } = useNotificationBar()
 const { openTaggingDialog } = useTaggingDialog()
 const { openAddComment } = useAddCommentDialog()
-const entryStore = useEntryStore()
-const commentStore = useCommentStore()
 
 const props = defineProps<{
   entry: EntryWithRelations
 }>()
 
 const handleAddComment = async () => {
-  const result = await openAddComment(props.entry.entryType)
-
-  if (!result) {
-    return
-  }
-
-  commentStore
-    .addComment(props.entry.id, {
-      content: result.content,
-      reviewType: result.reviewType,
-    })
-    .then(() => {
-      notify()
-    })
-    .catch(() => {
-      trigger("記録に失敗しました。時間をおいて再度お試しください", "error")
-    })
-  trigger("コメントを記録しました！", "success")
+  await openAddComment(props.entry.id, props.entry.entryType)
 }
 
 const handleUpdateTagging = async () => {
-  const tagIds = await openTaggingDialog(props.entry.tagIds)
-
-  if (!tagIds) {
-    return
-  }
-
-  await entryStore.updateEntryTags(props.entry.id, tagIds)
-  notify()
+  await openTaggingDialog(props.entry.id, props.entry.tagIds)
 }
 
 const entryTypeLabel = {

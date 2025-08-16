@@ -1,17 +1,24 @@
 <script setup lang="ts">
 import { useAddCommentDialog } from "@/composables/useAddCommentDialog"
+import { useNotificationBar } from "@/composables/useNotificationBar"
 import type { Comment } from "@/schemas/Comment"
 import type { EntryType } from "@/schemas/EntryType"
+import { useCommentStore } from "@/stores/useCommentStore"
+import { notify } from "@/utils/storageNotifier"
 import { ref, watch } from "vue"
+import LoadingSpinner from "../util/LoadingSpinner.vue"
 
 const emit = defineEmits(["submit", "cancel"])
 
-const { isOpen, originalEntryType, closeAddComment } = useAddCommentDialog()
+const { isOpen, originalEntryType, targetEntryId, closeAddComment } = useAddCommentDialog()
+const commentStore = useCommentStore()
+const { trigger } = useNotificationBar()
 
 const dialogRef = ref<HTMLDialogElement | null>(null)
 const inputValue = ref("")
 const showTypeReset = ref(false)
 const selectedType = ref<EntryType | null>(null)
+const loading = ref(false)
 
 watch(isOpen, (val) => {
   if (val) {
@@ -32,16 +39,27 @@ watch(showTypeReset, (val) => {
   }
 })
 
-const submit = () => {
-  const result: Omit<Comment, "id" | "entryId" | "createdAt"> | null = {
+const submit = async () => {
+  const commentBody: Omit<Comment, "id" | "entryId" | "createdAt"> | null = {
     content: inputValue.value,
     reviewType: selectedType.value,
   }
-  emit("submit", result)
-  closeAddComment(result)
+  loading.value = true
+  try {
+    const newComment = await commentStore.addComment(targetEntryId.value as string, commentBody)
+    notify()
+    emit("submit", newComment)
+    closeAddComment(newComment)
+  } catch (err) {
+    trigger("記録に失敗しました。時間をおいて再度お試しください", "error")
+    console.error(err)
+  } finally {
+    loading.value = false
+  }
 }
 
 const cancel = () => {
+  loading.value = false
   emit("cancel")
   closeAddComment(null)
 }
@@ -98,7 +116,9 @@ const options = [
         </div>
         <div class="actions">
           <button class="cancel-button" type="button" @click="cancel">キャンセル</button>
-          <button class="primary-button" type="submit">記録する</button>
+          <button class="primary-button" type="submit">
+            <LoadingSpinner v-if="loading" class="spinner" /> 記録する
+          </button>
         </div>
       </form>
     </dialog>
@@ -214,6 +234,12 @@ input[type="radio"] {
   outline: 2px solid var(--color-entry-type-accepted-border);
   outline-offset: 2px;
   border-radius: 4px;
+}
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  color: var(--color-primary-text);
 }
 
 .actions {

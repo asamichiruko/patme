@@ -1,17 +1,24 @@
 <script setup lang="ts">
 import TagCreateInlineForm from "@/components/tag/TagCreateInlineForm.vue"
+import { useNotificationBar } from "@/composables/useNotificationBar"
 import { useTaggingDialog } from "@/composables/useTaggingDialog"
+import { useEntryStore } from "@/stores/useEntryStore"
 import { useTagStore } from "@/stores/useTagStore"
+import { notify } from "@/utils/storageNotifier"
 import { nextTick, ref, watch } from "vue"
+import LoadingSpinner from "../util/LoadingSpinner.vue"
 
 const emit = defineEmits(["submit", "cancel"])
 
-const { isOpen, initialTagIds, closeTaggingDialog } = useTaggingDialog()
+const { isOpen, targetEntryId, initialTagIds, closeTaggingDialog } = useTaggingDialog()
+const { trigger } = useNotificationBar()
+const entryStore = useEntryStore()
 const tagStore = useTagStore()
 
 const dialogRef = ref<HTMLDialogElement | null>(null)
 const tagListRef = ref<HTMLUListElement | null>(null)
 const selectedTagIds = ref<string[]>([])
+const loading = ref(false)
 
 watch(isOpen, (val) => {
   if (val) {
@@ -37,12 +44,24 @@ const handleTagCreated = async (tagId: string) => {
   })
 }
 
-const submit = () => {
-  emit("submit", selectedTagIds.value)
-  closeTaggingDialog(selectedTagIds.value)
+const submit = async () => {
+  try {
+    loading.value = true
+    await entryStore.updateEntryTags(targetEntryId.value as string, selectedTagIds.value)
+    notify()
+
+    emit("submit", selectedTagIds.value)
+    closeTaggingDialog(selectedTagIds.value)
+  } catch (err) {
+    console.log(err)
+    trigger(`タグの紐づけに失敗しました。時間をおいて再度お試しください`, "error")
+  } finally {
+    loading.value = false
+  }
 }
 
 const cancel = () => {
+  loading.value = false
   emit("cancel")
   closeTaggingDialog(null)
 }
@@ -78,7 +97,9 @@ const toggleSelectedState = (id: string) => {
         <TagCreateInlineForm @tag-created="handleTagCreated" labeltext="タグを追加" />
         <div class="actions">
           <button class="cancel-button" type="button" @click="cancel">キャンセル</button>
-          <button class="primary-button" type="submit">決定</button>
+          <button class="primary-button" type="submit">
+            <LoadingSpinner v-if="loading" class="spinner" /> 決定
+          </button>
         </div>
       </form>
     </dialog>
@@ -146,6 +167,12 @@ dialog {
 }
 .tag.pulse {
   animation: pulse 0.2s ease-out;
+}
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  color: var(--color-sub-text);
 }
 
 .actions {

@@ -5,20 +5,26 @@ import type { EntryType } from "@/schemas/EntryType"
 import { useEntryStore } from "@/stores/useEntryStore"
 import { notify } from "@/utils/storageNotifier"
 import { ref } from "vue"
+import LoadingSpinner from "../util/LoadingSpinner.vue"
 
 const entryStore = useEntryStore()
 const { trigger } = useNotificationBar()
 const text = ref<string>("")
 const textareaRef = ref(null)
 const entryType = ref<EntryType>("achievement")
+const loading = ref(false)
 
 const submit = async () => {
+  if (loading.value) return
+
   const content = text.value.trim()
   const _entryType = entryType.value
   if (!content) {
     trigger("記録内容を入力してください", "error")
     return
   }
+
+  loading.value = true
   entryStore
     .createEntry({
       content,
@@ -27,16 +33,17 @@ const submit = async () => {
       tagIds: [],
     })
     .then(() => {
+      text.value = ""
+      entryType.value = "achievement"
+      loading.value = false
       notify()
     })
     .catch(() => {
       trigger("記録に失敗しました。時間をおいて再度お試しください", "error")
       text.value = content
       entryType.value = _entryType
+      loading.value = false
     })
-  trigger("記録しました！", "success")
-  text.value = ""
-  entryType.value = "achievement"
 }
 </script>
 
@@ -55,7 +62,9 @@ const submit = async () => {
       ></textarea>
     </label>
     <div class="actions">
-      <button class="primary-button" type="submit">記録する</button>
+      <button class="primary-button" type="submit">
+        <LoadingSpinner v-if="loading" class="spinner" /> 記録する
+      </button>
     </div>
   </form>
 </template>
@@ -85,6 +94,12 @@ const submit = async () => {
 }
 .entry-content.accepted {
   box-shadow: inset 5px 0 var(--color-entry-type-accepted-border);
+}
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  color: var(--color-primary-text);
 }
 
 .actions {
