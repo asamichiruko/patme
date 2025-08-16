@@ -3,7 +3,6 @@ import patmeImg from "@/assets/patme.svg"
 import AddCommentDialog from "@/components/entry/AddCommentDialog.vue"
 import TaggingDialog from "@/components/tag/TaggingDialog.vue"
 import ConfirmDialog from "@/components/util/ConfirmDialog.vue"
-import NotificationBar from "@/components/util/NotificationBar.vue"
 import TabNavigation from "@/components/util/TabNavigation.vue"
 import { auth } from "@/firebase"
 import { useEntryStore } from "@/stores/useEntryStore"
@@ -79,7 +78,6 @@ const linkWithGoogle = async () => {
       </div>
     </div>
   </header>
-  <NotificationBar />
   <TabNavigation />
   <div class="container">
     <RouterView />
