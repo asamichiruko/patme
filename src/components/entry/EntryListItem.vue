@@ -31,17 +31,18 @@ const handleAddComment = async () => {
     return
   }
 
-  const comment = await commentStore.addComment(props.entry.id, {
-    content: result.content,
-    reviewType: result.reviewType,
-  })
-
-  if (comment) {
-    trigger("コメントを記録しました！", "success")
-    notify()
-  } else {
-    trigger("記録に失敗しました。時間をおいて再度お試しください", "error")
-  }
+  commentStore
+    .addComment(props.entry.id, {
+      content: result.content,
+      reviewType: result.reviewType,
+    })
+    .then(() => {
+      notify()
+    })
+    .catch(() => {
+      trigger("記録に失敗しました。時間をおいて再度お試しください", "error")
+    })
+  trigger("コメントを記録しました！", "success")
 }
 
 const handleUpdateTagging = async () => {

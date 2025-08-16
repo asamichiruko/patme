@@ -5,41 +5,42 @@ import TaggingDialog from "@/components/tag/TaggingDialog.vue"
 import ConfirmDialog from "@/components/util/ConfirmDialog.vue"
 import TabNavigation from "@/components/util/TabNavigation.vue"
 import { auth } from "@/firebase"
+import { createStorageService } from "@/services/createStorageService"
+import type { StorageService } from "@/services/StorageService"
 import { useEntryStore } from "@/stores/useEntryStore"
 import { useTagStore } from "@/stores/useTagStore"
-import {
-  GoogleAuthProvider,
-  linkWithRedirect,
-  onAuthStateChanged,
-  signOut,
-  type Unsubscribe,
-} from "firebase/auth"
-import { onMounted, onUnmounted, ref } from "vue"
+import { GoogleAuthProvider, linkWithRedirect, onAuthStateChanged, signOut } from "firebase/auth"
+import { ref } from "vue"
 import { RouterView, useRouter } from "vue-router"
 
 const entryStore = useEntryStore()
 const tagStore = useTagStore()
 const router = useRouter()
 
+const storageReady = ref(false)
 const isAnonymous = ref(false)
+const storageService = ref<StorageService | null>(null)
 
-let unsubscribe: Unsubscribe
+onAuthStateChanged(auth, async (user) => {
+  if (!user) {
+    isAnonymous.value = false
+    return
+  }
+  isAnonymous.value = user.isAnonymous
 
-onMounted(async () => {
-  unsubscribe = onAuthStateChanged(auth, (user) => {
-    if (user) {
-      isAnonymous.value = user.isAnonymous
+  if (!storageService.value) {
+    const uid = user.uid
+    const backend = import.meta.env.VITE_STORAGE_BACKEND
+    if (backend === "local") {
+      storageService.value = createStorageService({ backend: "local" })
+    } else if (backend === "firestore") {
+      storageService.value = createStorageService({ backend: "firestore", uid })
     } else {
-      isAnonymous.value = false
+      throw new Error(`Invalid backend`)
     }
-  })
+    storageReady.value = true
 
-  await Promise.all([entryStore.fetchEntriesWithRelations(), tagStore.fetchTags()])
-})
-
-onUnmounted(() => {
-  if (unsubscribe) {
-    unsubscribe()
+    await Promise.all([entryStore.fetchEntriesWithRelations(), tagStore.fetchTags()])
   }
 })
 
@@ -65,26 +66,31 @@ const linkWithGoogle = async () => {
 </script>
 
 <template>
-  <header>
-    <div class="index-title">
-      <h1><img :src="patmeImg" alt="" width="20px" height="20px" />ふりかえり帖</h1>
-    </div>
-    <div class="account-nav">
-      <div v-if="isAnonymous">
-        <button class="link-button" @click="linkWithGoogle">Google 連携</button>
+  <template v-if="!storageReady">
+    <div>Loading...</div>
+  </template>
+  <template v-else>
+    <header>
+      <div class="index-title">
+        <h1><img :src="patmeImg" alt="" width="20px" height="20px" />ふりかえり帖</h1>
       </div>
-      <div v-else>
-        <button class="logout-button" @click="logout">ログアウト</button>
+      <div class="account-nav">
+        <div v-if="isAnonymous">
+          <button class="link-button" @click="linkWithGoogle">Google 連携</button>
+        </div>
+        <div v-else>
+          <button class="logout-button" @click="logout">ログアウト</button>
+        </div>
       </div>
+    </header>
+    <TabNavigation />
+    <div class="container">
+      <RouterView />
     </div>
-  </header>
-  <TabNavigation />
-  <div class="container">
-    <RouterView />
-  </div>
-  <AddCommentDialog />
-  <TaggingDialog />
-  <ConfirmDialog />
+    <AddCommentDialog />
+    <TaggingDialog />
+    <ConfirmDialog />
+  </template>
 </template>
 
 <style scoped>

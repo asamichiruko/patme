@@ -14,24 +14,29 @@ const entryType = ref<EntryType>("achievement")
 
 const submit = async () => {
   const content = text.value.trim()
+  const _entryType = entryType.value
   if (!content) {
     trigger("記録内容を入力してください", "error")
     return
   }
-  const result = await entryStore.createEntry({
-    content,
-    entryType: entryType.value,
-    isReviewed: false,
-    tagIds: [],
-  })
-  if (result) {
-    text.value = ""
-    entryType.value = "achievement"
-    trigger("記録しました！", "success")
-    notify()
-  } else {
-    trigger("記録に失敗しました。時間をおいて再度お試しください", "error")
-  }
+  entryStore
+    .createEntry({
+      content,
+      entryType: _entryType,
+      isReviewed: false,
+      tagIds: [],
+    })
+    .then(() => {
+      notify()
+    })
+    .catch(() => {
+      trigger("記録に失敗しました。時間をおいて再度お試しください", "error")
+      text.value = content
+      entryType.value = _entryType
+    })
+  trigger("記録しました！", "success")
+  text.value = ""
+  entryType.value = "achievement"
 }
 </script>
 

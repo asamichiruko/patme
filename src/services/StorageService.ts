@@ -23,6 +23,10 @@ export class StorageService {
     const comments = await this.commentRepo.getAll()
     const tags = await this.tagRepo.getAll()
 
+    entries.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
+    comments.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
+    tags.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
+
     const commentsGroupByEntryId = Map.groupBy(comments, (comment) => comment.entryId)
     const tagMap = new Map<string, Tag>()
     tags.forEach((tag) => {
