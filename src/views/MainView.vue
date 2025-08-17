@@ -8,25 +8,36 @@ import TabNavigation from "@/components/util/TabNavigation.vue"
 import { auth } from "@/firebase"
 import { createStorageService } from "@/services/createStorageService"
 import type { StorageService } from "@/services/StorageService"
+import { useCommentStore } from "@/stores/useCommentStore"
+import { useDataTransferStore } from "@/stores/useDataTransferStore"
 import { useEntryStore } from "@/stores/useEntryStore"
 import { useTagStore } from "@/stores/useTagStore"
 import { GoogleAuthProvider, linkWithRedirect, onAuthStateChanged, signOut } from "firebase/auth"
-import { ref } from "vue"
+import { computed, ref } from "vue"
 import { RouterView, useRouter } from "vue-router"
 
 const entryStore = useEntryStore()
 const tagStore = useTagStore()
+const commentStore = useCommentStore()
+const dataTransferStore = useDataTransferStore()
 const router = useRouter()
 
-const storageReady = ref(false)
+const storageReady = computed(() => Boolean(storageService))
 const isAnonymous = ref(false)
 const storageService = ref<StorageService | null>(null)
 
 onAuthStateChanged(auth, async (user) => {
   if (!user) {
     isAnonymous.value = false
+    storageService.value = null
+    entryStore.reset()
+    commentStore.reset()
+    tagStore.reset()
+    dataTransferStore.reset()
+    router.push("/login")
     return
   }
+
   isAnonymous.value = user.isAnonymous
 
   if (!storageService.value) {
@@ -39,7 +50,6 @@ onAuthStateChanged(auth, async (user) => {
     } else {
       throw new Error(`Invalid backend`)
     }
-    storageReady.value = true
 
     await Promise.all([entryStore.fetchEntriesWithRelations(), tagStore.fetchTags()])
   }
@@ -48,7 +58,6 @@ onAuthStateChanged(auth, async (user) => {
 const logout = async () => {
   try {
     await signOut(auth)
-    router.push("/login")
   } catch (err) {
     console.error("Logout error", err)
   }

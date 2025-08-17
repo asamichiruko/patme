@@ -20,6 +20,11 @@ export const useEntryStore = defineStore("entry", () => {
     }
   }
 
+  function reset() {
+    entriesWithRelations.value = []
+    instance = null
+  }
+
   async function createEntry(entryBody: Omit<Entry, "id" | "createdAt">): Promise<string | null> {
     if (!instance) {
       throw new Error("StorageService has not been initialized")
@@ -61,6 +66,7 @@ export const useEntryStore = defineStore("entry", () => {
   return {
     entriesWithRelations,
     fetchEntriesWithRelations,
+    reset,
     createEntry,
     countEntriesWithTag,
     updateEntryTags,

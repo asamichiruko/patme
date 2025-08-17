@@ -7,6 +7,10 @@ import { useTagStore } from "./useTagStore"
 let instance: StorageService | null = null
 
 export const useDataTransferStore = defineStore("dataTransfer", () => {
+  function reset() {
+    instance = null
+  }
+
   async function exportAll(): Promise<ExportedData | null> {
     if (!instance) {
       throw new Error("StorageService has not been initialized")
@@ -36,7 +40,7 @@ export const useDataTransferStore = defineStore("dataTransfer", () => {
     }
   }
 
-  return { exportAll, restoreAll }
+  return { reset, exportAll, restoreAll }
 })
 
 export function initializeDataTransferService(service: StorageService) {

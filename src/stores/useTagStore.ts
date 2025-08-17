@@ -19,6 +19,11 @@ export const useTagStore = defineStore("tag", () => {
     }
   }
 
+  function reset() {
+    tags.value = []
+    instance = null
+  }
+
   async function getTagByTitle(title: string): Promise<Tag | null> {
     if (!instance) {
       throw new Error("StorageService has not been initialized")
@@ -73,7 +78,15 @@ export const useTagStore = defineStore("tag", () => {
     }
   }
 
-  return { tags, fetchTags, getTagByTitle, createTag, deleteTagAndDetachFromEntries, reorderTags }
+  return {
+    tags,
+    fetchTags,
+    reset,
+    getTagByTitle,
+    createTag,
+    deleteTagAndDetachFromEntries,
+    reorderTags,
+  }
 })
 
 export function initializeTagService(service: StorageService) {

@@ -34,10 +34,6 @@ const submit = async () => {
     }
 
     await deleteUser(user)
-    router.push("/login").then(() => {
-      trigger(`ユーザ情報を削除しました`, "success")
-    })
-
     trigger(`ユーザ情報を削除しました`, "success")
     closeDeleteUserDialog()
   } catch (err) {

@@ -5,6 +5,10 @@ import type { StorageService } from "@/services/StorageService"
 let instance: StorageService | null = null
 
 export const useCommentStore = defineStore("comment", () => {
+  function reset() {
+    instance = null
+  }
+
   async function addComment(
     entryId: string,
     commentBody: Omit<Comment, "id" | "entryId" | "createdAt">,
@@ -21,7 +25,7 @@ export const useCommentStore = defineStore("comment", () => {
     }
   }
 
-  return { addComment }
+  return { reset, addComment }
 })
 
 export function initializeCommentService(service: StorageService) {
