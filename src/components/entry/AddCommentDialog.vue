@@ -8,60 +8,63 @@ import { notify } from "@/utils/storageNotifier"
 import { ref, watch } from "vue"
 import LoadingSpinner from "../util/LoadingSpinner.vue"
 
-const emit = defineEmits(["submit", "cancel"])
-
-const { isOpen, originalEntryType, targetEntryId, closeAddComment } = useAddCommentDialog()
+const { visible, params, closeAddCommentDialog } = useAddCommentDialog()
 const commentStore = useCommentStore()
 const { trigger } = useNotificationBar()
 
 const dialogRef = ref<HTMLDialogElement | null>(null)
-const inputValue = ref("")
-const showTypeReset = ref(false)
-const selectedType = ref<EntryType | null>(null)
+const content = ref("")
+const showReviewType = ref(false)
+const selectedReviewType = ref<EntryType | null>(null)
 const loading = ref(false)
 
-watch(isOpen, (val) => {
+watch(visible, (val) => {
   if (val) {
-    inputValue.value = ""
-    showTypeReset.value = false
-    selectedType.value = null
+    if (!params.value) return
     dialogRef.value?.showModal()
   } else {
     dialogRef.value?.close()
   }
 })
 
-watch(showTypeReset, (val) => {
+watch(showReviewType, (val) => {
   if (val) {
-    selectedType.value = "achievement"
+    selectedReviewType.value = "achievement"
   } else {
-    selectedType.value = null
+    selectedReviewType.value = null
   }
 })
 
+const closeDialog = () => {
+  content.value = ""
+  showReviewType.value = false
+  closeAddCommentDialog()
+}
+
 const submit = async () => {
+  if (!params.value) return
+
   const commentBody: Omit<Comment, "id" | "entryId" | "createdAt"> | null = {
-    content: inputValue.value,
-    reviewType: selectedType.value,
+    content: content.value,
+    reviewType: selectedReviewType.value,
   }
+
   loading.value = true
   try {
-    const newComment = await commentStore.addComment(targetEntryId.value as string, commentBody)
+    await commentStore.addComment(params.value.entryId, commentBody)
     notify()
-    emit("submit", newComment)
-    closeAddComment(newComment)
+    closeDialog()
   } catch (err) {
-    trigger("記録に失敗しました。時間をおいて再度お試しください", "error")
     console.error(err)
+    trigger("記録に失敗しました。時間をおいて再度お試しください", "error")
   } finally {
     loading.value = false
   }
 }
 
 const cancel = () => {
-  loading.value = false
-  emit("cancel")
-  closeAddComment(null)
+  if (loading.value) return
+  closeDialog()
 }
 
 const options = [
@@ -78,7 +81,7 @@ const options = [
         <label>
           <div class="label-header">ふりかえりコメント</div>
           <textarea
-            v-model="inputValue"
+            v-model="content"
             @keydown.ctrl.enter="submit"
             placeholder="この記録について、現在はどう感じますか？"
             class="content"
@@ -86,10 +89,10 @@ const options = [
           ></textarea>
         </label>
         <label>
-          <input type="checkbox" v-model="showTypeReset" />
+          <input type="checkbox" v-model="showReviewType" />
           記録の再評価（改めてふりかえる）
         </label>
-        <div v-if="showTypeReset">
+        <div v-if="showReviewType">
           <fieldset class="entry-type-selector">
             <legend class="label-header">新しい評価</legend>
             <label
@@ -97,7 +100,7 @@ const options = [
               :key="option.value"
               :class="[
                 'entry-type-option',
-                { selected: selectedType === option.value },
+                { selected: selectedReviewType === option.value },
                 option.value,
               ]"
             >
@@ -105,11 +108,13 @@ const options = [
                 type="radio"
                 name="newEntryType"
                 :value="option.value"
-                v-model="selectedType"
+                v-model="selectedReviewType"
               />
               <div class="entry-type-label">
                 {{ option.label }}
-                <small v-if="originalEntryType === option.value"> （以前と同じ評価） </small>
+                <small v-if="params && params.entryType === option.value">
+                  （以前と同じ評価）
+                </small>
               </div>
             </label>
           </fieldset>

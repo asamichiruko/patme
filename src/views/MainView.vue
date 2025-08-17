@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import patmeImg from "@/assets/patme.svg"
+import DeleteUserDialog from "@/components/data/DeleteUserDialog.vue"
 import AddCommentDialog from "@/components/entry/AddCommentDialog.vue"
+import DeleteTagDialog from "@/components/tag/DeleteTagDialog.vue"
 import TaggingDialog from "@/components/tag/TaggingDialog.vue"
-import ConfirmDialog from "@/components/util/ConfirmDialog.vue"
 import TabNavigation from "@/components/util/TabNavigation.vue"
 import { auth } from "@/firebase"
 import { createStorageService } from "@/services/createStorageService"
@@ -89,7 +90,8 @@ const linkWithGoogle = async () => {
     </div>
     <AddCommentDialog />
     <TaggingDialog />
-    <ConfirmDialog />
+    <DeleteTagDialog />
+    <DeleteUserDialog />
   </template>
 </template>
 

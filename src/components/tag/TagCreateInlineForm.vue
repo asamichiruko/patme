@@ -39,7 +39,6 @@ const handleCreateTag = async () => {
       }}</span>
       <input
         class="new-tag-title"
-        id="new-tag-title"
         type="text"
         v-model="newTagTitle"
         @keydown.enter.prevent="handleCreateTag"

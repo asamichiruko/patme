@@ -1,16 +1,10 @@
 <script setup lang="ts">
 import handleImg from "@/assets/handle.svg"
 import trashImg from "@/assets/trash.svg"
-import { useConfirmDialog } from "@/composables/useConfirmDialog"
-import { useNotificationBar } from "@/composables/useNotificationBar"
+import { useDeleteTagDialog } from "@/composables/useDeleteTagDialog"
 import type { Tag } from "@/schemas/Tag"
-import { useEntryStore } from "@/stores/useEntryStore"
-import { useTagStore } from "@/stores/useTagStore"
 
-const { trigger } = useNotificationBar()
-const { openConfirm } = useConfirmDialog()
-const entryStore = useEntryStore()
-const tagStore = useTagStore()
+const { openDeleteTagDialog } = useDeleteTagDialog()
 
 const props = defineProps<{
   tag: Tag
@@ -20,18 +14,7 @@ const props = defineProps<{
 const emit = defineEmits(["keydown-on-handle"])
 
 const handlePressDelete = async () => {
-  const count = await entryStore.countEntriesWithTag(props.tag.id)
-
-  const result = await openConfirm(
-    `タグの削除の確認`,
-    `タグ「${props.tag.title}」を削除しようとしています。${count} 件の記録からこのタグが取り除かれます。本当に削除してもよろしいですか？`,
-  )
-
-  if (result) {
-    await tagStore.deleteTagAndDetachFromEntries(props.tag.id)
-    await entryStore.fetchEntriesWithRelations()
-    trigger(`タグ「${props.tag.title}」を削除しました`, "success")
-  }
+  openDeleteTagDialog({ tagId: props.tag.id, tagTitle: props.tag.title })
 }
 </script>
 

@@ -1,36 +1,27 @@
 import { ref } from "vue"
 
-type Resolver = ((initialTagId: string[] | null) => void) | null
+export interface TaggingParams {
+  entryId: string
+  tagIds: string[]
+}
 
-const isOpen = ref(false)
-const targetEntryId = ref<string | null>(null)
-const initialTagIds = ref<string[]>([])
-const resolver = ref<Resolver>(null)
+const visible = ref(false)
+const params = ref<TaggingParams | null>(null)
 
 export function useTaggingDialog() {
-  const openTaggingDialog = (entryId: string, tagIds: string[]) => {
-    return new Promise<string[] | null>((resolve) => {
-      targetEntryId.value = entryId
-      initialTagIds.value = tagIds
-      isOpen.value = true
-      resolver.value = resolve as Resolver
-    })
+  const openTaggingDialog = (p: TaggingParams) => {
+    params.value = p
+    visible.value = true
   }
 
-  const closeTaggingDialog = (selectedTagIds: string[] | null) => {
-    if (resolver.value) {
-      resolver.value(selectedTagIds)
-    }
-    isOpen.value = false
-    targetEntryId.value = null
-    initialTagIds.value = []
-    resolver.value = null
+  const closeTaggingDialog = () => {
+    visible.value = false
+    params.value = null
   }
 
   return {
-    isOpen,
-    targetEntryId,
-    initialTagIds,
+    visible,
+    params,
     openTaggingDialog,
     closeTaggingDialog,
   }

@@ -11,18 +11,18 @@ import type { EntryWithRelations } from "@/schemas/EntryWithRelations"
 import { formatRelativeDate } from "@/utils/formatDate"
 
 const { openTaggingDialog } = useTaggingDialog()
-const { openAddComment } = useAddCommentDialog()
+const { openAddCommentDialog } = useAddCommentDialog()
 
 const props = defineProps<{
   entry: EntryWithRelations
 }>()
 
 const handleAddComment = async () => {
-  await openAddComment(props.entry.id, props.entry.entryType)
+  openAddCommentDialog({ entryId: props.entry.id, entryType: props.entry.entryType })
 }
 
 const handleUpdateTagging = async () => {
-  await openTaggingDialog(props.entry.id, props.entry.tagIds)
+  openTaggingDialog({ entryId: props.entry.id, tagIds: props.entry.tagIds })
 }
 
 const entryTypeLabel = {

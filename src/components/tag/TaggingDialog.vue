@@ -8,9 +8,7 @@ import { notify } from "@/utils/storageNotifier"
 import { nextTick, ref, watch } from "vue"
 import LoadingSpinner from "../util/LoadingSpinner.vue"
 
-const emit = defineEmits(["submit", "cancel"])
-
-const { isOpen, targetEntryId, initialTagIds, closeTaggingDialog } = useTaggingDialog()
+const { visible, params, closeTaggingDialog } = useTaggingDialog()
 const { trigger } = useNotificationBar()
 const entryStore = useEntryStore()
 const tagStore = useTagStore()
@@ -20,9 +18,10 @@ const tagListRef = ref<HTMLUListElement | null>(null)
 const selectedTagIds = ref<string[]>([])
 const loading = ref(false)
 
-watch(isOpen, (val) => {
+watch(visible, (val) => {
   if (val) {
-    selectedTagIds.value = [...initialTagIds.value]
+    if (!params.value) return
+    selectedTagIds.value = [...params.value.tagIds]
     dialogRef.value?.showModal()
   } else {
     dialogRef.value?.close()
@@ -45,13 +44,12 @@ const handleTagCreated = async (tagId: string) => {
 }
 
 const submit = async () => {
+  if (!params.value) return
   try {
     loading.value = true
-    await entryStore.updateEntryTags(targetEntryId.value as string, selectedTagIds.value)
+    await entryStore.updateEntryTags(params.value.entryId, selectedTagIds.value)
     notify()
-
-    emit("submit", selectedTagIds.value)
-    closeTaggingDialog(selectedTagIds.value)
+    closeTaggingDialog()
   } catch (err) {
     console.log(err)
     trigger(`タグの紐づけに失敗しました。時間をおいて再度お試しください`, "error")
@@ -61,9 +59,8 @@ const submit = async () => {
 }
 
 const cancel = () => {
-  loading.value = false
-  emit("cancel")
-  closeTaggingDialog(null)
+  if (loading.value) return
+  closeTaggingDialog()
 }
 
 const toggleSelectedState = (id: string) => {
