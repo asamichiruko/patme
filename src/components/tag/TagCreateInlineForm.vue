@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useTagStore } from "@/stores/useTagStore"
 import { computed, ref } from "vue"
+import LoadingSpinner from "../util/LoadingSpinner.vue"
 
 const props = defineProps<{
   labeltext: string
@@ -10,6 +11,7 @@ const newTagTitle = ref("")
 const tagStore = useTagStore()
 
 const isVisibleLabel = computed(() => props.labeltext.trim() !== "")
+const loading = ref(false)
 
 const handleCreateTag = async () => {
   const trimmed = newTagTitle.value.trim()
@@ -17,24 +19,31 @@ const handleCreateTag = async () => {
     return
   }
 
-  let result = null
-  const existing = await tagStore.getTagByTitle(trimmed)
-  if (existing) {
-    result = existing.id
-  } else {
-    result = tagStore.createTag({ title: trimmed })
-  }
-  if (!result) return
+  try {
+    loading.value = true
+    let result = null
+    const existing = await tagStore.getTagByTitle(trimmed)
+    if (existing) {
+      result = existing.id
+    } else {
+      result = tagStore.createTag({ title: trimmed })
+    }
+    if (!result) return
 
-  emit("tag-created", result)
-  newTagTitle.value = ""
+    emit("tag-created", result)
+    newTagTitle.value = ""
+  } catch (err) {
+    console.error(err)
+  } finally {
+    loading.value = false
+  }
 }
 </script>
 
 <template>
   <div class="tag-create-form">
     <label>
-      <span class="new-tag-label" :class="{ 'sr-only': !isVisibleLabel }">{{
+      <span class="new-tag-label" :class="{ 'visually-hidden': !isVisibleLabel }">{{
         props.labeltext || "タグ名"
       }}</span>
       <input
@@ -45,7 +54,9 @@ const handleCreateTag = async () => {
         placeholder="新しいタグ名"
       />
     </label>
-    <button class="tag-create-button" type="button" @click="handleCreateTag">追加</button>
+    <button class="tag-create-button" type="button" @click="handleCreateTag">
+      <LoadingSpinner v-if="loading" class="spinner" /> 追加
+    </button>
   </div>
 </template>
 
@@ -78,13 +89,10 @@ const handleCreateTag = async () => {
   outline-offset: 2px;
   border-radius: 4px;
 }
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  margin: -1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  border: 0;
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  color: var(--color-sub-text);
 }
 </style>
