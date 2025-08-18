@@ -25,9 +25,19 @@ export class StorageService {
 
     entries.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
     comments.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
-    tags.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
+    tags.sort((a, b) => a.sortOrder - b.sortOrder)
 
-    const commentsGroupByEntryId = Map.groupBy(comments, (comment) => comment.entryId)
+    // const commentsGroupByEntryId = Map.groupBy(comments, (comment) => comment.entryId)
+
+    const commentsGroupByEntryId = new Map<string, Comment[]>()
+    entries.forEach((entry) => {
+      commentsGroupByEntryId.set(entry.id, [])
+    })
+    comments.forEach((comment) => {
+      if (!commentsGroupByEntryId.has(comment.entryId)) return
+      commentsGroupByEntryId.get(comment.entryId)!.push(comment)
+    })
+
     const tagMap = new Map<string, Tag>()
     tags.forEach((tag) => {
       tagMap.set(tag.id, tag)

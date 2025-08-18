@@ -8,15 +8,13 @@
   },
   "scripts": {
     "dev": "vite",
-    "build-only": "vite build",
+    "build-only": "vite build -- mode production",
     "build": "run-p type-check \"build-only {@}\" --",
     "preview": "vite preview",
     "test": "vitest run",
     "type-check": "vue-tsc --build",
     "lint": "eslint . --fix",
-    "format": "prettier --write src/",
-    "prepare-deploy": "npm run build && cp dist/index.html dist/404.html && touch dist/.nojekyll && rm -rf docs && mv dist docs",
-    "deploy": "npm run prepare-deploy && git add docs && git commit -m 'deploy' && git push"
+    "format": "prettier --write src/"
   },
   "dependencies": {
     "firebase": "^12.1.0",

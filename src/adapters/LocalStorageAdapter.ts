@@ -51,14 +51,18 @@ export class LocalStorageAdapter<T extends { id: string }> implements DataStoreA
 
   async updateAll(items: T[]): Promise<void> {
     const data = this.read()
-    const dataIdSet = new Set<string>(data.map((dat) => dat.id))
-    const itemsIdSet = new Set<string>(items.map((item) => item.id))
-
-    if (items.length !== itemsIdSet.size) throw new Error("duplicate id in items")
-    if (!itemsIdSet.isSubsetOf(dataIdSet) || !dataIdSet.isSubsetOf(itemsIdSet))
-      throw new Error("id set is not equal to existing id set")
-
-    this.write(items)
+    const itemsMap = new Map<string, T>()
+    items.forEach((item) => {
+      itemsMap.set(item.id, item)
+    })
+    const updated = data.filter((dat) => {
+      if (itemsMap.has(dat.id)) {
+        return itemsMap.get(dat.id)
+      } else {
+        return dat
+      }
+    })
+    this.write(updated)
   }
 
   async delete(id: string): Promise<void> {
