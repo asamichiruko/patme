@@ -140,7 +140,7 @@ button {
   outline-offset: 2px;
   border-radius: 4px;
 }
-.cancel-button {
+.sub-button {
   background-color: var(--color-sub);
   color: var(--color-sub-text);
   border: none;
@@ -150,10 +150,10 @@ button {
   font-size: 16px;
   transition: background-color 0.3s;
 }
-.cancel-button:hover {
+.sub-button:hover {
   background-color: var(--color-sub-hover);
 }
-.cancel-button:focus-visible {
+.sub-button:focus-visible {
   outline: 2px solid var(--color-sub-focus);
   outline-offset: 2px;
   border-radius: 4px;

@@ -61,7 +61,7 @@ const cancel = () => {
           {{ taggingCount }} 件の記録からこのタグが取り除かれます。本当に削除してもよろしいですか？
         </div>
         <div class="actions">
-          <button class="cancel-button" type="button" @click="cancel">キャンセル</button>
+          <button class="sub-button" type="button" @click="cancel">キャンセル</button>
           <button class="warning-button" type="submit">
             <LoadingSpinner v-if="loading" class="spinner" /> 削除する
           </button>

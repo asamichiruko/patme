@@ -120,7 +120,7 @@ const options = [
           </fieldset>
         </div>
         <div class="actions">
-          <button class="cancel-button" type="button" @click="cancel">キャンセル</button>
+          <button class="sub-button" type="button" @click="cancel">キャンセル</button>
           <button class="primary-button" type="submit">
             <LoadingSpinner v-if="loading" class="spinner" /> 記録する
           </button>

@@ -93,7 +93,7 @@ const toggleSelectedState = (id: string) => {
         </ul>
         <TagCreateInlineForm @tag-created="handleTagCreated" labeltext="タグを追加" />
         <div class="actions">
-          <button class="cancel-button" type="button" @click="cancel">キャンセル</button>
+          <button class="sub-button" type="button" @click="cancel">キャンセル</button>
           <button class="primary-button" type="submit">
             <LoadingSpinner v-if="loading" class="spinner" /> 決定
           </button>

@@ -65,7 +65,7 @@ const cancel = () => {
           ふりかえり帖アプリからユーザ情報を削除しようとしています。この操作を行うと、これまでの記録に以後アクセスできなくなります。本当に削除してもよろしいですか？
         </div>
         <div class="actions">
-          <button class="cancel-button" type="button" @click="cancel">キャンセル</button>
+          <button class="sub-button" type="button" @click="cancel">キャンセル</button>
           <button class="warning-button" type="submit">
             <LoadingSpinner v-if="loading" class="spinner" /> 削除する
           </button>
