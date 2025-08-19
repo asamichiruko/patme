@@ -2,9 +2,10 @@ import { createRouter, createWebHistory, type RouteRecordRaw } from "vue-router"
 import EntryFormAndListView from "@/views/EntryFormAndListView.vue"
 import SettingsView from "@/views/SettingsView.vue"
 import LoginView from "@/views/LoginView.vue"
-import { auth } from "@/firebase"
 import MainView from "@/views/MainView.vue"
-import { onAuthStateChanged } from "firebase/auth"
+import { useAuthStore } from "@/stores/useAuthStore"
+import SignUpView from "@/views/SignUpView.vue"
+import ResetPasswordView from "@/views/ResetPasswordView.vue"
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -15,6 +16,19 @@ const routes: Array<RouteRecordRaw> = [
     path: "/login",
     name: "login",
     component: LoginView,
+    meta: { requiresAuth: false },
+  },
+  {
+    path: "/signup",
+    name: "signup",
+    component: SignUpView,
+    meta: { requiresAuth: false },
+  },
+  {
+    path: "/reset_password",
+    name: "reset_password",
+    component: ResetPasswordView,
+    meta: { requiresAuth: false },
   },
   {
     path: "/main",
@@ -48,28 +62,15 @@ const router = createRouter({
   routes,
 })
 
-let authReady: Promise<void> | null = null
-const ensureAuthReady = () => {
-  if (!authReady) {
-    authReady = new Promise((resolve) => {
-      const unsubscribe = onAuthStateChanged(auth, () => {
-        unsubscribe()
-        resolve()
-      })
-    })
-  }
-  return authReady
-}
+router.beforeEach(async (to, _from, next) => {
+  const authStore = useAuthStore()
+  await authStore.ensureReady()
 
-router.beforeEach(async (to, from, next) => {
-  await ensureAuthReady()
+  const requiresAuth = to.meta.requiresAuth === true || to.meta.requiresAuth === undefined
 
-  const user = auth.currentUser
-  const requiresAuth = to.matched.some((record) => record.meta.requiresAuth)
-
-  if (requiresAuth && !user) {
+  if (requiresAuth && !authStore.currentUser) {
     next("/login")
-  } else if (to.path === "/login" && user && !user.isAnonymous) {
+  } else if (!requiresAuth && authStore.currentUser && to.path === "/login") {
     next("/main")
   } else {
     next()

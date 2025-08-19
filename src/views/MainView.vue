@@ -12,7 +12,7 @@ import { useCommentStore } from "@/stores/useCommentStore"
 import { useDataTransferStore } from "@/stores/useDataTransferStore"
 import { useEntryStore } from "@/stores/useEntryStore"
 import { useTagStore } from "@/stores/useTagStore"
-import { GoogleAuthProvider, linkWithRedirect, onAuthStateChanged, signOut } from "firebase/auth"
+import { onAuthStateChanged, signOut } from "firebase/auth"
 import { computed, ref } from "vue"
 import { RouterView, useRouter } from "vue-router"
 
@@ -62,17 +62,6 @@ const logout = async () => {
     console.error("Logout error", err)
   }
 }
-
-const linkWithGoogle = async () => {
-  const provider = new GoogleAuthProvider()
-  const user = auth.currentUser
-  if (!user) return
-  try {
-    await linkWithRedirect(user, provider)
-  } catch (err) {
-    console.error("Failed to link with google account", err)
-  }
-}
 </script>
 
 <template>
@@ -85,10 +74,7 @@ const linkWithGoogle = async () => {
         <h1><img :src="patmeImg" alt="" width="20px" height="20px" />ふりかえり帖</h1>
       </div>
       <div class="account-nav">
-        <div v-if="isAnonymous">
-          <button class="link-button" @click="linkWithGoogle">Google 連携</button>
-        </div>
-        <div v-else>
+        <div v-if="!isAnonymous">
           <button class="logout-button" @click="logout">ログアウト</button>
         </div>
       </div>
@@ -117,25 +103,6 @@ header {
   display: flex;
   justify-content: flex-end;
   gap: 16px;
-}
-
-.link-button {
-  background-color: var(--color-primary);
-  color: var(--color-primary-text);
-  border: none;
-  padding: 4px 12px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 15px;
-  transition: background-color 0.3s;
-}
-.link-button:hover {
-  background-color: var(--color-primary-hover);
-}
-.link-button:focus-visible {
-  outline: 2px solid var(--color-primary-focus);
-  outline-offset: 2px;
-  border-radius: 4px;
 }
 
 .logout-button {
