@@ -1,8 +1,31 @@
 <script setup lang="ts">
 import patmeImg from "@/assets/patme.svg"
+import { useNotificationBar } from "@/composables/useNotificationBar"
+import { auth } from "@/firebase"
+import { sendPasswordResetEmail } from "firebase/auth"
 import { ref } from "vue"
 
+const { trigger } = useNotificationBar()
+
 const email = ref("")
+const dialogRef = ref<HTMLDialogElement | null>(null)
+
+async function sendMail() {
+  if (!email.value) {
+    trigger("メールアドレスを入力してください", "error")
+    return
+  }
+  try {
+    await sendPasswordResetEmail(auth, email.value)
+  } catch (err) {
+    console.error("Failed send password reset email", err)
+    trigger("パスワード再設定用のメール送信に失敗しました。メールアドレスをご確認ください", "error")
+  }
+}
+
+function confirm() {
+  dialogRef.value?.close()
+}
 </script>
 
 <template>
@@ -11,6 +34,7 @@ const email = ref("")
       <h1><img :src="patmeImg" alt="" width="20px" height="20px" />ふりかえり帖</h1>
     </div>
   </header>
+
   <div class="container">
     <h2>アカウントの新規登録</h2>
     <form>
@@ -24,10 +48,19 @@ const email = ref("")
           placeholder="メールアドレス"
         />
       </label>
-      <button type="button" class="primary-button">パスワードを再発行する</button>
+      <button type="button" class="primary-button" @click="sendMail">パスワードを再発行する</button>
     </form>
     <p><a href="./login">ログイン画面へ戻る</a></p>
   </div>
+
+  <dialog ref="dialogRef" @cancel="confirm">
+    <p class="message">
+      メールアドレス宛にパスワード再設定用のメールを送信しました。ご確認ください。
+    </p>
+    <div class="actions">
+      <button class="primary-button" type="button" @click="confirm">決定</button>
+    </div>
+  </dialog>
 </template>
 
 <style scoped>
@@ -77,5 +110,14 @@ form {
   padding: 4px;
   font-size: 15px;
   width: 250px;
+}
+
+dialog {
+  border: none;
+  border-radius: 8px;
+  padding: 16px;
+  max-width: 400px;
+  width: 80%;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 </style>

@@ -10,6 +10,7 @@ import {
   type User,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  sendEmailVerification,
 } from "firebase/auth"
 import { defineStore } from "pinia"
 import { ref } from "vue"
@@ -22,10 +23,17 @@ export const useAuthStore = defineStore("auth", () => {
 
   let unsubscribe: Unsubscribe | null = null
 
-  function initAuthListener() {
+  async function initAuthListener() {
     if (unsubscribe) return
-    unsubscribe = onAuthStateChanged(auth, (u) => {
-      currentUser.value = u
+    unsubscribe = onAuthStateChanged(auth, async (u) => {
+      if (u) {
+        await u.reload()
+      }
+      if (u && u.emailVerified) {
+        currentUser.value = u
+      } else {
+        currentUser.value = null
+      }
       loading.value = false
     })
   }
@@ -57,12 +65,15 @@ export const useAuthStore = defineStore("auth", () => {
 
   async function signUpWithEmail(email: string, password: string) {
     const cred = await createUserWithEmailAndPassword(auth, email, password)
-    currentUser.value = cred.user
+    await sendEmailVerification(cred.user)
     return cred.user
   }
 
   async function signInWithEmail(email: string, password: string) {
     const cred = await signInWithEmailAndPassword(auth, email, password)
+    if (cred.user && !cred.user.emailVerified) {
+      throw new Error("Email not verified")
+    }
     currentUser.value = cred.user
     return cred.user
   }

@@ -1,9 +1,42 @@
 <script setup lang="ts">
 import patmeImg from "@/assets/patme.svg"
+import { useNotificationBar } from "@/composables/useNotificationBar"
+import { useAuthStore } from "@/stores/useAuthStore"
 import { ref } from "vue"
+import { useRouter } from "vue-router"
+
+const { trigger } = useNotificationBar()
+const router = useRouter()
+const authStore = useAuthStore()
 
 const email = ref("")
 const password = ref("")
+
+async function signUpAndLogin() {
+  if (!email.value) {
+    trigger("メールアドレスを入力してください", "error")
+    return
+  }
+  if (!password.value) {
+    trigger("パスワードを入力してください", "error")
+    return
+  }
+  if (password.value.length < 8) {
+    trigger("パスワードは 8 文字以上で作成してください", "error")
+    return
+  }
+
+  try {
+    await authStore.signUpWithEmail(email.value, password.value)
+    trigger("アカウントを登録しました", "success")
+  } catch (err) {
+    console.error("Faild sign up with email", err)
+    trigger("アカウント登録に失敗しました。メールアドレス・パスワードをご確認ください", "error")
+    return
+  }
+
+  router.push("/main")
+}
 </script>
 
 <template>
@@ -36,7 +69,7 @@ const password = ref("")
         />
       </label>
       <p>注：パスワードは 8 文字以上で作成してください。</p>
-      <button type="button" class="primary-button">登録してログイン</button>
+      <button type="button" class="primary-button" @click="signUpAndLogin">登録</button>
     </form>
     <p><a href="./login">既存のアカウントでログインする</a></p>
   </div>
