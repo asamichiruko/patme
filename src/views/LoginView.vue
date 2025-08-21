@@ -1,23 +1,59 @@
 <script setup lang="ts">
 import patmeImg from "@/assets/patme.svg"
+import LoadingSpinner from "@/components/util/LoadingSpinner.vue"
+import { useNotificationBar } from "@/composables/useNotificationBar"
 import { useAuthStore } from "@/stores/useAuthStore"
 import { ref } from "vue"
+import { useRouter } from "vue-router"
 
 const authStore = useAuthStore()
+const { trigger } = useNotificationBar()
+const router = useRouter()
 
 const email = ref("")
 const password = ref("")
+const loading = ref<string | null>(null)
 
-const signInAsAnonymous = async () => {
-  authStore.signInAnonymous()
+const signInAnonymously = async () => {
+  loading.value = "anonymous"
+  try {
+    await authStore.signInAnonymously()
+    router.push("/main")
+  } catch {
+    trigger("ログインに失敗しました", "error")
+  } finally {
+    loading.value = null
+  }
 }
 
-const signInWithGoogleAccount = async () => {
-  authStore.signInWithGoogleRedirect()
+const signInWithGoogle = async () => {
+  loading.value = "google"
+  try {
+    const user = authStore.currentUser
+    if (!user) {
+      await authStore.signInWithGoogle()
+    } else if (user.isAnonymous) {
+      await authStore.linkAnonymousWithGoogle()
+    } else {
+      throw new Error("User already loggedin")
+    }
+  } catch {
+    trigger("ログインに失敗しました", "error")
+  } finally {
+    loading.value = null
+  }
 }
 
-const signInWithEmail = async () => {
-  await authStore.signInWithEmail(email.value, password.value)
+const signInWithPassword = async () => {
+  loading.value = "email"
+  try {
+    await authStore.signInWithPassword(email.value, password.value)
+    router.push("/main")
+  } catch {
+    trigger("ログインに失敗しました。メールアドレスとパスワードをご確認ください", "error")
+  } finally {
+    loading.value = null
+  }
 }
 </script>
 
@@ -39,8 +75,8 @@ const signInWithEmail = async () => {
     <form>
       <fieldset>
         <legend>アカウント連携</legend>
-        <button type="button" class="primary-button" @click="signInWithGoogleAccount">
-          Google アカウントでログイン
+        <button type="button" class="primary-button" @click="signInWithGoogle">
+          <LoadingSpinner v-if="loading === 'google'" class="spinner" /> Google アカウントでログイン
         </button>
       </fieldset>
       <fieldset>
@@ -65,18 +101,18 @@ const signInWithEmail = async () => {
             placeholder="パスワード"
           />
         </label>
-        <button type="button" class="primary-button" @click="signInWithEmail">
-          メールアドレスでログイン
+        <button type="button" class="primary-button" @click="signInWithPassword">
+          <LoadingSpinner v-if="loading === 'email'" class="spinner" /> メールアドレスでログイン
         </button>
         <p><a href="./reset_password">パスワードを忘れた場合（再発行）</a></p>
       </fieldset>
       <fieldset>
         <legend>アカウントの新規登録</legend>
-        <button type="button" class="primary-button" @click="$router.push('/signup')">
+        <button type="button" class="primary-button" @click="router.push('/signup')">
           新規登録
         </button>
-        <button type="button" class="primary-button" @click="signInAsAnonymous">
-          登録せずにログイン
+        <button type="button" class="primary-button" @click="signInAnonymously">
+          <LoadingSpinner v-if="loading === 'anonymous'" class="spinner" /> 登録せずにログイン
         </button>
         <p>
           注：アカウント登録せずにログインした場合、ブラウザを変更するとデータが引き継がれません。
@@ -164,5 +200,11 @@ fieldset {
   padding: 4px;
   font-size: 15px;
   width: 250px;
+}
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  color: var(--color-primary-text);
 }
 </style>

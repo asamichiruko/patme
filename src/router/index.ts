@@ -16,30 +16,30 @@ const routes: Array<RouteRecordRaw> = [
     path: "/login",
     name: "login",
     component: LoginView,
-    meta: { allowUnauthed: true, allowUnverified: true },
+    meta: { guestOnly: true },
   },
   {
     path: "/signup",
     name: "signup",
     component: SignUpView,
-    meta: { allowUnauthed: true, allowUnverified: true },
+    meta: { guestOnly: true },
   },
   {
     path: "/reset_password",
     name: "reset_password",
     component: ResetPasswordView,
-    meta: { allowUnauthed: true },
+    meta: { guestOnly: true },
   },
   {
     path: "/verify_email",
     name: "verify_email",
     component: ResetPasswordView,
-    meta: { allowUnauthed: false, allowUnverified: true },
+    meta: { requiresAuth: true },
   },
   {
     path: "/main",
     component: MainView,
-    meta: { requiresAuth: true },
+    meta: { requiresAuth: true, requiresEmailVerified: true },
     children: [
       {
         path: "",
@@ -68,39 +68,33 @@ const router = createRouter({
   routes,
 })
 
-router.beforeEach(async (to) => {
+router.beforeEach(async (to, _from, next) => {
   const authStore = useAuthStore()
   await authStore.ensureReady()
 
   const user = authStore.currentUser
+  const isLoggedIn = user !== null
+  const isAnonymous = user?.isAnonymous ?? false
+  const isEmailProvider = user?.providerData.some((p) => p.providerId === "password") ?? false
+  const isVerified = !isEmailProvider || user?.emailVerified === true
 
-  if (to.name === "reset_password") {
-    if (!user) return true
-    return { name: "main" }
+  // 1. 未ログインなのに requiresAuth
+  if (to.meta.requiresAuth && !isLoggedIn) {
+    return next({ name: "login" })
   }
 
-  // 未ログインユーザ
-  if (!user) {
-    if (to.meta.allowUnauthed) {
-      return true
-    }
-    return { name: "login" }
+  // 2. ログイン済みなのに guestOnly ページへアクセス
+  if (to.meta.guestOnly && isLoggedIn) {
+    return next({ path: "/main" })
   }
 
-  // password ログインで未認証の場合
-  const isPasswordProvider = user.providerData.some((p) => p.providerId === "password")
-  if (isPasswordProvider && !user.emailVerified) {
-    if (to.meta.allowUnverified) {
-      return true
-    }
-    return { name: "verify_email" }
+  // 3. メール認証が必須だが未認証
+  if (to.meta.requiresEmailVerified && isLoggedIn && !isVerified) {
+    return next({ name: "verify_email" })
   }
 
-  // ゲスト, プロバイダ, 認証済み email の場合
-  if (to.name === "verify_email") {
-    return { name: "main" }
-  }
-  return true
+  // デフォルトは許可
+  return next()
 })
 
 export default router

@@ -1,119 +1,134 @@
 import { auth } from "@/firebase"
+import { FirebaseError } from "firebase/app"
 import {
   getRedirectResult,
-  onAuthStateChanged,
   signInAnonymously,
-  signInWithRedirect,
   signOut,
   GoogleAuthProvider,
-  type Unsubscribe,
+  linkWithRedirect,
   type User,
-  createUserWithEmailAndPassword,
+  type Unsubscribe,
+  signInWithCredential,
+  signInWithRedirect,
   signInWithEmailAndPassword,
-  sendEmailVerification,
+  createUserWithEmailAndPassword,
+  EmailAuthProvider,
+  linkWithCredential,
+  onAuthStateChanged,
 } from "firebase/auth"
 import { defineStore } from "pinia"
 import { ref } from "vue"
 
+let authReadyResolve: () => void
+const authReadyPromise = new Promise<void>((resolve) => {
+  authReadyResolve = resolve
+})
+
 export const useAuthStore = defineStore("auth", () => {
   const currentUser = ref<User | null>(null)
-  const redirectChecked = ref(false)
   const loading = ref(true)
-  const error = ref<unknown>(null)
 
   let unsubscribe: Unsubscribe | null = null
 
-  async function initAuthListener() {
-    if (unsubscribe) return
-    unsubscribe = onAuthStateChanged(auth, async (u) => {
-      if (u) {
-        await u.reload()
+  async function init() {
+    try {
+      const result = await getRedirectResult(auth)
+      if (result?.user) {
+        currentUser.value = result.user
       }
-      if (u && u.emailVerified) {
-        currentUser.value = u
-      } else {
-        currentUser.value = null
+    } catch (err) {
+      if (err instanceof FirebaseError && err.code === "auth/credential-already-in-use") {
+        // credential login
       }
+    }
+
+    if (unsubscribe) unsubscribe()
+    unsubscribe = onAuthStateChanged(auth, (user) => {
+      currentUser.value = user
       loading.value = false
+
+      authReadyResolve()
     })
   }
 
-  async function checkRedirectResultOnce() {
-    if (redirectChecked.value) return
-    try {
-      const result = await getRedirectResult(auth)
-      if (result?.user) currentUser.value = result.user
-      redirectChecked.value = true
-    } catch (err) {
-      console.error("Failed getRedirectResult", err)
-      error.value = err
-    }
-  }
-
   async function ensureReady() {
-    initAuthListener()
-    await checkRedirectResultOnce()
-    if (loading.value) {
-      await new Promise<void>((resolve) => {
-        const off = onAuthStateChanged(auth, () => {
-          off()
-          resolve()
-        })
-      })
-    }
+    return authReadyPromise
   }
 
-  async function signUpWithEmail(email: string, password: string) {
-    const cred = await createUserWithEmailAndPassword(auth, email, password)
-    await sendEmailVerification(cred.user)
-    return cred.user
-  }
-
-  async function signInWithEmail(email: string, password: string) {
-    const cred = await signInWithEmailAndPassword(auth, email, password)
-    if (cred.user && !cred.user.emailVerified) {
-      throw new Error("Email not verified")
-    }
-    currentUser.value = cred.user
-    return cred.user
-  }
-
-  async function signInWithGoogleRedirect() {
-    error.value = null
+  async function signInWithGoogle() {
     const provider = new GoogleAuthProvider()
     await signInWithRedirect(auth, provider)
   }
 
-  async function signInAnonymous() {
-    error.value = null
+  async function signInWithPassword(email: string, password: string) {
+    await signInWithEmailAndPassword(auth, email, password)
+    currentUser.value = auth.currentUser
+  }
+
+  async function signInAnon() {
     await signInAnonymously(auth)
+    currentUser.value = auth.currentUser
+  }
+
+  async function signUpWithPassword(email: string, password: string) {
+    await createUserWithEmailAndPassword(auth, email, password)
+    currentUser.value = auth.currentUser
+  }
+
+  async function linkAnonymousWithGoogle() {
+    if (!auth.currentUser) throw new Error("No current user to link")
+    if (!auth.currentUser.isAnonymous) {
+      throw new Error("Not anonymous user")
+    }
+    const provider = new GoogleAuthProvider()
+    try {
+      await linkWithRedirect(auth.currentUser, provider)
+    } catch (err) {
+      if (!(err instanceof FirebaseError)) throw err
+      if (err.code === "auth/credential-already-in-use") {
+        const cred = GoogleAuthProvider.credentialFromError(err)
+        if (cred) {
+          await signInWithCredential(auth, cred)
+        }
+      } else {
+        throw err
+      }
+    }
+  }
+
+  async function linkAnonymousWithPassword(email: string, password: string) {
+    if (!auth.currentUser) throw new Error("No current user to link")
+    if (!auth.currentUser.isAnonymous) {
+      throw new Error("Not anonymous user")
+    }
+    const cred = EmailAuthProvider.credential(email, password)
+    try {
+      await linkWithCredential(auth.currentUser, cred)
+    } catch (err) {
+      if (!(err instanceof FirebaseError)) throw err
+      if (err.code === "auth/credential-already-in-use") {
+        await signInWithEmailAndPassword(auth, email, password)
+      } else {
+        throw err
+      }
+    }
   }
 
   async function signOutAll() {
-    error.value = null
     await signOut(auth)
-  }
-
-  function dispose() {
-    if (unsubscribe) {
-      unsubscribe()
-      unsubscribe = null
-    }
   }
 
   return {
     currentUser,
     loading,
-    redirectChecked,
-    error,
-    initAuthListener,
-    checkRedirectResultOnce,
+    init,
     ensureReady,
-    signUpWithEmail,
-    signInWithEmail,
-    signInWithGoogleRedirect,
-    signInAnonymous,
+    signInWithGoogle,
+    signInWithPassword,
+    signInAnonymously: signInAnon,
+    signUpWithPassword,
+    linkAnonymousWithGoogle,
+    linkAnonymousWithPassword,
     signOutAll,
-    dispose,
   }
 })
