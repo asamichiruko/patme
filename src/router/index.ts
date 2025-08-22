@@ -6,6 +6,7 @@ import MainView from "@/views/MainView.vue"
 import { useAuthStore } from "@/stores/useAuthStore"
 import SignUpView from "@/views/SignUpView.vue"
 import ResetPasswordView from "@/views/ResetPasswordView.vue"
+import VerifyEmailView from "@/views/VerifyEmailView.vue"
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -33,7 +34,7 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: "/verify_email",
     name: "verify_email",
-    component: ResetPasswordView,
+    component: VerifyEmailView,
     meta: { requiresAuth: true },
   },
   {

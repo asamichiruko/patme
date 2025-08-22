@@ -36,7 +36,7 @@ function confirm() {
   </header>
 
   <div class="container">
-    <h2>アカウントの新規登録</h2>
+    <h2>パスワードの再発行</h2>
     <form>
       <label>
         <span class="input-label">メールアドレス</span>

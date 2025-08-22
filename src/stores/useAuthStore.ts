@@ -15,6 +15,8 @@ import {
   EmailAuthProvider,
   linkWithCredential,
   onAuthStateChanged,
+  sendEmailVerification,
+  validatePassword,
 } from "firebase/auth"
 import { defineStore } from "pinia"
 import { ref } from "vue"
@@ -65,7 +67,7 @@ export const useAuthStore = defineStore("auth", () => {
     currentUser.value = auth.currentUser
   }
 
-  async function signInAnon() {
+  async function _signInAnonymously() {
     await signInAnonymously(auth)
     currentUser.value = auth.currentUser
   }
@@ -73,6 +75,16 @@ export const useAuthStore = defineStore("auth", () => {
   async function signUpWithPassword(email: string, password: string) {
     await createUserWithEmailAndPassword(auth, email, password)
     currentUser.value = auth.currentUser
+  }
+
+  async function _validatePassword(password: string) {
+    const status = await validatePassword(auth, password)
+    return status.isValid
+  }
+
+  function _sendEmailVerification() {
+    if (!auth.currentUser) return
+    sendEmailVerification(auth.currentUser)
   }
 
   async function linkAnonymousWithGoogle() {
@@ -125,7 +137,9 @@ export const useAuthStore = defineStore("auth", () => {
     ensureReady,
     signInWithGoogle,
     signInWithPassword,
-    signInAnonymously: signInAnon,
+    signInAnonymously: _signInAnonymously,
+    sendEmailVerification: _sendEmailVerification,
+    validatePassword: _validatePassword,
     signUpWithPassword,
     linkAnonymousWithGoogle,
     linkAnonymousWithPassword,
