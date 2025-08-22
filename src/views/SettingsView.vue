@@ -13,16 +13,14 @@ import TagManager from "@/components/tag/TagManager.vue"
     </section>
 
     <section>
-      <h2>エクスポート</h2>
+      <h2>データの保存と復元</h2>
+      <h3>エクスポート</h3>
       <ExportForm />
       <p>
         記録を JSON ファイルとしてエクスポートします。
         エクスポートファイルは記録の復元に利用できます。
       </p>
-    </section>
-
-    <section>
-      <h2>インポート</h2>
+      <h3>インポート</h3>
       <ImportForm />
       <p>
         アップロードしたファイルの内容で記録をリストアします。
@@ -46,9 +44,5 @@ import TagManager from "@/components/tag/TagManager.vue"
   display: flex;
   flex-direction: column;
   gap: 16px;
-}
-
-h2 {
-  color: var(--color-header);
 }
 </style>

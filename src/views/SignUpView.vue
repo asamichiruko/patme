@@ -51,8 +51,8 @@ async function signUpAndLogin() {
 </script>
 
 <template>
-  <header>
-    <div class="index-title">
+  <header class="main-header">
+    <div class="main-title">
       <h1><img :src="patmeImg" alt="" width="20px" height="20px" />ふりかえり帖</h1>
     </div>
   </header>
@@ -89,33 +89,6 @@ async function signUpAndLogin() {
 </template>
 
 <style scoped>
-header {
-  margin-bottom: 32px;
-}
-
-.index-title {
-  color: var(--color-header);
-  text-align: center;
-  margin: 0;
-  padding: 0;
-  white-space: nowrap;
-}
-
-.index-title h1 {
-  font-size: 24px;
-  margin: 0;
-  padding: 0;
-}
-
-.index-title img {
-  margin-right: 8px;
-}
-
-p {
-  margin: 0;
-  padding: 0;
-}
-
 form {
   margin: 0;
   padding: 0;

@@ -58,15 +58,15 @@ const signInWithPassword = async () => {
 </script>
 
 <template>
-  <header>
+  <header class="index-header">
     <div class="index-title">
       <h1><img :src="patmeImg" alt="" width="30px" height="30px" />ふりかえり帖</h1>
-      <p>Give yourself a pat on the back!</p>
+      <p class="index-subtitle">Give yourself a pat on the back!</p>
     </div>
   </header>
   <div class="container">
     <h2>このアプリについて</h2>
-    <p class="index-subtitle">
+    <p>
       ふりかえり帖 (Patme)
       は日常の「できたこと」や「ふりかえりたいこと」を記録し、自分を客観的にふりかえるためのアプリです。
     </p>
@@ -108,9 +108,7 @@ const signInWithPassword = async () => {
       </fieldset>
       <fieldset>
         <legend>アカウントの新規登録</legend>
-        <button type="button" class="primary-button" @click="router.push('/signup')">
-          新規登録
-        </button>
+        <a type="button" class="primary-button" href="./signup"> 新規登録 </a>
         <button type="button" class="primary-button" @click="signInAnonymously">
           <LoadingSpinner v-if="loading === 'anonymous'" class="spinner" /> 登録せずにログイン
         </button>
@@ -153,7 +151,7 @@ const signInWithPassword = async () => {
   padding: 0;
 }
 
-header {
+.index-header {
   margin-bottom: 16px;
 }
 
