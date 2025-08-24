@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import DeleteUserForm from "@/components/data/DeleteUserForm.vue"
 import ExportForm from "@/components/data/ExportForm.vue"
 import ImportForm from "@/components/data/ImportForm.vue"
 import TagManager from "@/components/tag/TagManager.vue"
@@ -13,28 +12,27 @@ import TagManager from "@/components/tag/TagManager.vue"
     </section>
 
     <section>
-      <h2>データの保存と復元</h2>
-      <h3>エクスポート</h3>
-      <ExportForm />
+      <h2>アカウント情報の編集</h2>
+      <p>アカウント連携やパスワードの変更、アカウントの削除を行います。</p>
       <p>
-        記録を JSON ファイルとしてエクスポートします。
-        エクスポートファイルは記録の復元に利用できます。
-      </p>
-      <h3>インポート</h3>
-      <ImportForm />
-      <p>
-        アップロードしたファイルの内容で記録をリストアします。
-        <strong>既存の記録を上書き</strong>します。
+        <a href="./account_settings" class="primary-button">アカウント情報の編集（別ページ）</a>
       </p>
     </section>
 
     <section>
-      <h2>ユーザの削除</h2>
-      <DeleteUserForm />
+      <h2>データの保存と復元</h2>
+      <h3>エクスポート</h3>
       <p>
-        匿名または連携アカウントの情報を削除します。
-        <strong>この操作は元に戻せません</strong>。
+        記録を JSON ファイルとしてエクスポートします。
+        エクスポートファイルは記録の復元に利用できます。
       </p>
+      <ExportForm />
+      <h3>インポート</h3>
+      <p>
+        アップロードしたファイルの内容で記録をリストアします。
+        <strong>既存の記録を上書き</strong>します。
+      </p>
+      <ImportForm />
     </section>
   </div>
 </template>

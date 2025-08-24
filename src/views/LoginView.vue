@@ -155,16 +155,6 @@ const signInWithPassword = async () => {
   margin-bottom: 16px;
 }
 
-h2 {
-  color: var(--color-header);
-  font-size: 22px;
-}
-
-p {
-  margin: 0;
-  padding: 0;
-}
-
 form {
   display: flex;
   flex-direction: column;
@@ -185,7 +175,7 @@ fieldset {
   display: flex;
   flex-direction: column;
   align-items: start;
-  gap: 16px;
+  gap: 8px;
   padding-bottom: 16px;
   border-bottom: 1px solid var(--color-border);
 }

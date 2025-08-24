@@ -105,6 +105,7 @@ form {
   width: 130px;
 }
 .input-text {
+  display: inline-block;
   padding: 4px;
   font-size: 15px;
   width: 250px;

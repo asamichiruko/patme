@@ -7,6 +7,7 @@ import { useAuthStore } from "@/stores/useAuthStore"
 import SignUpView from "@/views/SignUpView.vue"
 import ResetPasswordView from "@/views/ResetPasswordView.vue"
 import VerifyEmailView from "@/views/VerifyEmailView.vue"
+import AccountSettingsView from "@/views/AccountSettingsView.vue"
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -35,6 +36,12 @@ const routes: Array<RouteRecordRaw> = [
     path: "/verify_email",
     name: "verify_email",
     component: VerifyEmailView,
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/account_settings",
+    name: "account_settings",
+    component: AccountSettingsView,
     meta: { requiresAuth: true },
   },
   {
@@ -75,7 +82,6 @@ router.beforeEach(async (to, _from, next) => {
 
   const user = authStore.currentUser
   const isLoggedIn = user !== null
-  const isAnonymous = user?.isAnonymous ?? false
   const isEmailProvider = user?.providerData.some((p) => p.providerId === "password") ?? false
   const isVerified = !isEmailProvider || user?.emailVerified === true
 

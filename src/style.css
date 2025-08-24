@@ -162,10 +162,12 @@ button {
 }
 
 .primary-button {
+  display: inline-block;
   background-color: var(--color-primary);
   color: var(--color-primary-text);
   border: none;
   padding: 8px 16px;
+  margin: 8px 0;
   border-radius: 4px;
   cursor: pointer;
   font-size: 16px;

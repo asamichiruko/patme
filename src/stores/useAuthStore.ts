@@ -17,6 +17,7 @@ import {
   onAuthStateChanged,
   sendEmailVerification,
   validatePassword,
+  fetchSignInMethodsForEmail,
 } from "firebase/auth"
 import { defineStore } from "pinia"
 import { ref } from "vue"
@@ -87,6 +88,12 @@ export const useAuthStore = defineStore("auth", () => {
     sendEmailVerification(auth.currentUser)
   }
 
+  async function hasPasswordProvider() {
+    if (!auth.currentUser?.email) return false
+    const methods = await fetchSignInMethodsForEmail(auth, auth.currentUser.email)
+    return methods.includes("password")
+  }
+
   async function linkAnonymousWithGoogle() {
     if (!auth.currentUser) throw new Error("No current user to link")
     if (!auth.currentUser.isAnonymous) {
@@ -108,22 +115,10 @@ export const useAuthStore = defineStore("auth", () => {
     }
   }
 
-  async function linkAnonymousWithPassword(email: string, password: string) {
+  async function linkWithPassword(email: string, password: string) {
     if (!auth.currentUser) throw new Error("No current user to link")
-    if (!auth.currentUser.isAnonymous) {
-      throw new Error("Not anonymous user")
-    }
     const cred = EmailAuthProvider.credential(email, password)
-    try {
-      await linkWithCredential(auth.currentUser, cred)
-    } catch (err) {
-      if (!(err instanceof FirebaseError)) throw err
-      if (err.code === "auth/credential-already-in-use") {
-        await signInWithEmailAndPassword(auth, email, password)
-      } else {
-        throw err
-      }
-    }
+    await linkWithCredential(auth.currentUser, cred)
   }
 
   async function signOutAll() {
@@ -139,10 +134,11 @@ export const useAuthStore = defineStore("auth", () => {
     signInWithPassword,
     signInAnonymously: _signInAnonymously,
     sendEmailVerification: _sendEmailVerification,
+    hasPasswordProvider,
     validatePassword: _validatePassword,
     signUpWithPassword,
     linkAnonymousWithGoogle,
-    linkAnonymousWithPassword,
+    linkWithPassword,
     signOutAll,
   }
 })

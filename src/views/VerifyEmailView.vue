@@ -2,15 +2,17 @@
 import patmeImg from "@/assets/patme.svg"
 import { useNotificationBar } from "@/composables/useNotificationBar"
 import { useAuthStore } from "@/stores/useAuthStore"
-import { useRouter } from "vue-router"
+import { useRoute, useRouter } from "vue-router"
 
 const authStore = useAuthStore()
+const route = useRoute()
 const router = useRouter()
 const { trigger } = useNotificationBar()
 
 async function resendEmailVerification() {
   try {
     authStore.sendEmailVerification()
+    trigger("アカウント認証メールを再送しました。", "success")
   } catch (err) {
     console.error(err)
     trigger("アカウント認証メールの再送に失敗しました", "error")
@@ -21,7 +23,8 @@ async function tryLogin() {
   if (!authStore.currentUser) return
   await authStore.currentUser.reload()
   if (authStore.currentUser.emailVerified) {
-    router.push("/main")
+    const redirect = route.query.redirect as string | undefined
+    router.push(redirect ?? "/main")
   } else {
     trigger("先に認証を完了してください", "error")
   }
