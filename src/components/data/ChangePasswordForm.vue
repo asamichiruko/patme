@@ -27,7 +27,7 @@ async function updatePassword() {
       trigger("パスワードを更新しました", "success")
     } catch (err) {
       console.warn(err)
-      trigger("パスワードの更新に失敗しました。新しいパスワードの内容をご確認ください")
+      trigger("パスワードの更新に失敗しました。新しいパスワードの内容をご確認ください", "error")
       return
     }
   } finally {

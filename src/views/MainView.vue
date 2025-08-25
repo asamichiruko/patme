@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import patmeImg from "@/assets/patme.svg"
-import DeleteUserDialog from "@/components/data/DeleteUserDialog.vue"
 import AddCommentDialog from "@/components/entry/AddCommentDialog.vue"
 import DeleteTagDialog from "@/components/tag/DeleteTagDialog.vue"
 import TaggingDialog from "@/components/tag/TaggingDialog.vue"
@@ -49,7 +48,6 @@ const logout = async () => {
     <AddCommentDialog />
     <TaggingDialog />
     <DeleteTagDialog />
-    <DeleteUserDialog />
   </template>
 </template>
 

@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { useNotificationBar } from "@/composables/useNotificationBar"
-import { auth } from "@/firebase"
-import router from "@/router"
-import { FirebaseError } from "firebase/app"
-import { deleteUser } from "firebase/auth"
+import { useAuthStore } from "@/stores/useAuthStore"
 import { ref } from "vue"
+import { useRouter } from "vue-router"
 import LoadingSpinner from "../util/LoadingSpinner.vue"
 
 const { trigger } = useNotificationBar()
+const authStore = useAuthStore()
+const router = useRouter()
 
 const dialogRef = ref<HTMLDialogElement | null>(null)
 const loading = ref(false)
@@ -15,25 +15,13 @@ const loading = ref(false)
 const submit = async () => {
   try {
     loading.value = true
-
-    const user = auth.currentUser
-    if (!user) {
-      trigger(`ユーザ情報を取得できませんでした`)
-      return
-    }
-
-    await deleteUser(user)
+    await authStore.deleteUser()
     trigger(`ユーザ情報を削除しました`, "success")
     dialogRef.value?.close()
+    router.push("/login")
   } catch (err) {
     console.log(err)
-    if (err instanceof FirebaseError && err.code === "auth/requires-recent-login") {
-      console.error("Error deleting user: ", err)
-      alert("セキュリティ上の理由で再ログインが必要です。再ログイン後に削除をお試しください")
-      router.push("/login")
-    } else {
-      trigger(`ユーザ情報の削除に失敗しました。時間をおいて再度お試しください`, "error")
-    }
+    trigger(`ユーザ情報の削除に失敗しました。再度ログインした後に改めてお試しください`, "error")
   } finally {
     loading.value = false
   }

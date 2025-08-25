@@ -11,11 +11,11 @@ const isGoogleLinked = computed(() => authStore.providers.includes("google.com")
 
 const updating = ref(false)
 
-async function linkWithProvider(provider: string) {
+async function linkWithProvider(providerId: string) {
   if (updating.value) return
   updating.value = true
   try {
-    await authStore.linkWithProvider(provider as "google.com")
+    await authStore.linkWithProvider(providerId as "google.com")
   } catch (err) {
     console.warn(err)
     trigger("プロバイダ連携に失敗しました", "error")
@@ -24,11 +24,11 @@ async function linkWithProvider(provider: string) {
   }
 }
 
-async function unlinkProvider(provider: string) {
+async function unlinkProvider(providerId: string) {
   if (updating.value) return
   updating.value = true
   try {
-    await authStore.unlinkProvider(provider)
+    await authStore.unlinkProvider(providerId as "google.com")
   } finally {
     updating.value = false
   }
