@@ -6,9 +6,8 @@ import { computed, ref } from "vue"
 const authStore = useAuthStore()
 const { trigger } = useNotificationBar()
 
-const linkedProviders = computed(() => authStore.signInMethods())
-const isPasswordLinked = computed(() => linkedProviders.value.includes("password"))
-const isGoogleLinked = computed(() => linkedProviders.value.includes("google.com"))
+const isPasswordLinked = computed(() => authStore.providers.includes("password"))
+const isGoogleLinked = computed(() => authStore.providers.includes("google.com"))
 
 const updating = ref(false)
 

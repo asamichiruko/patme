@@ -5,59 +5,22 @@ import AddCommentDialog from "@/components/entry/AddCommentDialog.vue"
 import DeleteTagDialog from "@/components/tag/DeleteTagDialog.vue"
 import TaggingDialog from "@/components/tag/TaggingDialog.vue"
 import TabNavigation from "@/components/util/TabNavigation.vue"
-import { auth } from "@/firebase"
-import { createStorageService } from "@/services/createStorageService"
 import type { StorageService } from "@/services/StorageService"
-import { useCommentStore } from "@/stores/useCommentStore"
-import { useDataTransferStore } from "@/stores/useDataTransferStore"
-import { useEntryStore } from "@/stores/useEntryStore"
-import { useTagStore } from "@/stores/useTagStore"
-import { onAuthStateChanged, signOut } from "firebase/auth"
+import { useAuthStore } from "@/stores/useAuthStore"
 import { computed, ref } from "vue"
 import { RouterView, useRouter } from "vue-router"
 
-const entryStore = useEntryStore()
-const tagStore = useTagStore()
-const commentStore = useCommentStore()
-const dataTransferStore = useDataTransferStore()
+const authStore = useAuthStore()
 const router = useRouter()
 
 const storageReady = computed(() => Boolean(storageService))
 const isAnonymous = ref(false)
 const storageService = ref<StorageService | null>(null)
 
-onAuthStateChanged(auth, async (user) => {
-  if (!user) {
-    isAnonymous.value = false
-    storageService.value = null
-    entryStore.reset()
-    commentStore.reset()
-    tagStore.reset()
-    dataTransferStore.reset()
-    router.push("/login")
-    return
-  }
-
-  isAnonymous.value = user.isAnonymous
-
-  if (!storageService.value) {
-    const uid = user.uid
-    const backend = import.meta.env.VITE_STORAGE_BACKEND
-    if (backend === "local") {
-      storageService.value = createStorageService({ backend: "local" })
-    } else if (backend === "firestore") {
-      storageService.value = createStorageService({ backend: "firestore", uid })
-    } else {
-      throw new Error(`Invalid backend`)
-    }
-
-    await Promise.all([entryStore.fetchEntriesWithRelations(), tagStore.fetchTags()])
-  }
-})
-
 const logout = async () => {
   try {
-    await signOut(auth)
+    await authStore.signOut()
+    router.push("/login")
   } catch (err) {
     console.error("Logout error", err)
   }

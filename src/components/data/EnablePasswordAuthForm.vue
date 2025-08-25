@@ -9,19 +9,19 @@ const authStore = useAuthStore()
 const router = useRouter()
 const { trigger } = useNotificationBar()
 
-const emailView = computed(() => authStore.currentUser?.email ?? "--")
+const emailView = computed(() => authStore.email ?? "--")
 const password = ref("")
 const loading = ref(false)
-const hasPasswordAuth = computed(() => authStore.signInMethods().includes("password"))
+const hasPasswordAuth = computed(() => authStore.providers.includes("password"))
 
 async function onSubmit() {
-  if (!password.value || !authStore.currentUser) return
+  if (!password.value || !authStore.isLoggedIn) return
   loading.value = true
   try {
     await authStore.linkWithPassword(password.value)
     authStore.sendEmailVerification()
     trigger("パスワードを登録し、アドレス認証メールを送信しました", "success")
-    await authStore.currentUser.reload()
+    await authStore.reloadUser()
     router.push("/verify_email?redirect=/account_settings")
   } catch (err) {
     console.error(err)

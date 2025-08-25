@@ -8,7 +8,6 @@ import {
   linkWithRedirect,
   type User,
   type Unsubscribe,
-  signInWithCredential,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   EmailAuthProvider,
@@ -16,12 +15,18 @@ import {
   onAuthStateChanged,
   sendEmailVerification,
   validatePassword,
-  fetchSignInMethodsForEmail,
   type AuthProvider,
   unlink,
+  signInWithRedirect,
 } from "firebase/auth"
 import { defineStore } from "pinia"
-import { ref } from "vue"
+import { computed, ref } from "vue"
+import { useEntryStore } from "./useEntryStore"
+import { useCommentStore } from "./useCommentStore"
+import { useTagStore } from "./useTagStore"
+import { useDataTransferStore } from "./useDataTransferStore"
+import { createStorageService } from "@/services/createStorageService"
+import type { StorageService } from "@/services/StorageService"
 
 let authReadyResolve: () => void
 const authReadyPromise = new Promise<void>((resolve) => {
@@ -31,6 +36,13 @@ const authReadyPromise = new Promise<void>((resolve) => {
 export const useAuthStore = defineStore("auth", () => {
   const currentUser = ref<User | null>(null)
   const loading = ref(true)
+  const storageService = ref<StorageService | null>(null)
+
+  const isLoggedIn = computed(() => !!currentUser.value)
+  const isAnonymous = computed(() => currentUser.value?.isAnonymous ?? false)
+  const email = computed(() => currentUser.value?.email ?? null)
+  const emailVerified = computed(() => currentUser.value?.emailVerified ?? false)
+  const providers = computed(() => currentUser.value?.providerData.map((p) => p.providerId) ?? [])
 
   let unsubscribe: Unsubscribe | null = null
 
@@ -42,16 +54,23 @@ export const useAuthStore = defineStore("auth", () => {
       }
     } catch (err) {
       if (err instanceof FirebaseError && err.code === "auth/credential-already-in-use") {
-        // credential login
+        // ここで何をすべき？
+        // 1. 既存のアカウントにサインインする
+        // 2. 新しい認証情報をリンク
       }
       throw err
     }
 
     if (unsubscribe) unsubscribe()
-    unsubscribe = onAuthStateChanged(auth, (user) => {
+    unsubscribe = onAuthStateChanged(auth, async (user) => {
       currentUser.value = user
-      loading.value = false
+      if (user) {
+        await _initializeUserData(user)
+      } else {
+        _clearUserData()
+      }
 
+      loading.value = false
       authReadyResolve()
     })
   }
@@ -60,12 +79,48 @@ export const useAuthStore = defineStore("auth", () => {
     return authReadyPromise
   }
 
+  function _clearUserData() {
+    const entryStore = useEntryStore()
+    const commentStore = useCommentStore()
+    const tagStore = useTagStore()
+    const dataTransferStore = useDataTransferStore()
+
+    storageService.value = null
+    entryStore.reset()
+    commentStore.reset()
+    tagStore.reset()
+    dataTransferStore.reset()
+  }
+
+  async function _initializeUserData(user: User) {
+    const entryStore = useEntryStore()
+    const tagStore = useTagStore()
+
+    let backend
+    if (!storageService.value) {
+      backend = import.meta.env.VITE_STORAGE_BACKEND
+    }
+    if (backend === "local") {
+      storageService.value = createStorageService({ backend: "local" })
+    } else if (backend === "firestore") {
+      storageService.value = createStorageService({ backend: "firestore", uid: user.uid })
+    } else {
+      throw new Error(`Invalid backend`)
+    }
+
+    await Promise.all([entryStore.fetchEntriesWithRelations(), tagStore.fetchTags()])
+  }
+
+  async function reloadUser() {
+    currentUser.value?.reload()
+  }
+
   async function signInWithPassword(email: string, password: string) {
     await signInWithEmailAndPassword(auth, email, password)
     currentUser.value = auth.currentUser
   }
 
-  async function _signInAnonymously() {
+  async function signInAnonymously_() {
     await signInAnonymously(auth)
     currentUser.value = auth.currentUser
   }
@@ -75,25 +130,14 @@ export const useAuthStore = defineStore("auth", () => {
     currentUser.value = auth.currentUser
   }
 
-  async function _validatePassword(password: string) {
+  async function validatePassword_(password: string) {
     const status = await validatePassword(auth, password)
     return status.isValid
   }
 
-  function _sendEmailVerification() {
+  function sendEmailVerification_() {
     if (!auth.currentUser) return
     sendEmailVerification(auth.currentUser)
-  }
-
-  async function fetchSignInMethods() {
-    if (!auth.currentUser?.email) return []
-    const methods = await fetchSignInMethodsForEmail(auth, auth.currentUser.email)
-    return methods
-  }
-
-  function signInMethods() {
-    if (!auth.currentUser?.providerData) return []
-    return auth.currentUser.providerData.map((p) => p.providerId)
   }
 
   async function linkWithProvider(providerId: "google.com") {
@@ -117,22 +161,15 @@ export const useAuthStore = defineStore("auth", () => {
     await auth.currentUser.reload()
   }
 
-  async function signInWithGoogle() {
-    if (!auth.currentUser) throw new Error("No current user to link")
-    const provider = new GoogleAuthProvider()
-    try {
-      await linkWithRedirect(auth.currentUser, provider)
-    } catch (err) {
-      if (!(err instanceof FirebaseError)) throw err
-      if (err.code === "auth/credential-already-in-use") {
-        const cred = GoogleAuthProvider.credentialFromError(err)
-        if (cred) {
-          await signInWithCredential(auth, cred)
-        }
-      } else {
-        throw err
-      }
+  async function signInWithProvider(providerId: "google.com") {
+    let provider
+    if (providerId === "google.com") {
+      provider = new GoogleAuthProvider()
+    } else {
+      throw new Error(`Unknown provider ${providerId}`)
     }
+
+    await signInWithRedirect(auth, provider)
   }
 
   async function linkWithPassword(password: string) {
@@ -143,26 +180,28 @@ export const useAuthStore = defineStore("auth", () => {
     await linkWithCredential(auth.currentUser, cred)
   }
 
-  async function signOutAll() {
+  async function signOut_() {
     await signOut(auth)
   }
 
   return {
-    currentUser,
-    loading,
+    isLoggedIn,
+    isAnonymous,
+    email,
+    emailVerified,
+    providers,
     init,
     ensureReady,
-    signInWithGoogle,
+    reloadUser,
+    signInWithProvider,
     signInWithPassword,
-    signInAnonymously: _signInAnonymously,
-    sendEmailVerification: _sendEmailVerification,
-    fetchSignInMethods,
-    signInMethods,
+    signInAnonymously: signInAnonymously_,
+    sendEmailVerification: sendEmailVerification_,
     linkWithProvider,
     unlinkProvider,
-    validatePassword: _validatePassword,
+    validatePassword: validatePassword_,
     signUpWithPassword,
     linkWithPassword,
-    signOutAll,
+    signOut: signOut_,
   }
 })

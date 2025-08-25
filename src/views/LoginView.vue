@@ -29,13 +29,15 @@ const signInAnonymously = async () => {
 const signInWithGoogle = async () => {
   loading.value = "google"
   try {
-    const user = authStore.currentUser
-    if (!user || user.isAnonymous) {
-      await authStore.signInWithGoogle()
+    if (!authStore.isLoggedIn) {
+      await authStore.signInWithProvider("google.com")
+    } else if (authStore.isAnonymous) {
+      await authStore.linkWithProvider("google.com")
     } else {
       throw new Error("User already loggedin")
     }
-  } catch {
+  } catch (err) {
+    console.warn(err)
     trigger("ログインに失敗しました", "error")
   } finally {
     loading.value = null

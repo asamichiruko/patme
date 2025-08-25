@@ -20,9 +20,8 @@ async function resendEmailVerification() {
 }
 
 async function tryLogin() {
-  if (!authStore.currentUser) return
-  await authStore.currentUser.reload()
-  if (authStore.currentUser.emailVerified) {
+  await authStore.reloadUser()
+  if (authStore.emailVerified) {
     const redirect = route.query.redirect as string | undefined
     router.push(redirect ?? "/main")
   } else {

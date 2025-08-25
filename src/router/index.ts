@@ -80,10 +80,9 @@ router.beforeEach(async (to, _from, next) => {
   const authStore = useAuthStore()
   await authStore.ensureReady()
 
-  const user = authStore.currentUser
-  const isLoggedIn = user !== null
-  const isEmailProvider = user?.providerData.some((p) => p.providerId === "password") ?? false
-  const isVerified = !isEmailProvider || user?.emailVerified === true
+  const isLoggedIn = authStore.isLoggedIn
+  const isEmailProvider = authStore.providers.includes("password")
+  const isVerified = !isEmailProvider || authStore.emailVerified
 
   // 1. 未ログインなのに requiresAuth
   if (to.meta.requiresAuth && !isLoggedIn) {
