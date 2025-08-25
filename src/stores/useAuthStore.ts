@@ -9,7 +9,6 @@ import {
   type User,
   type Unsubscribe,
   signInWithCredential,
-  signInWithRedirect,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   EmailAuthProvider,
@@ -18,6 +17,8 @@ import {
   sendEmailVerification,
   validatePassword,
   fetchSignInMethodsForEmail,
+  type AuthProvider,
+  unlink,
 } from "firebase/auth"
 import { defineStore } from "pinia"
 import { ref } from "vue"
@@ -43,6 +44,7 @@ export const useAuthStore = defineStore("auth", () => {
       if (err instanceof FirebaseError && err.code === "auth/credential-already-in-use") {
         // credential login
       }
+      throw err
     }
 
     if (unsubscribe) unsubscribe()
@@ -56,11 +58,6 @@ export const useAuthStore = defineStore("auth", () => {
 
   async function ensureReady() {
     return authReadyPromise
-  }
-
-  async function signInWithGoogle() {
-    const provider = new GoogleAuthProvider()
-    await signInWithRedirect(auth, provider)
   }
 
   async function signInWithPassword(email: string, password: string) {
@@ -88,17 +85,40 @@ export const useAuthStore = defineStore("auth", () => {
     sendEmailVerification(auth.currentUser)
   }
 
-  async function hasPasswordProvider() {
-    if (!auth.currentUser?.email) return false
+  async function fetchSignInMethods() {
+    if (!auth.currentUser?.email) return []
     const methods = await fetchSignInMethodsForEmail(auth, auth.currentUser.email)
-    return methods.includes("password")
+    return methods
   }
 
-  async function linkAnonymousWithGoogle() {
-    if (!auth.currentUser) throw new Error("No current user to link")
-    if (!auth.currentUser.isAnonymous) {
-      throw new Error("Not anonymous user")
+  function signInMethods() {
+    if (!auth.currentUser?.providerData) return []
+    return auth.currentUser.providerData.map((p) => p.providerId)
+  }
+
+  async function linkWithProvider(providerId: "google.com") {
+    if (!auth.currentUser) throw new Error("User not found")
+
+    let provider: AuthProvider
+    if (providerId === "google.com") {
+      provider = new GoogleAuthProvider()
+    } else {
+      throw new Error("Provider not found")
     }
+
+    await linkWithRedirect(auth.currentUser, provider)
+    await auth.currentUser.reload()
+  }
+
+  async function unlinkProvider(providerId: string) {
+    if (!auth.currentUser) throw new Error("User not found")
+
+    await unlink(auth.currentUser, providerId)
+    await auth.currentUser.reload()
+  }
+
+  async function signInWithGoogle() {
+    if (!auth.currentUser) throw new Error("No current user to link")
     const provider = new GoogleAuthProvider()
     try {
       await linkWithRedirect(auth.currentUser, provider)
@@ -115,7 +135,9 @@ export const useAuthStore = defineStore("auth", () => {
     }
   }
 
-  async function linkWithPassword(email: string, password: string) {
+  async function linkWithPassword(password: string) {
+    const email = auth.currentUser?.email
+    if (!email) return
     if (!auth.currentUser) throw new Error("No current user to link")
     const cred = EmailAuthProvider.credential(email, password)
     await linkWithCredential(auth.currentUser, cred)
@@ -134,10 +156,12 @@ export const useAuthStore = defineStore("auth", () => {
     signInWithPassword,
     signInAnonymously: _signInAnonymously,
     sendEmailVerification: _sendEmailVerification,
-    hasPasswordProvider,
+    fetchSignInMethods,
+    signInMethods,
+    linkWithProvider,
+    unlinkProvider,
     validatePassword: _validatePassword,
     signUpWithPassword,
-    linkAnonymousWithGoogle,
     linkWithPassword,
     signOutAll,
   }

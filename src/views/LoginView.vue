@@ -30,10 +30,8 @@ const signInWithGoogle = async () => {
   loading.value = "google"
   try {
     const user = authStore.currentUser
-    if (!user) {
+    if (!user || user.isAnonymous) {
       await authStore.signInWithGoogle()
-    } else if (user.isAnonymous) {
-      await authStore.linkAnonymousWithGoogle()
     } else {
       throw new Error("User already loggedin")
     }

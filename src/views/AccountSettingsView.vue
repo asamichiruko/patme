@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import patmeImg from "@/assets/patme.svg"
 import EnablePasswordAuthForm from "@/components/data/EnablePasswordAuthForm.vue"
+import ProviderLinkManager from "@/components/data/ProviderLinkManager.vue"
 </script>
 
 <template>
@@ -20,6 +21,7 @@ import EnablePasswordAuthForm from "@/components/data/EnablePasswordAuthForm.vue
     </section>
     <section>
       <h2>プロバイダ連携の管理</h2>
+      <ProviderLinkManager />
     </section>
     <section>
       <h2>パスワードの再設定</h2>

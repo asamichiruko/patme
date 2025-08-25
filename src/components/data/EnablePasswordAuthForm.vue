@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useNotificationBar } from "@/composables/useNotificationBar"
 import { useAuthStore } from "@/stores/useAuthStore"
-import { computed, onMounted, ref } from "vue"
+import { computed, ref } from "vue"
 import { useRouter } from "vue-router"
 import LoadingSpinner from "../util/LoadingSpinner.vue"
 
@@ -12,20 +12,16 @@ const { trigger } = useNotificationBar()
 const emailView = computed(() => authStore.currentUser?.email ?? "--")
 const password = ref("")
 const loading = ref(false)
-const hasPasswordAuth = ref(false)
-
-onMounted(async () => {
-  hasPasswordAuth.value = await authStore.hasPasswordProvider()
-})
+const hasPasswordAuth = computed(() => authStore.signInMethods().includes("password"))
 
 async function onSubmit() {
-  if (!authStore.currentUser?.email || !password.value) return
+  if (!password.value || !authStore.currentUser) return
   loading.value = true
   try {
-    await authStore.linkWithPassword(authStore.currentUser.email, password.value)
+    await authStore.linkWithPassword(password.value)
     authStore.sendEmailVerification()
     trigger("パスワードを登録し、アドレス認証メールを送信しました", "success")
-    hasPasswordAuth.value = await authStore.hasPasswordProvider()
+    await authStore.currentUser.reload()
     router.push("/verify_email?redirect=/account_settings")
   } catch (err) {
     console.error(err)
@@ -79,7 +75,6 @@ async function onSubmit() {
 form {
   margin: 0;
   padding: 0;
-  border: none;
   display: flex;
   flex-direction: column;
   align-items: start;
