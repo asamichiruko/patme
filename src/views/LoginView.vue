@@ -80,7 +80,7 @@ const signInWithPassword = async () => {
         </button>
       </fieldset>
       <fieldset>
-        <legend>メールアドレスでログイン</legend>
+        <legend>パスワードでログイン</legend>
         <label>
           <span class="input-label">メールアドレス</span>
           <input
@@ -102,7 +102,8 @@ const signInWithPassword = async () => {
           />
         </label>
         <button type="button" class="primary-button" @click="signInWithPassword">
-          <LoadingSpinner v-if="loading === 'email'" class="spinner" /> メールアドレスでログイン
+          <LoadingSpinner v-if="loading === 'email'" class="spinner" />
+          パスワードでログイン
         </button>
         <p><a href="./reset_password">パスワードを忘れた場合（再発行）</a></p>
       </fieldset>

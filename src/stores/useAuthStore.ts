@@ -19,6 +19,7 @@ import {
   signInWithRedirect,
   reauthenticateWithCredential,
   updatePassword,
+  AuthCredential,
 } from "firebase/auth"
 import { defineStore } from "pinia"
 import { computed, ref } from "vue"
@@ -28,6 +29,8 @@ import { useTagStore } from "./useTagStore"
 import { useDataTransferStore } from "./useDataTransferStore"
 import { createStorageService } from "@/services/createStorageService"
 import type { StorageService } from "@/services/StorageService"
+
+const PENDING_PROVIDER_ID_KEY = "pendingProviderId"
 
 let authReadyResolve: () => void
 const authReadyPromise = new Promise<void>((resolve) => {
@@ -45,6 +48,9 @@ export const useAuthStore = defineStore("auth", () => {
   const emailVerified = computed(() => currentUser.value?.emailVerified ?? false)
   const providers = computed(() => currentUser.value?.providerData.map((p) => p.providerId) ?? [])
 
+  const pendingCredential = ref<AuthCredential | null>(null)
+  const authConflictEmail = ref<string | null>(null)
+
   let unsubscribe: Unsubscribe | null = null
 
   async function init() {
@@ -55,12 +61,26 @@ export const useAuthStore = defineStore("auth", () => {
       }
     } catch (err) {
       if (err instanceof FirebaseError && err.code === "auth/credential-already-in-use") {
-        console.warn(err)
-        // ここで何をすべき？
-        // 1. 既存のアカウントにサインインする
-        // 2. 新しい認証情報をリンク
+        const providerId = sessionStorage.getItem(PENDING_PROVIDER_ID_KEY)
+        if (!providerId) {
+          throw new Error("Missing provider id")
+        }
+
+        let cred
+        if (providerId === "google.com") {
+          cred = GoogleAuthProvider.credentialFromError(err)
+        } else {
+          throw new Error("Unknown provider")
+        }
+
+        authConflictEmail.value = err.customData?.email as string
+        pendingCredential.value = cred
+
+        sessionStorage.removeItem(PENDING_PROVIDER_ID_KEY)
+        throw err
+      } else {
+        throw err
       }
-      throw err
     }
 
     if (unsubscribe) unsubscribe()
@@ -117,6 +137,21 @@ export const useAuthStore = defineStore("auth", () => {
     currentUser.value?.reload()
   }
 
+  async function linkPendingCredential(user: User) {
+    if (!authConflictEmail.value || !pendingCredential.value) {
+      throw new Error("Failed link credential")
+    }
+
+    try {
+      await linkWithCredential(user, pendingCredential.value)
+      pendingCredential.value = null
+      authConflictEmail.value = null
+    } catch (err) {
+      console.error(err)
+      throw err
+    }
+  }
+
   async function signInWithPassword(email: string, password: string) {
     await signInWithEmailAndPassword(auth, email, password)
     currentUser.value = auth.currentUser
@@ -170,6 +205,7 @@ export const useAuthStore = defineStore("auth", () => {
     } else {
       throw new Error(`Unknown provider ${providerId}`)
     }
+    sessionStorage.setItem(PENDING_PROVIDER_ID_KEY, providerId)
 
     await signInWithRedirect(auth, provider)
   }
@@ -215,6 +251,7 @@ export const useAuthStore = defineStore("auth", () => {
     unlinkProvider,
     validatePassword: validatePassword_,
     signUpWithPassword,
+    linkPendingCredential,
     linkWithPassword,
     signOut: signOut_,
     reauthenticateWithPassword,
