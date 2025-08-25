@@ -12,6 +12,7 @@ const isGoogleLinked = computed(() => authStore.providers.includes("google.com")
 const updating = ref(false)
 
 async function linkWithProvider(provider: string) {
+  if (updating.value) return
   updating.value = true
   try {
     await authStore.linkWithProvider(provider as "google.com")
@@ -24,6 +25,7 @@ async function linkWithProvider(provider: string) {
 }
 
 async function unlinkProvider(provider: string) {
+  if (updating.value) return
   updating.value = true
   try {
     await authStore.unlinkProvider(provider)

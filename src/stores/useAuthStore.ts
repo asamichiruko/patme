@@ -15,9 +15,10 @@ import {
   onAuthStateChanged,
   sendEmailVerification,
   validatePassword,
-  type AuthProvider,
   unlink,
   signInWithRedirect,
+  reauthenticateWithCredential,
+  updatePassword,
 } from "firebase/auth"
 import { defineStore } from "pinia"
 import { computed, ref } from "vue"
@@ -54,6 +55,7 @@ export const useAuthStore = defineStore("auth", () => {
       }
     } catch (err) {
       if (err instanceof FirebaseError && err.code === "auth/credential-already-in-use") {
+        console.warn(err)
         // ここで何をすべき？
         // 1. 既存のアカウントにサインインする
         // 2. 新しい認証情報をリンク
@@ -143,7 +145,7 @@ export const useAuthStore = defineStore("auth", () => {
   async function linkWithProvider(providerId: "google.com") {
     if (!auth.currentUser) throw new Error("User not found")
 
-    let provider: AuthProvider
+    let provider
     if (providerId === "google.com") {
       provider = new GoogleAuthProvider()
     } else {
@@ -184,6 +186,18 @@ export const useAuthStore = defineStore("auth", () => {
     await signOut(auth)
   }
 
+  async function reauthenticateWithPassword(password: string) {
+    if (!currentUser.value || !currentUser.value.email)
+      throw new Error("Email auth has not registered")
+    const cred = EmailAuthProvider.credential(currentUser.value.email, password)
+    await reauthenticateWithCredential(currentUser.value, cred)
+  }
+
+  async function updatePassword_(password: string) {
+    if (!currentUser.value) return
+    await updatePassword(currentUser.value, password)
+  }
+
   return {
     isLoggedIn,
     isAnonymous,
@@ -203,5 +217,7 @@ export const useAuthStore = defineStore("auth", () => {
     signUpWithPassword,
     linkWithPassword,
     signOut: signOut_,
+    reauthenticateWithPassword,
+    updatePassword: updatePassword_,
   }
 })
