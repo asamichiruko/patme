@@ -17,7 +17,7 @@ async function linkWithProvider(providerId: string) {
   try {
     await authStore.linkWithProvider(providerId as "google.com")
   } catch (err) {
-    console.warn(err)
+    console.error(err)
     trigger("プロバイダ連携に失敗しました", "error")
   } finally {
     updating.value = false
@@ -29,6 +29,8 @@ async function unlinkProvider(providerId: string) {
   updating.value = true
   try {
     await authStore.unlinkProvider(providerId as "google.com")
+  } catch (err) {
+    console.error(err)
   } finally {
     updating.value = false
   }
@@ -57,6 +59,7 @@ async function unlinkProvider(providerId: string) {
           <td>
             <button
               v-if="isGoogleLinked"
+              type="button"
               class="warning-button slim-button"
               @click="unlinkProvider('google.com')"
             >
@@ -64,6 +67,7 @@ async function unlinkProvider(providerId: string) {
             </button>
             <button
               v-else
+              type="button"
               class="primary-button slim-button"
               @click="linkWithProvider('google.com')"
             >
