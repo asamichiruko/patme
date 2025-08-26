@@ -10,6 +10,7 @@ const router = useRouter()
 const { trigger } = useNotificationBar()
 
 const emailView = computed(() => authStore.email ?? "--")
+const email = ref("")
 const password = ref("")
 const loading = ref(false)
 const hasPasswordAuth = computed(() => authStore.providers.includes("password"))
@@ -18,15 +19,21 @@ async function onSubmit() {
   if (!password.value || !authStore.isLoggedIn) return
   loading.value = true
   try {
-    await authStore.linkWithPassword(password.value)
-    authStore.sendEmailVerification()
-    trigger("パスワードを登録し、アドレス認証メールを送信しました", "success")
-    await authStore.reloadUser()
-    router.push("/verify_email?redirect=/account_settings")
+    if (authStore.isAnonymous) {
+      await authStore.signUpWithPassword(email.value, password.value)
+      authStore.sendEmailVerification()
+      trigger("アカウントを仮登録し、アドレス認証メールを送信しました", "success")
+      router.push("/verify_email?redirect=/account_settings")
+    } else {
+      await authStore.linkWithPassword(password.value)
+      authStore.sendEmailVerification()
+      trigger("パスワードを登録し、アドレス認証メールを送信しました", "success")
+      router.push("/verify_email?redirect=/account_settings")
+    }
   } catch (err) {
     console.error(err)
     trigger(
-      "パスワードの登録に失敗しました。入力したパスワードをご確認の上、改めてお試しください",
+      "パスワードの登録に失敗しました。メールアドレス・パスワードをご確認の上、改めてお試しください",
       "error",
     )
   } finally {
@@ -37,7 +44,17 @@ async function onSubmit() {
 
 <template>
   <form>
-    <div>
+    <label v-if="authStore.isAnonymous">
+      <span class="input-label">メールアドレス</span>
+      <input
+        v-model="email"
+        class="input-text"
+        name="email"
+        type="email"
+        placeholder="メールアドレス"
+      />
+    </label>
+    <div v-else>
       <span class="input-label">メールアドレス</span>
       <span class="input-fixed-item">{{ emailView }}</span>
     </div>

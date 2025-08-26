@@ -4,7 +4,6 @@ import {
   signInAnonymously,
   signOut,
   GoogleAuthProvider,
-  linkWithRedirect,
   type User,
   type Unsubscribe,
   signInWithEmailAndPassword,
@@ -20,6 +19,7 @@ import {
   updatePassword,
   deleteUser,
   reauthenticateWithRedirect,
+  type UserCredential,
 } from "firebase/auth"
 import { defineStore } from "pinia"
 import { computed, ref } from "vue"
@@ -29,6 +29,7 @@ import { useTagStore } from "./useTagStore"
 import { useDataTransferStore } from "./useDataTransferStore"
 import { createStorageService } from "@/services/createStorageService"
 import type { StorageService } from "@/services/StorageService"
+import { FirebaseError } from "firebase/app"
 
 const PROVIDER_ID_KEY = "firebaseAuth_providerId"
 const ACTION_KEY = "firebaseAuth_action"
@@ -54,23 +55,13 @@ export const useAuthStore = defineStore("auth", () => {
   async function init() {
     try {
       const result = await getRedirectResult(auth)
-      if (result) {
-        const action = sessionStorage.getItem(ACTION_KEY)
-        const providerId = sessionStorage.getItem(PROVIDER_ID_KEY) as string
-
-        if (action === "unlink") {
-          await unlink(result.user, providerId)
-        }
-      }
+      if (result) _handleRedirectResult(result)
 
       if (result?.user) {
         currentUser.value = result.user
       }
     } catch (err) {
       console.error(err)
-    } finally {
-      sessionStorage.removeItem(ACTION_KEY)
-      sessionStorage.removeItem(PROVIDER_ID_KEY)
     }
 
     if (unsubscribe) unsubscribe()
@@ -89,6 +80,19 @@ export const useAuthStore = defineStore("auth", () => {
 
   async function ensureReady() {
     return authReadyPromise
+  }
+
+  async function _handleRedirectResult(result: UserCredential) {
+    const action = sessionStorage.getItem(ACTION_KEY)
+    const providerId = sessionStorage.getItem(PROVIDER_ID_KEY) as string
+
+    if (action === "unlink") {
+      await unlink(result.user, providerId)
+      await reloadUser()
+    }
+
+    sessionStorage.removeItem(ACTION_KEY)
+    sessionStorage.removeItem(PROVIDER_ID_KEY)
   }
 
   function _clearUserData() {
@@ -124,9 +128,10 @@ export const useAuthStore = defineStore("auth", () => {
   }
 
   async function reloadUser() {
-    if (!currentUser.value) return
-    currentUser.value.reload()
-    currentUser.value = auth.currentUser
+    if (!auth.currentUser) return
+    await auth.currentUser.reload()
+    await auth.currentUser.getIdToken(true)
+    currentUser.value = { ...auth.currentUser }
   }
 
   async function signInWithPassword(email: string, password: string) {
@@ -173,8 +178,12 @@ export const useAuthStore = defineStore("auth", () => {
   async function unlinkProvider(providerId: string) {
     if (!auth.currentUser) throw new Error("User not found")
 
-    sessionStorage.setItem(ACTION_KEY, "unlink")
-    sessionStorage.setItem(PROVIDER_ID_KEY, providerId)
+    if (auth.currentUser.providerData.length === 1) {
+      throw new Error("User must have at least one provider")
+    }
+    if (!auth.currentUser.providerData.some((p) => p.providerId === providerId)) {
+      throw new Error("Provider is not linked")
+    }
 
     let provider
     if (providerId === "google.com") {
@@ -183,7 +192,18 @@ export const useAuthStore = defineStore("auth", () => {
       throw new Error(`Unknown provider ${providerId}`)
     }
 
-    await reauthenticateWithRedirect(auth.currentUser, provider)
+    try {
+      await unlink(auth.currentUser, providerId)
+      await reloadUser()
+    } catch (err) {
+      if (err instanceof FirebaseError && err.code === "auth/requires-recent-login") {
+        sessionStorage.setItem(ACTION_KEY, "unlink")
+        sessionStorage.setItem(PROVIDER_ID_KEY, providerId)
+        await reauthenticateWithRedirect(auth.currentUser, provider)
+      } else {
+        throw err
+      }
+    }
   }
 
   async function signInWithProvider(providerId: "google.com") {
@@ -199,6 +219,15 @@ export const useAuthStore = defineStore("auth", () => {
   async function linkWithPassword(password: string) {
     if (!auth.currentUser) throw new Error("No current user to link")
     if (!auth.currentUser.email) return
+
+    console.log("Current user UID:", auth.currentUser.uid)
+    console.log("Current user email:", auth.currentUser.email)
+    console.log("Current user isAnonymous:", auth.currentUser.isAnonymous)
+    console.log(
+      "Current user providers:",
+      auth.currentUser.providerData.map((p) => p.providerId),
+    )
+
     const cred = EmailAuthProvider.credential(auth.currentUser.email, password)
     await linkWithCredential(auth.currentUser, cred)
   }
@@ -212,17 +241,6 @@ export const useAuthStore = defineStore("auth", () => {
       throw new Error("Email auth has not registered")
     const cred = EmailAuthProvider.credential(auth.currentUser.email, password)
     await reauthenticateWithCredential(auth.currentUser, cred)
-  }
-
-  async function reauthenticateWithProvider(providerId: string) {
-    if (!auth.currentUser) throw new Error("User not found")
-    let provider
-    if (providerId === "google.com") {
-      provider = new GoogleAuthProvider()
-    } else {
-      throw new Error(`Unknown provider ${providerId}`)
-    }
-    await reauthenticateWithRedirect(auth.currentUser, provider)
   }
 
   async function updatePassword_(password: string) {
@@ -257,7 +275,6 @@ export const useAuthStore = defineStore("auth", () => {
     signOut: signOut_,
     deleteUser: deleteUser_,
     reauthenticateWithPassword,
-    reauthenticateWithProvider,
     updatePassword: updatePassword_,
   }
 })
