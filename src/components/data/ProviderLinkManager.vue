@@ -15,7 +15,11 @@ async function linkWithProvider(providerId: string) {
   if (updating.value) return
   updating.value = true
   try {
-    await authStore.linkWithProvider(providerId as "google.com")
+    if (providerId === "google.com") {
+      await authStore.linkWithGoogle()
+    } else {
+      throw new Error("Unknown provider")
+    }
   } catch (err) {
     console.error(err)
     trigger("プロバイダ連携に失敗しました", "error")
@@ -28,7 +32,11 @@ async function unlinkProvider(providerId: string) {
   if (updating.value) return
   updating.value = true
   try {
-    await authStore.unlinkProvider(providerId as "google.com")
+    if (providerId === "google.com") {
+      await authStore.unlinkGoogle()
+    } else {
+      throw new Error("Unknown provider")
+    }
   } catch (err) {
     console.error(err)
   } finally {

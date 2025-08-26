@@ -4,17 +4,11 @@ import AddCommentDialog from "@/components/entry/AddCommentDialog.vue"
 import DeleteTagDialog from "@/components/tag/DeleteTagDialog.vue"
 import TaggingDialog from "@/components/tag/TaggingDialog.vue"
 import TabNavigation from "@/components/util/TabNavigation.vue"
-import type { StorageService } from "@/services/StorageService"
 import { useAuthStore } from "@/stores/useAuthStore"
-import { computed, ref } from "vue"
 import { RouterView, useRouter } from "vue-router"
 
 const authStore = useAuthStore()
 const router = useRouter()
-
-const storageReady = computed(() => Boolean(storageService))
-const isAnonymous = ref(false)
-const storageService = ref<StorageService | null>(null)
 
 const logout = async () => {
   try {
@@ -27,28 +21,23 @@ const logout = async () => {
 </script>
 
 <template>
-  <template v-if="!storageReady">
-    <div>Loading...</div>
-  </template>
-  <template v-else>
-    <header class="main-header">
-      <div class="main-title">
-        <h1><img :src="patmeImg" alt="" width="20px" height="20px" />ふりかえり帖</h1>
-      </div>
-      <div class="account-nav">
-        <div v-if="!isAnonymous">
-          <button class="logout-button" @click="logout">ログアウト</button>
-        </div>
-      </div>
-    </header>
-    <TabNavigation />
-    <div class="container">
-      <RouterView />
+  <header class="main-header">
+    <div class="main-title">
+      <h1><img :src="patmeImg" alt="" width="20px" height="20px" />ふりかえり帖</h1>
     </div>
-    <AddCommentDialog />
-    <TaggingDialog />
-    <DeleteTagDialog />
-  </template>
+    <div class="account-nav">
+      <div v-if="!authStore.isAnonymous">
+        <button class="logout-button" @click="logout">ログアウト</button>
+      </div>
+    </div>
+  </header>
+  <TabNavigation />
+  <div class="container">
+    <RouterView />
+  </div>
+  <AddCommentDialog />
+  <TaggingDialog />
+  <DeleteTagDialog />
 </template>
 
 <style scoped>

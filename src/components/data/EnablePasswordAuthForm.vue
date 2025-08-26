@@ -20,12 +20,13 @@ async function onSubmit() {
   loading.value = true
   try {
     if (authStore.isAnonymous) {
-      await authStore.signUpWithPassword(email.value, password.value)
+      await authStore.linkWithPassword(email.value, password.value)
       authStore.sendEmailVerification()
       trigger("アカウントを仮登録し、アドレス認証メールを送信しました", "success")
       router.push("/verify_email?redirect=/account_settings")
     } else {
-      await authStore.linkWithPassword(password.value)
+      if (!authStore.email) throw new Error("Email not found")
+      await authStore.linkWithPassword(authStore.email, password.value)
       authStore.sendEmailVerification()
       trigger("パスワードを登録し、アドレス認証メールを送信しました", "success")
       router.push("/verify_email?redirect=/account_settings")

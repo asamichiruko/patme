@@ -1,252 +1,133 @@
-import { auth } from "@/firebase"
-import {
-  getRedirectResult,
-  signInAnonymously,
-  signOut,
-  GoogleAuthProvider,
-  type User,
-  type Unsubscribe,
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
-  EmailAuthProvider,
-  linkWithCredential,
-  onAuthStateChanged,
-  sendEmailVerification,
-  validatePassword,
-  unlink,
-  signInWithRedirect,
-  reauthenticateWithCredential,
-  updatePassword,
-  deleteUser,
-  reauthenticateWithRedirect,
-  type UserCredential,
-} from "firebase/auth"
+import type { User, Unsubscribe } from "firebase/auth"
 import { defineStore } from "pinia"
-import { computed, ref } from "vue"
-import { useEntryStore } from "./useEntryStore"
-import { useCommentStore } from "./useCommentStore"
-import { useTagStore } from "./useTagStore"
-import { useDataTransferStore } from "./useDataTransferStore"
-import { createStorageService } from "@/services/createStorageService"
-import type { StorageService } from "@/services/StorageService"
-import { FirebaseError } from "firebase/app"
+import { computed, ref, watch } from "vue"
+import { authService } from "@/services/authService"
 
-const PROVIDER_ID_KEY = "firebaseAuth_providerId"
-const ACTION_KEY = "firebaseAuth_action"
-
-let authReadyResolve: () => void
-const authReadyPromise = new Promise<void>((resolve) => {
-  authReadyResolve = resolve
-})
+let readyPromise: Promise<void> | null = null
 
 export const useAuthStore = defineStore("auth", () => {
+  // State
   const currentUser = ref<User | null>(null)
+  let unsubscribe: Unsubscribe | null = null
   const loading = ref(true)
-  const storageService = ref<StorageService | null>(null)
 
+  // Getters
   const isLoggedIn = computed(() => !!currentUser.value)
+  const uid = computed(() => currentUser.value?.uid ?? null)
   const isAnonymous = computed(() => currentUser.value?.isAnonymous ?? false)
   const email = computed(() => currentUser.value?.email ?? null)
   const emailVerified = computed(() => currentUser.value?.emailVerified ?? false)
   const providers = computed(() => currentUser.value?.providerData.map((p) => p.providerId) ?? [])
 
-  let unsubscribe: Unsubscribe | null = null
-
+  // Actions
   async function init() {
-    try {
-      const result = await getRedirectResult(auth)
-      if (result) _handleRedirectResult(result)
+    if (readyPromise) return readyPromise
 
-      if (result?.user) {
-        currentUser.value = result.user
-      }
-    } catch (err) {
-      console.error(err)
-    }
+    readyPromise = new Promise(async (resolve) => {
+      const unwatch = watch(loading, (isLoading) => {
+        if (!isLoading) {
+          resolve()
+          unwatch()
+        }
+      })
 
-    if (unsubscribe) unsubscribe()
-    unsubscribe = onAuthStateChanged(auth, async (user) => {
-      currentUser.value = user
-      if (user) {
-        await _initializeUserData(user)
-      } else {
-        _clearUserData()
-      }
-
-      loading.value = false
-      authReadyResolve()
+      if (unsubscribe) unsubscribe()
+      unsubscribe = await authService.initialize((user) => {
+        currentUser.value = user
+        if (loading.value) {
+          loading.value = false
+        }
+      })
     })
+
+    return readyPromise
   }
 
-  async function ensureReady() {
-    return authReadyPromise
-  }
-
-  async function _handleRedirectResult(result: UserCredential) {
-    const action = sessionStorage.getItem(ACTION_KEY)
-    const providerId = sessionStorage.getItem(PROVIDER_ID_KEY) as string
-
-    if (action === "unlink") {
-      await unlink(result.user, providerId)
-      await reloadUser()
-    }
-
-    sessionStorage.removeItem(ACTION_KEY)
-    sessionStorage.removeItem(PROVIDER_ID_KEY)
-  }
-
-  function _clearUserData() {
-    const entryStore = useEntryStore()
-    const commentStore = useCommentStore()
-    const tagStore = useTagStore()
-    const dataTransferStore = useDataTransferStore()
-
-    storageService.value = null
-    entryStore.reset()
-    commentStore.reset()
-    tagStore.reset()
-    dataTransferStore.reset()
-  }
-
-  async function _initializeUserData(user: User) {
-    const entryStore = useEntryStore()
-    const tagStore = useTagStore()
-
-    let backend
-    if (!storageService.value) {
-      backend = import.meta.env.VITE_STORAGE_BACKEND
-    }
-    if (backend === "local") {
-      storageService.value = createStorageService({ backend: "local" })
-    } else if (backend === "firestore") {
-      storageService.value = createStorageService({ backend: "firestore", uid: user.uid })
-    } else {
-      throw new Error(`Invalid backend`)
-    }
-
-    await Promise.all([entryStore.fetchEntriesWithRelations(), tagStore.fetchTags()])
+  async function ensureReady(): Promise<void> {
+    return init()
   }
 
   async function reloadUser() {
-    if (!auth.currentUser) return
-    await auth.currentUser.reload()
-    await auth.currentUser.getIdToken(true)
-    currentUser.value = { ...auth.currentUser }
+    if (!currentUser.value) return
+    await authService.reloadUser(currentUser.value)
+    currentUser.value = { ...currentUser.value }
   }
 
   async function signInWithPassword(email: string, password: string) {
-    await signInWithEmailAndPassword(auth, email, password)
-    currentUser.value = auth.currentUser
+    const user = await authService.emailProvider.signIn(email, password)
+    currentUser.value = user
   }
 
-  async function signInAnonymously_() {
-    await signInAnonymously(auth)
-    currentUser.value = auth.currentUser
+  async function signInAnonymously() {
+    const user = await authService.signInAnonymously()
+    currentUser.value = user
   }
 
   async function signUpWithPassword(email: string, password: string) {
-    await createUserWithEmailAndPassword(auth, email, password)
-    currentUser.value = auth.currentUser
+    const user = await authService.emailProvider.signUp(email, password)
+    currentUser.value = user
   }
 
-  async function validatePassword_(password: string) {
-    const status = await validatePassword(auth, password)
-    return status.isValid
+  async function validatePassword(password: string) {
+    return await authService.validatePassword(password)
   }
 
-  function sendEmailVerification_() {
-    if (!auth.currentUser) return
-    sendEmailVerification(auth.currentUser)
+  async function sendEmailVerification() {
+    if (!currentUser.value) return
+    await authService.sendEmailVerification(currentUser.value)
   }
 
-  async function linkWithProvider(providerId: "google.com") {
-    if (!auth.currentUser) throw new Error("User not found")
-
-    let provider
-    if (providerId === "google.com") {
-      provider = new GoogleAuthProvider()
-    } else {
-      throw new Error("Provider not found")
-    }
-
-    sessionStorage.setItem(ACTION_KEY, "link")
-    sessionStorage.setItem(PROVIDER_ID_KEY, providerId)
-
-    await reauthenticateWithRedirect(auth.currentUser, provider)
+  async function linkWithGoogle() {
+    if (!currentUser.value) throw new Error("User not found")
+    await authService.googleProvider.link(currentUser.value)
   }
 
-  async function unlinkProvider(providerId: string) {
-    if (!auth.currentUser) throw new Error("User not found")
-
-    if (auth.currentUser.providerData.length === 1) {
-      throw new Error("User must have at least one provider")
-    }
-    if (!auth.currentUser.providerData.some((p) => p.providerId === providerId)) {
-      throw new Error("Provider is not linked")
-    }
-
-    let provider
-    if (providerId === "google.com") {
-      provider = new GoogleAuthProvider()
-    } else {
-      throw new Error(`Unknown provider ${providerId}`)
-    }
-
-    try {
-      await unlink(auth.currentUser, providerId)
-      await reloadUser()
-    } catch (err) {
-      if (err instanceof FirebaseError && err.code === "auth/requires-recent-login") {
-        sessionStorage.setItem(ACTION_KEY, "unlink")
-        sessionStorage.setItem(PROVIDER_ID_KEY, providerId)
-        await reauthenticateWithRedirect(auth.currentUser, provider)
-      } else {
-        throw err
-      }
-    }
+  async function unlinkGoogle() {
+    if (!currentUser.value) throw new Error("User not found")
+    await authService.googleProvider.unlink(currentUser.value)
   }
 
-  async function signInWithProvider(providerId: "google.com") {
-    let provider
-    if (providerId === "google.com") {
-      provider = new GoogleAuthProvider()
-    } else {
-      throw new Error(`Unknown provider ${providerId}`)
-    }
-    await signInWithRedirect(auth, provider)
+  async function signInWithGoogle() {
+    await authService.googleProvider.signIn()
   }
 
-  async function linkWithPassword(password: string) {
-    if (!auth.currentUser) throw new Error("No current user to link")
-    if (!auth.currentUser.email) return
+  async function linkWithPassword(email: string, password: string) {
+    if (!currentUser.value) throw new Error("No current user to link")
 
-    const cred = EmailAuthProvider.credential(auth.currentUser.email, password)
-    await linkWithCredential(auth.currentUser, cred)
+    await authService.emailProvider.link(currentUser.value, email, password)
   }
 
-  async function signOut_() {
-    await signOut(auth)
+  async function signOut() {
+    await authService.signOut()
+    currentUser.value = null
   }
 
   async function reauthenticateWithPassword(password: string) {
-    if (!auth.currentUser || !auth.currentUser.email)
-      throw new Error("Email auth has not registered")
-    const cred = EmailAuthProvider.credential(auth.currentUser.email, password)
-    await reauthenticateWithCredential(auth.currentUser, cred)
+    if (!currentUser.value) throw new Error("User not found")
+    if (!email.value) throw new Error("Email not found")
+
+    await authService.emailProvider.reauthenticateWithPassword(
+      currentUser.value,
+      email.value,
+      password,
+    )
   }
 
-  async function updatePassword_(password: string) {
-    if (!auth.currentUser) return
-    await updatePassword(auth.currentUser, password)
+  async function updatePassword(password: string) {
+    if (!currentUser.value) throw new Error("User not found")
+    await authService.emailProvider.updatePassword(currentUser.value, password)
   }
 
-  async function deleteUser_() {
-    if (!auth.currentUser) return
-    await deleteUser(auth.currentUser)
-    currentUser.value = auth.currentUser
+  async function deleteUser() {
+    if (!currentUser.value) throw new Error("User not found")
+    await authService.deleteUser(currentUser.value)
+    currentUser.value = null
   }
 
   return {
+    currentUser,
+    loading,
+    uid,
     isLoggedIn,
     isAnonymous,
     email,
@@ -255,18 +136,18 @@ export const useAuthStore = defineStore("auth", () => {
     init,
     ensureReady,
     reloadUser,
-    signInWithProvider,
+    signInWithGoogle,
     signInWithPassword,
-    signInAnonymously: signInAnonymously_,
-    sendEmailVerification: sendEmailVerification_,
-    linkWithProvider,
-    unlinkProvider,
-    validatePassword: validatePassword_,
+    signInAnonymously,
+    sendEmailVerification,
+    linkWithGoogle,
+    unlinkGoogle,
+    validatePassword,
     signUpWithPassword,
     linkWithPassword,
-    signOut: signOut_,
-    deleteUser: deleteUser_,
+    signOut,
+    deleteUser,
     reauthenticateWithPassword,
-    updatePassword: updatePassword_,
+    updatePassword,
   }
 })
