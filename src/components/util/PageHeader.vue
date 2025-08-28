@@ -6,7 +6,7 @@ import { useRouter } from "vue-router"
 
 const props = defineProps<{
   showAccountNav: boolean
-  logoHref: string
+  logoTo: string
 }>()
 
 const router = useRouter()
@@ -27,9 +27,9 @@ const logout = async () => {
 <template>
   <header class="main-header">
     <h1 class="main-title">
-      <a :href="props.logoHref"
-        ><img :src="patmeImg" alt="" width="20px" height="20px" />ふりかえり帖</a
-      >
+      <RouterLink :to="props.logoTo">
+        <img :src="patmeImg" alt="" width="20px" height="20px" />ふりかえり帖
+      </RouterLink>
     </h1>
     <div class="account-nav" v-if="showAccountNav">
       <button class="logout-button" @click="logout">ログアウト</button>

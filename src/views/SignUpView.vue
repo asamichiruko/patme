@@ -51,7 +51,7 @@ async function signUpAndLogin() {
 </script>
 
 <template>
-  <PageHeader :show-account-nav="false" :logo-href="'./login'" />
+  <PageHeader :show-account-nav="false" :logoTo="'/login'" />
   <div class="container">
     <h2>アカウントの新規登録</h2>
     <form>
@@ -80,7 +80,7 @@ async function signUpAndLogin() {
       </p>
       <button type="button" class="primary-button" @click="signUpAndLogin">登録</button>
     </form>
-    <p><a href="./login">既存のアカウントでログインする</a></p>
+    <p><RouterLink to="/login">既存のアカウントでログインする</RouterLink></p>
   </div>
 </template>
 

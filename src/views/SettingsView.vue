@@ -15,7 +15,9 @@ import TagManager from "@/components/tag/TagManager.vue"
       <h2>アカウント情報の編集</h2>
       <p>アカウント連携やパスワードの変更、アカウントの削除を行います。</p>
       <p>
-        <a href="./account_settings" class="primary-button">アカウント情報の編集（別ページ）</a>
+        <RouterLink to="./account_settings" class="primary-button"
+          >アカウント情報の編集（別ページ）</RouterLink
+        >
       </p>
     </section>
 

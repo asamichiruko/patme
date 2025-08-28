@@ -8,7 +8,7 @@ import { RouterView } from "vue-router"
 </script>
 
 <template>
-  <PageHeader :show-account-nav="true" :logo-href="'./main'" />
+  <PageHeader :show-account-nav="true" :logoTo="'/main'" />
   <TabNavigation />
   <div class="container">
     <RouterView />

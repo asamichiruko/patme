@@ -13,10 +13,10 @@ const isPasswordLinked = computed(() => authStore.providers.includes("password")
 </script>
 
 <template>
-  <PageHeader :show-account-nav="true" :logo-href="'./main'" />
+  <PageHeader :show-account-nav="true" :logoTo="'/main'" />
   <div class="container">
     <section>
-      <p><a href="./settings">設定画面へ戻る</a></p>
+      <p><RouterLink to="/settings">設定画面へ戻る</RouterLink></p>
     </section>
     <section>
       <h2>パスワード認証の追加</h2>

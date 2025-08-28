@@ -31,7 +31,7 @@ async function tryLogin() {
 </script>
 
 <template>
-  <PageHeader :show-account-nav="false" :logo-href="'./login'" />
+  <PageHeader :show-account-nav="false" :logoTo="'/login'" />
 
   <div class="container">
     <h2>アカウント認証</h2>

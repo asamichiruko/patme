@@ -29,7 +29,7 @@ function confirm() {
 </script>
 
 <template>
-  <PageHeader :show-account-nav="false" :logo-href="'./login'" />
+  <PageHeader :show-account-nav="false" :logoTo="'/login'" />
   <div class="container">
     <h2>パスワードの再発行</h2>
     <form>
@@ -45,7 +45,7 @@ function confirm() {
       </label>
       <button type="button" class="primary-button" @click="sendMail">パスワードを再発行する</button>
     </form>
-    <p><a href="./login">ログイン画面へ戻る</a></p>
+    <p><RouterLink to="./login">ログイン画面へ戻る</RouterLink></p>
   </div>
 
   <dialog ref="dialogRef" @cancel="confirm">

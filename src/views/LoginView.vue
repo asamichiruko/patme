@@ -105,11 +105,11 @@ const signInWithPassword = async () => {
           <LoadingSpinner v-if="loading === 'email'" class="spinner" />
           パスワードでログイン
         </button>
-        <p><a href="./reset_password">パスワードを忘れた場合（再発行）</a></p>
+        <p><RouterLink to="./reset_password">パスワードを忘れた場合（再発行）</RouterLink></p>
       </fieldset>
       <fieldset>
         <legend>アカウントの新規登録</legend>
-        <a type="button" class="primary-button" href="./signup"> 新規登録 </a>
+        <RouterLink class="primary-button" to="/signup">新規登録</RouterLink>
         <button type="button" class="primary-button" @click="signInAnonymously">
           <LoadingSpinner v-if="loading === 'anonymous'" class="spinner" /> 登録せずにログイン
         </button>
