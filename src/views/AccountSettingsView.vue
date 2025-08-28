@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import patmeImg from "@/assets/patme.svg"
 import ChangePasswordForm from "@/components/data/ChangePasswordForm.vue"
 import DeleteUserForm from "@/components/data/DeleteUserForm.vue"
 import EnablePasswordAuthForm from "@/components/data/EnablePasswordAuthForm.vue"
 import ProviderLinkManager from "@/components/data/ProviderLinkManager.vue"
+import PageHeader from "@/components/util/PageHeader.vue"
 import { useAuthStore } from "@/stores/useAuthStore"
 import { computed } from "vue"
 
@@ -13,12 +13,7 @@ const isPasswordLinked = computed(() => authStore.providers.includes("password")
 </script>
 
 <template>
-  <header class="main-header">
-    <div class="main-title">
-      <h1><img :src="patmeImg" alt="" width="20px" height="20px" />ふりかえり帖</h1>
-    </div>
-  </header>
-
+  <PageHeader :show-account-nav="true" :logo-href="'./main'" />
   <div class="container">
     <section>
       <p><a href="./settings">設定画面へ戻る</a></p>
@@ -41,5 +36,3 @@ const isPasswordLinked = computed(() => authStore.providers.includes("password")
     </section>
   </div>
 </template>
-
-<style scoped></style>

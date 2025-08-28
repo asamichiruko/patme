@@ -123,28 +123,6 @@ p {
   padding: 0;
 }
 
-.main-header {
-  margin-bottom: 32px;
-}
-
-.main-title {
-  color: var(--color-header);
-  text-align: left;
-  margin: 0;
-  padding: 0;
-  white-space: nowrap;
-}
-
-.main-title h1 {
-  font-size: 24px;
-  margin: 0;
-  padding: 0;
-}
-
-.main-title img {
-  margin-right: 8px;
-}
-
 .container {
   background-color: var(--color-surface);
   border-radius: 8px;

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import patmeImg from "@/assets/patme.svg"
+import PageHeader from "@/components/util/PageHeader.vue"
 import { useNotificationBar } from "@/composables/useNotificationBar"
 import { useAuthStore } from "@/stores/useAuthStore"
 import { ref } from "vue"
@@ -51,11 +51,7 @@ async function signUpAndLogin() {
 </script>
 
 <template>
-  <header class="main-header">
-    <div class="main-title">
-      <h1><img :src="patmeImg" alt="" width="20px" height="20px" />ふりかえり帖</h1>
-    </div>
-  </header>
+  <PageHeader :show-account-nav="false" :logo-href="'./login'" />
   <div class="container">
     <h2>アカウントの新規登録</h2>
     <form>

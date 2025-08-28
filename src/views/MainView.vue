@@ -1,36 +1,14 @@
 <script setup lang="ts">
-import patmeImg from "@/assets/patme.svg"
 import AddCommentDialog from "@/components/entry/AddCommentDialog.vue"
 import DeleteTagDialog from "@/components/tag/DeleteTagDialog.vue"
 import TaggingDialog from "@/components/tag/TaggingDialog.vue"
+import PageHeader from "@/components/util/PageHeader.vue"
 import TabNavigation from "@/components/util/TabNavigation.vue"
-import { useAuthStore } from "@/stores/useAuthStore"
-import { RouterView, useRouter } from "vue-router"
-
-const authStore = useAuthStore()
-const router = useRouter()
-
-const logout = async () => {
-  try {
-    await authStore.signOut()
-    router.push("/login")
-  } catch (err) {
-    console.error("Logout error", err)
-  }
-}
+import { RouterView } from "vue-router"
 </script>
 
 <template>
-  <header class="main-header">
-    <div class="main-title">
-      <h1><img :src="patmeImg" alt="" width="20px" height="20px" />ふりかえり帖</h1>
-    </div>
-    <div class="account-nav">
-      <div v-if="!authStore.isAnonymous">
-        <button class="logout-button" @click="logout">ログアウト</button>
-      </div>
-    </div>
-  </header>
+  <PageHeader :show-account-nav="true" :logo-href="'./main'" />
   <TabNavigation />
   <div class="container">
     <RouterView />
@@ -39,38 +17,3 @@ const logout = async () => {
   <TaggingDialog />
   <DeleteTagDialog />
 </template>
-
-<style scoped>
-header {
-  display: flex;
-  flex-wrap: wrap-reverse;
-  gap: 32px;
-  margin-bottom: 16px;
-}
-
-.account-nav {
-  margin-left: auto;
-  display: flex;
-  justify-content: flex-end;
-  gap: 16px;
-}
-
-.logout-button {
-  background-color: var(--color-sub);
-  color: var(--color-sub-text);
-  border: none;
-  padding: 4px 12px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 15px;
-  transition: background-color 0.3s;
-}
-.logout-button:hover {
-  background-color: var(--color-sub-hover);
-}
-.logout-button:focus-visible {
-  outline: 2px solid var(--color-sub-focus);
-  outline-offset: 2px;
-  border-radius: 4px;
-}
-</style>
