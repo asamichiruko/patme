@@ -24,13 +24,6 @@ export const useAuthStore = defineStore("auth", () => {
     if (readyPromise) return readyPromise
 
     readyPromise = new Promise(async (resolve) => {
-      const unwatch = watch(loading, (isLoading) => {
-        if (!isLoading) {
-          resolve()
-          unwatch()
-        }
-      })
-
       if (unsubscribe) unsubscribe()
       unsubscribe = await authService.initialize((user) => {
         currentUser.value = user
@@ -38,6 +31,18 @@ export const useAuthStore = defineStore("auth", () => {
           loading.value = false
         }
       })
+
+      const unwatch = watch(loading, (isLoading) => {
+        if (!isLoading) {
+          resolve()
+          unwatch()
+        }
+      })
+
+      if (!loading.value) {
+        resolve()
+        unwatch()
+      }
     })
 
     return readyPromise
@@ -106,11 +111,7 @@ export const useAuthStore = defineStore("auth", () => {
     if (!currentUser.value) throw new Error("User not found")
     if (!email.value) throw new Error("Email not found")
 
-    await authService.emailProvider.reauthenticateWithPassword(
-      currentUser.value,
-      email.value,
-      password,
-    )
+    await authService.emailProvider.reauthenticateWithPassword(currentUser.value, password)
   }
 
   async function updatePassword(password: string) {
@@ -122,6 +123,14 @@ export const useAuthStore = defineStore("auth", () => {
     if (!currentUser.value) throw new Error("User not found")
     await authService.deleteUser(currentUser.value)
     currentUser.value = null
+  }
+
+  function dispose() {
+    if (unsubscribe) {
+      unsubscribe()
+      unsubscribe = null
+    }
+    readyPromise = null
   }
 
   return {
@@ -149,5 +158,6 @@ export const useAuthStore = defineStore("auth", () => {
     deleteUser,
     reauthenticateWithPassword,
     updatePassword,
+    dispose,
   }
 })

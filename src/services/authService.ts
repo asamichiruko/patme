@@ -52,15 +52,14 @@ async function _handleRedirectResult(result: UserCredential) {
   if (action === "unlink" && providerId) {
     await unlink(result.user, providerId as string)
   } else if (action === "link" && providerId) {
-    // この時点で自動的にリンクされているはず
+    if (providerId === "google.com") {
+      const authCredential = GoogleAuthProvider.credentialFromResult(result)
+      if (authCredential) linkWithCredential(result.user, authCredential)
+    }
   }
 
   sessionStorage.removeItem(ACTION_KEY)
   sessionStorage.removeItem(PROVIDER_ID_KEY)
-}
-
-function onStateChanged(callback: (user: User | null) => void) {
-  return onAuthStateChanged(auth, callback)
 }
 
 const emailProvider = {
@@ -79,8 +78,9 @@ const emailProvider = {
   async updatePassword(user: User, password: string): Promise<void> {
     await updatePassword(user, password)
   },
-  async reauthenticateWithPassword(user: User, email: string, password: string) {
-    const userCredential = EmailAuthProvider.credential(email, password)
+  async reauthenticateWithPassword(user: User, password: string) {
+    if (!user.email) throw new Error("User email is not available")
+    const userCredential = EmailAuthProvider.credential(user.email, password)
     await reauthenticateWithCredential(user, userCredential)
   },
 }
@@ -99,10 +99,13 @@ const googleProvider = {
     try {
       linkWithRedirect(user, provider)
     } catch (err) {
-      console.error(err)
-      throw err
+      if (err instanceof FirebaseError && err.code === "auth/requires-recent-login") {
+        await reauthenticateWithRedirect(user, provider)
+      } else {
+        console.error(err)
+        throw err
+      }
     }
-    // await reauthenticateWithRedirect(user, provider)
   },
   async unlink(user: User) {
     if (user.providerData.length === 1) {
@@ -157,7 +160,6 @@ async function deleteUser_(user: User) {
 
 export const authService = {
   initialize,
-  onStateChanged,
   emailProvider,
   googleProvider,
   signInAnonymously: signInAnonymously_,
