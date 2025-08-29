@@ -20,7 +20,7 @@ export const useAuthStore = defineStore("auth", () => {
   const providers = computed(() => currentUser.value?.providerData.map((p) => p.providerId) ?? [])
 
   // Actions
-  async function init() {
+  async function ensureReady() {
     if (readyPromise) return readyPromise
 
     readyPromise = new Promise(async (resolve) => {
@@ -46,10 +46,6 @@ export const useAuthStore = defineStore("auth", () => {
     })
 
     return readyPromise
-  }
-
-  async function ensureReady(): Promise<void> {
-    return init()
   }
 
   async function reloadUser() {
@@ -142,7 +138,6 @@ export const useAuthStore = defineStore("auth", () => {
     email,
     emailVerified,
     providers,
-    init,
     ensureReady,
     reloadUser,
     signInWithGoogle,

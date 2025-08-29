@@ -19,7 +19,7 @@ const commentStore = useCommentStore()
 const tagStore = useTagStore()
 const dataTransferStore = useDataTransferStore()
 
-authStore.init()
+authStore.ensureReady()
 
 watch(
   () => authStore.uid,
