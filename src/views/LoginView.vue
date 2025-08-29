@@ -76,7 +76,8 @@ const signInWithPassword = async () => {
       <fieldset>
         <legend>アカウント連携</legend>
         <button type="button" class="primary-button" @click="signInWithGoogle">
-          <LoadingSpinner v-if="loading === 'google'" class="spinner" /> Google アカウントでログイン
+          <LoadingSpinner v-if="loading === 'google'" class="spinner" />
+          <span class="button-label">Google アカウントでログイン</span>
         </button>
       </fieldset>
       <fieldset>
@@ -103,7 +104,7 @@ const signInWithPassword = async () => {
         </label>
         <button type="button" class="primary-button" @click="signInWithPassword">
           <LoadingSpinner v-if="loading === 'email'" class="spinner" />
-          パスワードでログイン
+          <span class="button-label">パスワードでログイン</span>
         </button>
         <p><RouterLink to="./reset_password">パスワードを忘れた場合（再発行）</RouterLink></p>
       </fieldset>
@@ -111,7 +112,8 @@ const signInWithPassword = async () => {
         <legend>アカウントの新規登録</legend>
         <RouterLink class="primary-button" to="/signup">新規登録</RouterLink>
         <button type="button" class="primary-button" @click="signInAnonymously">
-          <LoadingSpinner v-if="loading === 'anonymous'" class="spinner" /> 登録せずにログイン
+          <LoadingSpinner v-if="loading === 'anonymous'" class="spinner" />
+          <span class="button-label">登録せずにログイン</span>
         </button>
         <p>
           注：アカウント登録せずにログインした場合、ブラウザを変更するとデータが引き継がれません。
@@ -189,11 +191,5 @@ fieldset {
   padding: 4px;
   font-size: 15px;
   width: 250px;
-}
-
-.spinner {
-  width: 16px;
-  height: 16px;
-  color: var(--color-primary-text);
 }
 </style>

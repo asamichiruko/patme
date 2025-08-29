@@ -8,6 +8,7 @@ import { subscribe } from "@/utils/storageNotifier"
 import { computed, onMounted, ref } from "vue"
 
 const entryStore = useEntryStore()
+
 const entries = computed<EntryWithRelations[]>(() =>
   entryStore.entriesWithRelations
     .filter((a) => {

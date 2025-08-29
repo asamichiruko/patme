@@ -95,7 +95,8 @@ const toggleSelectedState = (id: string) => {
         <div class="actions">
           <button class="sub-button" type="button" @click="cancel">キャンセル</button>
           <button class="primary-button" type="submit">
-            <LoadingSpinner v-if="loading" class="spinner" /> 決定
+            <LoadingSpinner v-if="loading" class="spinner" />
+            <span class="button-label">決定</span>
           </button>
         </div>
       </form>
@@ -165,13 +166,6 @@ dialog {
 .tag.pulse {
   animation: pulse 0.2s ease-out;
 }
-
-.spinner {
-  width: 16px;
-  height: 16px;
-  color: var(--color-sub-text);
-}
-
 .actions {
   display: flex;
   justify-content: flex-end;

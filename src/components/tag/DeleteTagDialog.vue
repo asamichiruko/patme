@@ -63,7 +63,8 @@ const cancel = () => {
         <div class="actions">
           <button class="sub-button" type="button" @click="cancel">キャンセル</button>
           <button class="warning-button" type="submit">
-            <LoadingSpinner v-if="loading" class="spinner" /> 削除する
+            <LoadingSpinner v-if="loading" class="spinner" />
+            <span class="button-label">削除する</span>
           </button>
         </div>
       </form>
@@ -86,12 +87,6 @@ dialog {
   margin-top: 0;
   margin-bottom: 16px;
   color: var(--color-text);
-}
-
-.spinner {
-  width: 16px;
-  height: 16px;
-  color: var(--color-warn-text);
 }
 
 .actions {

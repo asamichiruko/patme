@@ -124,10 +124,4 @@ table.auth-methods td:last-of-type {
   font-size: 15px;
   padding: 4px 12px;
 }
-
-.spinner {
-  width: 16px;
-  height: 16px;
-  color: var(--color-primary-text);
-}
 </style>

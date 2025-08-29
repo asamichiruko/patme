@@ -63,7 +63,8 @@ const submit = async () => {
     </label>
     <div class="actions">
       <button class="primary-button" type="submit">
-        <LoadingSpinner v-if="loading" class="spinner" /> 記録する
+        <LoadingSpinner v-if="loading" class="spinner" />
+        <span class="button-label">記録する</span>
       </button>
     </div>
   </form>
@@ -94,12 +95,6 @@ const submit = async () => {
 }
 .entry-content.accepted {
   box-shadow: inset 5px 0 var(--color-entry-type-accepted-border);
-}
-
-.spinner {
-  width: 16px;
-  height: 16px;
-  color: var(--color-primary-text);
 }
 
 .actions {

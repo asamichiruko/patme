@@ -60,7 +60,8 @@ async function updatePassword() {
     </label>
     <p>注：パスワードは 8 文字以上で、英小文字・英大文字・数字のすべてを含めて作成してください。</p>
     <button type="button" class="primary-button" @click="updatePassword">
-      <LoadingSpinner class="spinner" v-if="loading" /> パスワードの更新
+      <LoadingSpinner class="spinner" v-if="loading" />
+      <span class="button-label">パスワードの更新</span>
     </button>
   </form>
   <p v-else>パスワードの更新はパスワード認証を登録しているユーザのみ行えます。</p>
@@ -90,11 +91,5 @@ form {
 .input-fixed-item {
   display: inline-block;
   width: 250px;
-}
-
-.spinner {
-  width: 16px;
-  height: 16px;
-  color: var(--color-primary-text);
 }
 </style>

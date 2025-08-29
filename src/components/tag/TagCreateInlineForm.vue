@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useTagStore } from "@/stores/useTagStore"
+import { notify } from "@/utils/storageNotifier"
 import { computed, ref } from "vue"
 import LoadingSpinner from "../util/LoadingSpinner.vue"
 
@@ -26,7 +27,8 @@ const handleCreateTag = async () => {
     if (existing) {
       result = existing.id
     } else {
-      result = tagStore.createTag({ title: trimmed })
+      result = await tagStore.createTag({ title: trimmed })
+      notify()
     }
     if (!result) return
 
@@ -55,7 +57,8 @@ const handleCreateTag = async () => {
       />
     </label>
     <button class="tag-create-button" type="button" @click="handleCreateTag">
-      <LoadingSpinner v-if="loading" class="spinner" /> 追加
+      <LoadingSpinner v-if="loading" class="spinner" />
+      <span class="button-label">追加</span>
     </button>
   </div>
 </template>
@@ -88,11 +91,5 @@ const handleCreateTag = async () => {
   outline: 2px solid var(--color-primary-focus);
   outline-offset: 2px;
   border-radius: 4px;
-}
-
-.spinner {
-  width: 16px;
-  height: 16px;
-  color: var(--color-sub-text);
 }
 </style>

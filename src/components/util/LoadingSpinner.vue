@@ -9,9 +9,10 @@
 <style scoped>
 .spinner {
   animation: rotate 1s linear infinite;
-  width: 24px;
-  height: 24px;
+  width: 16px;
+  height: 16px;
   color: currentColor;
+  display: inline-block;
 }
 
 .path {

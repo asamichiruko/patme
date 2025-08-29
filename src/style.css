@@ -140,10 +140,12 @@ button {
   cursor: pointer;
 }
 
-.primary-button {
-  display: inline-block;
-  background-color: var(--color-primary);
-  color: var(--color-primary-text);
+.primary-button,
+.sub-button,
+.warning-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   border: none;
   padding: 8px 16px;
   margin: 8px 0;
@@ -153,51 +155,47 @@ button {
   text-decoration: none;
   transition: background-color 0.3s;
 }
+.primary-button:focus-visible,
+.sub-button:focus-visible,
+.warning-button:focus-visible {
+  outline-offset: 2px;
+  border-radius: 4px;
+  outline-width: 2px;
+  outline: 2px solid var(--color-border);
+}
+.button-label {
+  display: inline-block;
+}
+
+.primary-button {
+  background-color: var(--color-primary);
+  color: var(--color-primary-text);
+}
 .primary-button:hover {
   background-color: var(--color-primary-hover);
 }
 .primary-button:focus-visible {
-  outline: 2px solid var(--color-primary-focus);
-  outline-offset: 2px;
-  border-radius: 4px;
+  outline-color: var(--color-primary-focus);
 }
 .sub-button {
   background-color: var(--color-sub);
   color: var(--color-sub-text);
-  border: none;
-  padding: 8px 16px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 16px;
-  text-decoration: none;
-  transition: background-color 0.3s;
 }
 .sub-button:hover {
   background-color: var(--color-sub-hover);
 }
 .sub-button:focus-visible {
-  outline: 2px solid var(--color-sub-focus);
-  outline-offset: 2px;
-  border-radius: 4px;
+  outline-color: var(--color-sub-focus);
 }
 .warning-button {
   background-color: var(--color-warn);
   color: var(--color-warn-text);
-  border: none;
-  padding: 8px 16px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 16px;
-  text-decoration: none;
-  transition: background-color 0.3s;
 }
 .warning-button:hover {
   background-color: var(--color-warn-hover);
 }
 .warning-button:focus-visible {
-  outline: 2px solid var(--color-warn-focus);
-  outline-offset: 2px;
-  border-radius: 4px;
+  outline-color: var(--color-warn-focus);
 }
 
 .visually-hidden {

@@ -122,7 +122,8 @@ const options = [
         <div class="actions">
           <button class="sub-button" type="button" @click="cancel">キャンセル</button>
           <button class="primary-button" type="submit">
-            <LoadingSpinner v-if="loading" class="spinner" /> 記録する
+            <LoadingSpinner v-if="loading" class="spinner" />
+            <span class="button-label">記録する</span>
           </button>
         </div>
       </form>
@@ -239,12 +240,6 @@ input[type="radio"] {
   outline: 2px solid var(--color-entry-type-accepted-border);
   outline-offset: 2px;
   border-radius: 4px;
-}
-
-.spinner {
-  width: 16px;
-  height: 16px;
-  color: var(--color-primary-text);
 }
 
 .actions {

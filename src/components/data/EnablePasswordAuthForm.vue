@@ -77,7 +77,8 @@ async function onSubmit() {
         パスワード認証の追加を行った場合はアドレス認証が必要になります。アドレス認証メールを送信いたしますので、そちらをご確認ください。
       </p>
       <button type="button" class="primary-button" @click="onSubmit">
-        <LoadingSpinner class="spinner" v-if="loading" /> パスワード認証の追加
+        <LoadingSpinner class="spinner" v-if="loading" />
+        <span class="button-label">パスワード認証の追加</span>
       </button>
     </template>
     <template v-else>
@@ -113,11 +114,5 @@ form {
 .input-fixed-item {
   display: inline-block;
   width: 250px;
-}
-
-.spinner {
-  width: 16px;
-  height: 16px;
-  color: var(--color-primary-text);
 }
 </style>
