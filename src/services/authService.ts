@@ -53,7 +53,10 @@ async function _handleRedirectResult(result: UserCredential) {
   if (action === "unlink" && providerId) {
     await unlink(result.user, providerId as string)
   } else if (action === "link" && providerId) {
-    if (providerId === "google.com") {
+    if (
+      providerId === "google.com" &&
+      !result.user.providerData.some((p) => p.providerId === "google.com")
+    ) {
       const authCredential = GoogleAuthProvider.credentialFromResult(result)
       if (authCredential) linkWithCredential(result.user, authCredential)
     }
