@@ -1,25 +1,31 @@
 <script setup lang="ts">
+import LoadingSpinner from "@/components/util/LoadingSpinner.vue"
 import PageHeader from "@/components/util/PageHeader.vue"
 import { useNotificationBar } from "@/composables/useNotificationBar"
-import { auth } from "@/firebase"
-import { sendPasswordResetEmail } from "firebase/auth"
+import { useAuthStore } from "@/stores/useAuthStore"
 import { ref } from "vue"
 
 const { trigger } = useNotificationBar()
+const authStore = useAuthStore()
 
+const loading = ref(false)
 const email = ref("")
 const dialogRef = ref<HTMLDialogElement | null>(null)
 
 async function sendMail() {
+  if (loading.value) return
   if (!email.value) {
     trigger("メールアドレスを入力してください", "error")
     return
   }
   try {
-    await sendPasswordResetEmail(auth, email.value)
+    loading.value = true
+    await authStore.sendPasswordResetEmail(email.value)
   } catch (err) {
     console.error("Failed send password reset email", err)
     trigger("パスワード再設定用のメール送信に失敗しました。メールアドレスをご確認ください", "error")
+  } finally {
+    loading.value = false
   }
 }
 
@@ -43,7 +49,10 @@ function confirm() {
           placeholder="メールアドレス"
         />
       </label>
-      <button type="button" class="primary-button" @click="sendMail">パスワードを再発行する</button>
+      <button type="button" class="primary-button" @click="sendMail">
+        <LoadingSpinner v-if="loading" />
+        <span class="button-label">パスワードを再発行する</span>
+      </button>
     </form>
     <p><RouterLink to="./login">ログイン画面へ戻る</RouterLink></p>
   </div>

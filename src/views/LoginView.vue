@@ -15,6 +15,7 @@ const password = ref("")
 const loading = ref<string | null>(null)
 
 const signInAnonymously = async () => {
+  if (loading.value) return
   loading.value = "anonymous"
   try {
     await authStore.signInAnonymously()
@@ -27,6 +28,7 @@ const signInAnonymously = async () => {
 }
 
 const signInWithGoogle = async () => {
+  if (loading.value) return
   loading.value = "google"
   try {
     if (!authStore.isLoggedIn) {
@@ -45,6 +47,7 @@ const signInWithGoogle = async () => {
 }
 
 const signInWithPassword = async () => {
+  if (loading.value) return
   loading.value = "email"
   try {
     await authStore.signInWithPassword(email.value, password.value)

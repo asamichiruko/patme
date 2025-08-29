@@ -1,21 +1,28 @@
 <script setup lang="ts">
+import LoadingSpinner from "@/components/util/LoadingSpinner.vue"
 import PageHeader from "@/components/util/PageHeader.vue"
 import { useNotificationBar } from "@/composables/useNotificationBar"
 import { useAuthStore } from "@/stores/useAuthStore"
+import { ref } from "vue"
 import { useRoute, useRouter } from "vue-router"
 
 const authStore = useAuthStore()
 const route = useRoute()
 const router = useRouter()
 const { trigger } = useNotificationBar()
+const loading = ref(false)
 
 async function resendEmailVerification() {
   try {
+    if (loading.value) return
+    loading.value = true
     authStore.sendEmailVerification()
     trigger("アカウント認証メールを再送しました。", "success")
   } catch (err) {
     console.error(err)
     trigger("アカウント認証メールの再送に失敗しました", "error")
+  } finally {
+    loading.value = false
   }
 }
 
@@ -47,7 +54,8 @@ async function tryLogin() {
     </p>
     <p class="button-paragraph">
       <button type="button" class="sub-button" @click="resendEmailVerification">
-        アカウント認証メールを再送する
+        <LoadingSpinner v-if="loading" />
+        <span class="button-label">アカウント認証メールを再送する</span>
       </button>
     </p>
   </div>

@@ -2,18 +2,25 @@
 import { useNotificationBar } from "@/composables/useNotificationBar"
 import { useAuthStore } from "@/stores/useAuthStore"
 import { computed, ref } from "vue"
+import LoadingSpinner from "../util/LoadingSpinner.vue"
 
 const authStore = useAuthStore()
 const { trigger } = useNotificationBar()
 
+type ProviderId = "google.com"
+
 const isPasswordLinked = computed(() => authStore.providers.includes("password"))
 const isGoogleLinked = computed(() => authStore.providers.includes("google.com"))
+const canUnlink = computed(() => authStore.providers.length > 1)
+const loadingProvider = ref<ProviderId | null>(null)
+const loadingType = ref<"link" | "unlink" | null>(null)
 
-const updating = ref(false)
+const updating = computed(() => loadingProvider.value !== null && loadingType.value !== null)
 
-async function linkWithProvider(providerId: string) {
+async function linkWithProvider(providerId: ProviderId) {
   if (updating.value) return
-  updating.value = true
+  loadingProvider.value = providerId
+  loadingType.value = "link"
   try {
     if (providerId === "google.com") {
       await authStore.linkWithGoogle()
@@ -24,13 +31,15 @@ async function linkWithProvider(providerId: string) {
     console.error(err)
     trigger("プロバイダ連携に失敗しました", "error")
   } finally {
-    updating.value = false
+    loadingProvider.value = null
+    loadingType.value = null
   }
 }
 
-async function unlinkProvider(providerId: string) {
+async function unlinkProvider(providerId: ProviderId) {
   if (updating.value) return
-  updating.value = true
+  loadingProvider.value = providerId
+  loadingType.value = "unlink"
   try {
     if (providerId === "google.com") {
       await authStore.unlinkGoogle()
@@ -39,8 +48,10 @@ async function unlinkProvider(providerId: string) {
     }
   } catch (err) {
     console.error(err)
+    trigger("プロバイダ連携の解除に失敗しました", "error")
   } finally {
-    updating.value = false
+    loadingProvider.value = null
+    loadingType.value = null
   }
 }
 </script>
@@ -66,21 +77,24 @@ async function unlinkProvider(providerId: string) {
           <td>{{ isGoogleLinked ? "登録済み" : "未登録" }}</td>
           <td>
             <button
-              v-if="isGoogleLinked"
+              v-if="isGoogleLinked && canUnlink"
               type="button"
               class="warning-button slim-button"
               @click="unlinkProvider('google.com')"
             >
-              登録解除
+              <LoadingSpinner v-if="loadingType === 'unlink' && loadingProvider === 'google.com'" />
+              <span class="button-label">登録解除</span>
             </button>
             <button
-              v-else
+              v-else-if="!isGoogleLinked"
               type="button"
               class="primary-button slim-button"
               @click="linkWithProvider('google.com')"
             >
-              登録
+              <LoadingSpinner v-if="loadingType === 'link' && loadingProvider === 'google.com'" />
+              <span class="button-label">登録</span>
             </button>
+            <span v-else>--</span>
           </td>
         </tr>
       </tbody>

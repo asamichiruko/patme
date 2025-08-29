@@ -2,12 +2,15 @@
 import { useNotificationBar } from "@/composables/useNotificationBar.js"
 import { useDataTransferStore } from "@/stores/useDataTransferStore"
 import { ref } from "vue"
+import LoadingSpinner from "../util/LoadingSpinner.vue"
 
 const { trigger } = useNotificationBar()
 const dataTransferStore = useDataTransferStore()
 const fileInput = ref<HTMLInputElement | null>(null)
+const loading = ref(false)
 
 const importData = async (e: Event) => {
+  if (loading.value) return
   const file = (e.target as HTMLInputElement).files?.[0]
   if (!file) {
     return
@@ -16,6 +19,7 @@ const importData = async (e: Event) => {
     return
   }
   try {
+    loading.value = true
     const text = await file.text()
     const data = JSON.parse(text)
     await dataTransferStore.restoreAll(data)
@@ -26,6 +30,8 @@ const importData = async (e: Event) => {
       "error",
     )
     console.error(err)
+  } finally {
+    loading.value = false
   }
 }
 
@@ -36,7 +42,10 @@ const selectFile = () => {
 
 <template>
   <form @submit.prevent="selectFile">
-    <button type="submit" class="primary-button">記録をインポートする...</button>
+    <button type="submit" class="primary-button">
+      <LoadingSpinner v-if="loading" />
+      <span class="button-label">記録をインポートする...</span>
+    </button>
     <input ref="fileInput" type="file" accept=".json" @change="importData" />
   </form>
 </template>

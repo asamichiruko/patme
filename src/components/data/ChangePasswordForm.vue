@@ -18,7 +18,7 @@ async function updatePassword() {
     try {
       await authStore.reauthenticateWithPassword(oldPassword.value)
     } catch (err) {
-      console.warn(err)
+      console.error(err)
       trigger("ユーザの再認証に失敗しました。現在のパスワードが正しいことをご確認ください", "error")
       return
     }
@@ -26,7 +26,7 @@ async function updatePassword() {
       await authStore.updatePassword(newPassword.value)
       trigger("パスワードを更新しました", "success")
     } catch (err) {
-      console.warn(err)
+      console.error(err)
       trigger("パスワードの更新に失敗しました。新しいパスワードの内容をご確認ください", "error")
       return
     }

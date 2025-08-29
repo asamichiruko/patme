@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import patmeImg from "@/assets/patme.svg"
 import { useAuthStore } from "@/stores/useAuthStore"
-import { computed } from "vue"
+import { computed, ref } from "vue"
 import { useRouter } from "vue-router"
+import LoadingSpinner from "./LoadingSpinner.vue"
 
 const props = defineProps<{
   showAccountNav: boolean
@@ -13,13 +14,18 @@ const router = useRouter()
 const authStore = useAuthStore()
 
 const showAccountNav = computed(() => props.showAccountNav && !authStore.isAnonymous)
+const loading = ref(false)
 
 const logout = async () => {
+  if (loading.value) return
   try {
+    loading.value = true
     await authStore.signOut()
     router.push("/login")
   } catch (err) {
     console.error("Logout error", err)
+  } finally {
+    loading.value = false
   }
 }
 </script>
@@ -32,7 +38,10 @@ const logout = async () => {
       </RouterLink>
     </h1>
     <div class="account-nav" v-if="showAccountNav">
-      <button class="sub-button slim-button" @click="logout">ログアウト</button>
+      <button class="sub-button slim-button" @click="logout">
+        <LoadingSpinner v-if="loading" />
+        <span class="button-label">ログアウト</span>
+      </button>
     </div>
   </header>
 </template>
