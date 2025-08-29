@@ -56,7 +56,7 @@ const handleCreateTag = async () => {
         placeholder="新しいタグ名"
       />
     </label>
-    <button class="tag-create-button" type="button" @click="handleCreateTag">
+    <button class="primary-button slim-button" type="button" @click="handleCreateTag">
       <LoadingSpinner v-if="loading" class="spinner" />
       <span class="button-label">追加</span>
     </button>
@@ -64,32 +64,25 @@ const handleCreateTag = async () => {
 </template>
 
 <style scoped>
+.tag-create-form {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .new-tag-label {
+  display: inline-block;
   font-size: 15px;
   margin-right: 8px;
 }
 .new-tag-title {
   padding: 8px;
   font-size: 15px;
-  margin-right: 8px;
   width: 100px;
 }
-.tag-create-button {
-  background-color: var(--color-primary);
-  color: var(--color-primary-text);
-  border: none;
-  font-size: 14px;
-  padding: 8px 16px;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-.tag-create-button:hover {
-  background-color: var(--color-primary-hover);
-}
-.tag-create-button:focus-visible {
-  outline: 2px solid var(--color-primary-focus);
-  outline-offset: 2px;
-  border-radius: 4px;
+
+.slim-button {
+  font-size: 15px;
+  padding: 4px 12px;
 }
 </style>

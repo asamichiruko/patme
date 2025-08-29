@@ -50,13 +50,13 @@ const entryTypeLabel = {
     <CommentList :comments="props.entry.comments" />
 
     <div class="entry-actions">
-      <button class="action-button" @click="handleAddComment">
+      <button class="primary-button" type="button" @click="handleAddComment">
         <img :src="commentImg" alt="" class="action-icon" width="20px" height="20px" />
-        <span class="action-text">コメント</span>
+        <span class="button-label">コメント</span>
       </button>
-      <button class="action-button" @click="handleUpdateTagging">
+      <button class="primary-button" type="button" @click="handleUpdateTagging">
         <img :src="tagImg" alt="" class="action-icon" width="20px" height="20px" />
-        <span class="action-text">タグ</span>
+        <span class="button-label">タグ</span>
       </button>
     </div>
   </div>
@@ -125,32 +125,10 @@ const entryTypeLabel = {
   gap: 16px;
   align-items: center;
 }
-.action-button {
-  background-color: var(--color-primary);
-  color: var(--color-primary-text);
-  font-size: 14px;
-  padding: 8px 16px;
-  border: none;
-  border-radius: 4px;
-  display: flex;
-  align-items: center;
-  transition: background-color 0.3s;
-}
-.action-button:hover {
-  background-color: var(--color-primary-hover);
-}
-.action-button:focus-visible {
-  outline: 2px solid var(--color-primary-focus);
-  outline-offset: 2px;
-  border-radius: 4px;
-}
+
 .action-icon {
   width: 18px;
   height: 18px;
-  padding-right: 4px;
-  display: inline-block;
-}
-.action-text {
   display: inline-block;
 }
 </style>

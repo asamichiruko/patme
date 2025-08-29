@@ -32,7 +32,7 @@ const logout = async () => {
       </RouterLink>
     </h1>
     <div class="account-nav" v-if="showAccountNav">
-      <button class="logout-button" @click="logout">ログアウト</button>
+      <button class="sub-button slim-button" @click="logout">ログアウト</button>
     </div>
   </header>
 </template>
@@ -41,6 +41,7 @@ const logout = async () => {
 .main-header {
   display: flex;
   flex-wrap: wrap-reverse;
+  align-items: center;
   gap: 32px;
   margin-bottom: 32px;
 }
@@ -68,23 +69,8 @@ const logout = async () => {
   justify-content: flex-end;
   gap: 16px;
 }
-
-.logout-button {
-  background-color: var(--color-sub);
-  color: var(--color-sub-text);
-  border: none;
-  padding: 4px 12px;
-  border-radius: 4px;
-  cursor: pointer;
+.slim-button {
   font-size: 15px;
-  transition: background-color 0.3s;
-}
-.logout-button:hover {
-  background-color: var(--color-sub-hover);
-}
-.logout-button:focus-visible {
-  outline: 2px solid var(--color-sub-focus);
-  outline-offset: 2px;
-  border-radius: 4px;
+  padding: 4px 12px;
 }
 </style>
