@@ -3,17 +3,20 @@ import type { Tag } from "@/schemas/Tag"
 import type { StorageService } from "@/services/StorageService"
 import { ref } from "vue"
 
-let instance: StorageService | null = null
-
 export const useTagStore = defineStore("tag", () => {
+  const storageService = ref<StorageService | null>(null)
   const tags = ref<Tag[]>([])
 
+  function initialize(service: StorageService) {
+    storageService.value = service
+  }
+
   async function fetchTags(): Promise<void> {
-    if (!instance) {
+    if (!storageService.value) {
       throw new Error("StorageService has not been initialized")
     }
     try {
-      tags.value = await instance.getAllTags()
+      tags.value = await storageService.value.getAllTags()
     } catch (err) {
       console.error("Failed to fetch tags", err)
     }
@@ -21,17 +24,17 @@ export const useTagStore = defineStore("tag", () => {
 
   function reset() {
     tags.value = []
-    instance = null
+    storageService.value = null
   }
 
   async function getTagByTitle(title: string): Promise<Tag | null> {
-    if (!instance) {
+    if (!storageService.value) {
       throw new Error("StorageService has not been initialized")
     }
     try {
       const tag = tags.value.find((t) => t.title === title)
       if (tag) return tag
-      return await instance.getTagByTitle(title)
+      return await storageService.value.getTagByTitle(title)
     } catch (err) {
       console.error("Failed to fetch tag by title", err)
       return null
@@ -41,11 +44,11 @@ export const useTagStore = defineStore("tag", () => {
   async function createTag(
     tagBody: Omit<Tag, "id" | "createdAt" | "sortOrder">,
   ): Promise<string | null> {
-    if (!instance) {
+    if (!storageService.value) {
       throw new Error("StorageService has not been initialized")
     }
     try {
-      const id = await instance.createTag(tagBody)
+      const id = await storageService.value.createTag(tagBody)
       await fetchTags()
       return id
     } catch (err) {
@@ -55,11 +58,11 @@ export const useTagStore = defineStore("tag", () => {
   }
 
   async function deleteTagAndDetachFromEntries(tagId: string): Promise<void> {
-    if (!instance) {
+    if (!storageService.value) {
       throw new Error("StorageService has not been initialized")
     }
     try {
-      await instance.deleteTagAndDetachFromEntries(tagId)
+      await storageService.value.deleteTagAndDetachFromEntries(tagId)
       await fetchTags()
     } catch (err) {
       console.error("Failed to delete tags", err)
@@ -67,11 +70,11 @@ export const useTagStore = defineStore("tag", () => {
   }
 
   async function reorderTags(orderedTags: Tag[]): Promise<void> {
-    if (!instance) {
+    if (!storageService.value) {
       throw new Error("StorageService has not been initialized")
     }
     try {
-      await instance.reorderTags(orderedTags)
+      await storageService.value.reorderTags(orderedTags)
       await fetchTags()
     } catch (err) {
       console.error("Failed to reorder tags", err)
@@ -80,6 +83,7 @@ export const useTagStore = defineStore("tag", () => {
 
   return {
     tags,
+    initialize,
     fetchTags,
     reset,
     getTagByTitle,
@@ -88,7 +92,3 @@ export const useTagStore = defineStore("tag", () => {
     reorderTags,
   }
 })
-
-export function initializeTagService(service: StorageService) {
-  instance = service
-}

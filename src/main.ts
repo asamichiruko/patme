@@ -25,12 +25,14 @@ watch(
   () => authStore.uid,
   async (uid) => {
     if (uid) {
-      const backend = import.meta.env.VITE_STORAGE_BACKEND
-      if (backend === "local") {
-        createStorageService({ backend: "local" })
-      } else if (backend === "firestore") {
-        createStorageService({ backend: "firestore", uid })
-      }
+      const backend = import.meta.env.VITE_STORAGE_BACKEND as "local" | "firestore"
+
+      const storage = createStorageService({ backend, uid })
+
+      entryStore.initialize(storage)
+      commentStore.initialize(storage)
+      tagStore.initialize(storage)
+      dataTransferStore.initialize(storage)
 
       await Promise.all([entryStore.fetchEntriesWithRelations(), tagStore.fetchTags()])
     } else {

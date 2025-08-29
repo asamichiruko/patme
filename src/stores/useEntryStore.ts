@@ -4,17 +4,20 @@ import type { EntryWithRelations } from "@/schemas/EntryWithRelations"
 import type { StorageService } from "@/services/StorageService"
 import { ref } from "vue"
 
-let instance: StorageService | null = null
-
 export const useEntryStore = defineStore("entry", () => {
   const entriesWithRelations = ref<EntryWithRelations[]>([])
+  const storageService = ref<StorageService | null>(null)
+
+  function initialize(service: StorageService) {
+    storageService.value = service
+  }
 
   async function fetchEntriesWithRelations(): Promise<void> {
-    if (!instance) {
+    if (!storageService.value) {
       throw new Error("StorageService has not been initialized")
     }
     try {
-      entriesWithRelations.value = await instance.getAllEntriesWithRelations()
+      entriesWithRelations.value = await storageService.value.getAllEntriesWithRelations()
     } catch (err) {
       console.error("Failed to fetch entries", err)
     }
@@ -22,15 +25,15 @@ export const useEntryStore = defineStore("entry", () => {
 
   function reset() {
     entriesWithRelations.value = []
-    instance = null
+    storageService.value = null
   }
 
   async function createEntry(entryBody: Omit<Entry, "id" | "createdAt">): Promise<string | null> {
-    if (!instance) {
+    if (!storageService.value) {
       throw new Error("StorageService has not been initialized")
     }
     try {
-      const id = await instance.createEntry(entryBody)
+      const id = await storageService.value.createEntry(entryBody)
       await fetchEntriesWithRelations()
       return id
     } catch (err) {
@@ -40,11 +43,11 @@ export const useEntryStore = defineStore("entry", () => {
   }
 
   async function countEntriesWithTag(tagId: string): Promise<number> {
-    if (!instance) {
+    if (!storageService.value) {
       throw new Error("StorageService has not been initialized")
     }
     try {
-      return await instance.countEntriesWithTag(tagId)
+      return await storageService.value.countEntriesWithTag(tagId)
     } catch (err) {
       console.error("Failed to get number of entries with tag", err)
       return 0
@@ -52,11 +55,11 @@ export const useEntryStore = defineStore("entry", () => {
   }
 
   async function updateEntryTags(id: string, tagIds: string[]): Promise<void> {
-    if (!instance) {
+    if (!storageService.value) {
       throw new Error("StorageService has not been initialized")
     }
     try {
-      await instance.updateEntryTags(id, tagIds)
+      await storageService.value.updateEntryTags(id, tagIds)
       await fetchEntriesWithRelations()
     } catch (err) {
       console.error("Failed to update entry tags", err)
@@ -65,6 +68,7 @@ export const useEntryStore = defineStore("entry", () => {
 
   return {
     entriesWithRelations,
+    initialize,
     fetchEntriesWithRelations,
     reset,
     createEntry,
@@ -72,7 +76,3 @@ export const useEntryStore = defineStore("entry", () => {
     updateEntryTags,
   }
 })
-
-export function initializeEntryService(service: StorageService) {
-  instance = service
-}

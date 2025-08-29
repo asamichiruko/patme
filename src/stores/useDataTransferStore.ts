@@ -3,20 +3,25 @@ import type { ExportedData } from "@/schemas/ExportedData"
 import { defineStore } from "pinia"
 import { useEntryStore } from "./useEntryStore"
 import { useTagStore } from "./useTagStore"
-
-let instance: StorageService | null = null
+import { ref } from "vue"
 
 export const useDataTransferStore = defineStore("dataTransfer", () => {
+  const storageService = ref<StorageService | null>(null)
+
+  function initialize(service: StorageService) {
+    storageService.value = service
+  }
+
   function reset() {
-    instance = null
+    storageService.value = null
   }
 
   async function exportAll(): Promise<ExportedData | null> {
-    if (!instance) {
+    if (!storageService.value) {
       throw new Error("StorageService has not been initialized")
     }
     try {
-      return await instance.exportAllData()
+      return await storageService.value.exportAllData()
     } catch (err) {
       console.error("Failed to export all data", err)
       return null
@@ -24,11 +29,11 @@ export const useDataTransferStore = defineStore("dataTransfer", () => {
   }
 
   async function restoreAll(data: ExportedData): Promise<void> {
-    if (!instance) {
+    if (!storageService.value) {
       throw new Error("StorageService has not been initialized")
     }
     try {
-      await instance.restoreAllData(data)
+      await storageService.value.restoreAllData(data)
 
       const entryStore = useEntryStore()
       const tagStore = useTagStore()
@@ -40,9 +45,5 @@ export const useDataTransferStore = defineStore("dataTransfer", () => {
     }
   }
 
-  return { reset, exportAll, restoreAll }
+  return { initialize, reset, exportAll, restoreAll }
 })
-
-export function initializeDataTransferService(service: StorageService) {
-  instance = service
-}
