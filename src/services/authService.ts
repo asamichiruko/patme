@@ -12,6 +12,7 @@ import {
   reauthenticateWithCredential,
   reauthenticateWithRedirect,
   sendEmailVerification,
+  sendPasswordResetEmail,
   signInAnonymously,
   signInWithEmailAndPassword,
   signInWithRedirect,
@@ -149,6 +150,10 @@ async function sendEmailVerification_(user: User) {
   await sendEmailVerification(user)
 }
 
+async function sendPasswordResetEmail_(email: string) {
+  await sendPasswordResetEmail(auth, email)
+}
+
 async function validatePassword_(password: string) {
   const status = await validatePassword(auth, password)
   return status.isValid
@@ -166,6 +171,7 @@ export const authService = {
   signOut: signOut_,
   reloadUser,
   sendEmailVerification: sendEmailVerification_,
+  sendPasswordResetEmail: sendPasswordResetEmail_,
   validatePassword: validatePassword_,
   deleteUser: deleteUser_,
 }

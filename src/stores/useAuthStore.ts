@@ -78,6 +78,10 @@ export const useAuthStore = defineStore("auth", () => {
     await authService.sendEmailVerification(currentUser.value)
   }
 
+  async function sendPasswordResetEmail(email: string) {
+    await authService.sendPasswordResetEmail(email)
+  }
+
   async function linkWithGoogle() {
     if (!currentUser.value) throw new Error("User not found")
     await authService.googleProvider.link(currentUser.value)
@@ -144,6 +148,7 @@ export const useAuthStore = defineStore("auth", () => {
     signInWithPassword,
     signInAnonymously,
     sendEmailVerification,
+    sendPasswordResetEmail,
     linkWithGoogle,
     unlinkGoogle,
     validatePassword,
