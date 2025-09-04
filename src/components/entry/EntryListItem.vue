@@ -6,9 +6,11 @@ import TagPillList from "@/components/tag/TagPillList.vue"
 import CommentList from "./CommentList.vue"
 
 import { useAddCommentDialog } from "@/composables/useAddCommentDialog"
+import type { Option } from "@/composables/useOptionMenu"
 import { useTaggingDialog } from "@/composables/useTaggingDialog"
 import type { EntryWithRelations } from "@/schemas/EntryWithRelations"
 import { formatRelativeDate } from "@/utils/formatDate"
+import OptionMenuButton from "../util/OptionMenuButton.vue"
 
 const { openTaggingDialog } = useTaggingDialog()
 const { openAddCommentDialog } = useAddCommentDialog()
@@ -30,6 +32,15 @@ const entryTypeLabel = {
   incomplete: "ふりかえりたいこと",
   accepted: "受け入れたこと",
 }
+
+const menuOptions = [
+  { value: "edit", label: "編集" },
+  { value: "delete", label: "削除" },
+]
+
+const handleOptionSelect = (option: Option, params: Record<string, unknown>) => {
+  console.log(`${params.id} で ${option.label} が押されました`)
+}
 </script>
 
 <template>
@@ -39,6 +50,12 @@ const entryTypeLabel = {
         <span class="entry-type">{{ entryTypeLabel[props.entry.entryType] }}</span>
         <small v-if="props.entry.isReviewed">（再評価済み）</small>
       </div>
+      <OptionMenuButton
+        class="option-menu-button"
+        :options="menuOptions"
+        :handler="handleOptionSelect"
+        :params="{ id: entry.id }"
+      />
       <div class="achievement-date">{{ formatRelativeDate(props.entry.createdAt) }}</div>
     </div>
 
@@ -82,11 +99,19 @@ const entryTypeLabel = {
 
 .achievement-header {
   display: flex;
+  gap: 8px;
+  align-items: center;
+}
+.option-menu-button {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  color: var(--color-subtext);
+  margin-left: auto;
 }
 .achievement-date {
   color: var(--color-subtext);
   font-size: 15px;
-  margin-left: auto;
   white-space: nowrap;
 }
 
