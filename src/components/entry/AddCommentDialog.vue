@@ -6,26 +6,17 @@ import type { EntryType } from "@/schemas/EntryType"
 import { useCommentStore } from "@/stores/useCommentStore"
 import { notify } from "@/utils/storageNotifier"
 import { ref, watch } from "vue"
+import BaseDialog from "../util/BaseDialog.vue"
 import LoadingSpinner from "../util/LoadingSpinner.vue"
 
 const { visible, params, closeAddCommentDialog } = useAddCommentDialog()
 const commentStore = useCommentStore()
 const { trigger } = useNotificationBar()
 
-const dialogRef = ref<HTMLDialogElement | null>(null)
 const content = ref("")
 const showReviewType = ref(false)
 const selectedReviewType = ref<EntryType | null>(null)
 const loading = ref(false)
-
-watch(visible, (val) => {
-  if (val) {
-    if (!params.value) return
-    dialogRef.value?.showModal()
-  } else {
-    dialogRef.value?.close()
-  }
-})
 
 watch(showReviewType, (val) => {
   if (val) {
@@ -75,72 +66,60 @@ const options = [
 </script>
 
 <template>
-  <Teleport to="body">
-    <dialog ref="dialogRef" @cancel="cancel">
-      <form @submit.prevent="submit" class="comment-container">
-        <label>
-          <div class="label-header">ふりかえりコメント</div>
-          <textarea
-            v-model="content"
-            @keydown.ctrl.enter="submit"
-            placeholder="この記録について、現在はどう感じますか？"
-            class="content"
-            required
-          ></textarea>
+  <BaseDialog :visible="visible" @submit="submit" @close="cancel">
+    <template #title>
+      <h2>ふりかえりコメント</h2>
+    </template>
+    <div class="comment-container">
+      <label>
+        <div class="label-header">コメント内容</div>
+        <textarea
+          v-model="content"
+          @keydown.ctrl.enter="submit"
+          placeholder="この記録について、現在はどう感じますか？"
+          class="content"
+          required
+        ></textarea>
+      </label>
+      <label>
+        <input type="checkbox" v-model="showReviewType" />
+        記録の再評価（改めてふりかえる）
+      </label>
+      <fieldset class="entry-type-selector" v-if="showReviewType">
+        <legend class="label-header">新しい評価</legend>
+        <label
+          v-for="option in options"
+          :key="option.value"
+          :class="[
+            'entry-type-option',
+            { selected: selectedReviewType === option.value },
+            option.value,
+          ]"
+        >
+          <input
+            type="radio"
+            name="newEntryType"
+            :value="option.value"
+            v-model="selectedReviewType"
+          />
+          <div class="entry-type-label">
+            {{ option.label }}
+            <small v-if="params && params.entryType === option.value"> （以前と同じ評価） </small>
+          </div>
         </label>
-        <label>
-          <input type="checkbox" v-model="showReviewType" />
-          記録の再評価（改めてふりかえる）
-        </label>
-        <div v-if="showReviewType">
-          <fieldset class="entry-type-selector">
-            <legend class="label-header">新しい評価</legend>
-            <label
-              v-for="option in options"
-              :key="option.value"
-              :class="[
-                'entry-type-option',
-                { selected: selectedReviewType === option.value },
-                option.value,
-              ]"
-            >
-              <input
-                type="radio"
-                name="newEntryType"
-                :value="option.value"
-                v-model="selectedReviewType"
-              />
-              <div class="entry-type-label">
-                {{ option.label }}
-                <small v-if="params && params.entryType === option.value">
-                  （以前と同じ評価）
-                </small>
-              </div>
-            </label>
-          </fieldset>
-        </div>
-        <div class="actions">
-          <button class="sub-button" type="button" @click="cancel">キャンセル</button>
-          <button class="primary-button" type="submit">
-            <LoadingSpinner v-if="loading" class="spinner" />
-            <span class="button-label">記録する</span>
-          </button>
-        </div>
-      </form>
-    </dialog>
-  </Teleport>
+      </fieldset>
+    </div>
+    <template #actions>
+      <button class="sub-button" type="button" @click="cancel">キャンセル</button>
+      <button class="primary-button" type="submit">
+        <LoadingSpinner v-if="loading" class="spinner" />
+        <span class="button-label">記録する</span>
+      </button>
+    </template>
+  </BaseDialog>
 </template>
 
 <style scoped>
-dialog {
-  border: none;
-  border-radius: 8px;
-  padding: 16px;
-  max-width: 480px;
-  width: 80%;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
 legend {
   margin: 0;
   padding: 0;
@@ -151,6 +130,10 @@ fieldset {
   margin: 0;
   padding: 0;
   border: none;
+}
+
+h2 {
+  padding-bottom: 8px;
 }
 
 .label-header {
@@ -240,12 +223,5 @@ input[type="radio"] {
   outline: 2px solid var(--color-entry-type-accepted-border);
   outline-offset: 2px;
   border-radius: 4px;
-}
-
-.actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 16px;
-  margin-top: 24px;
 }
 </style>

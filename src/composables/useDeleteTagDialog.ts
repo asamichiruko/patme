@@ -1,28 +1,17 @@
-import { ref } from "vue"
+import { useDialog } from "@/composables/useDialog"
 
 export interface DeleteTagDialogParams {
   tagId: string
   tagTitle: string
 }
 
-const visible = ref(false)
-const params = ref<DeleteTagDialogParams | null>(null)
+const { visible, params, openDialog, closeDialog } = useDialog<DeleteTagDialogParams>()
 
 export function useDeleteTagDialog() {
-  const openDeleteTagDialog = (p: DeleteTagDialogParams) => {
-    params.value = p
-    visible.value = true
-  }
-
-  const closeDeleteTagDialog = () => {
-    visible.value = false
-    params.value = null
-  }
-
   return {
     visible,
     params,
-    openDeleteTagDialog,
-    closeDeleteTagDialog,
+    openDeleteTagDialog: openDialog,
+    closeDeleteTagDialog: closeDialog,
   }
 }

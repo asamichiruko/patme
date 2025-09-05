@@ -1,29 +1,18 @@
 import type { EntryType } from "@/schemas/EntryType"
-import { ref } from "vue"
+import { useDialog } from "./useDialog"
 
 export interface AddCommentParams {
   entryId: string
   entryType: EntryType
 }
 
-const visible = ref(false)
-const params = ref<AddCommentParams | null>(null)
+const { visible, params, openDialog, closeDialog } = useDialog<AddCommentParams>()
 
 export function useAddCommentDialog() {
-  const openAddCommentDialog = (p: AddCommentParams) => {
-    params.value = p
-    visible.value = true
-  }
-
-  const closeAddCommentDialog = () => {
-    visible.value = false
-    params.value = null
-  }
-
   return {
     visible,
     params,
-    openAddCommentDialog,
-    closeAddCommentDialog,
+    openAddCommentDialog: openDialog,
+    closeAddCommentDialog: closeDialog,
   }
 }

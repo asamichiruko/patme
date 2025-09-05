@@ -6,6 +6,7 @@ import { useEntryStore } from "@/stores/useEntryStore"
 import { useTagStore } from "@/stores/useTagStore"
 import { notify } from "@/utils/storageNotifier"
 import { nextTick, ref, watch } from "vue"
+import BaseDialog from "../util/BaseDialog.vue"
 import LoadingSpinner from "../util/LoadingSpinner.vue"
 
 const { visible, params, closeTaggingDialog } = useTaggingDialog()
@@ -13,7 +14,6 @@ const { trigger } = useNotificationBar()
 const entryStore = useEntryStore()
 const tagStore = useTagStore()
 
-const dialogRef = ref<HTMLDialogElement | null>(null)
 const tagListRef = ref<HTMLUListElement | null>(null)
 const selectedTagIds = ref<string[]>([])
 const loading = ref(false)
@@ -22,9 +22,6 @@ watch(visible, (val) => {
   if (val) {
     if (!params.value) return
     selectedTagIds.value = [...params.value.tagIds]
-    dialogRef.value?.showModal()
-  } else {
-    dialogRef.value?.close()
   }
 })
 
@@ -74,44 +71,38 @@ const toggleSelectedState = (id: string) => {
 </script>
 
 <template>
-  <Teleport to="body">
-    <dialog ref="dialogRef" @cancel="cancel">
-      <p class="message">割り当てるタグを選んでください</p>
-      <form @submit.prevent="submit">
-        <ul class="tag-list" ref="tagListRef">
-          <li v-for="tag in tagStore.tags" :key="tag.id">
-            <button
-              :class="['tag', { selected: selectedTagIds.includes(tag.id) }]"
-              :aria-pressed="selectedTagIds.includes(tag.id)"
-              type="button"
-              @click="toggleSelectedState(tag.id)"
-              :tag-id="tag.id"
-            >
-              {{ tag.title }}
-            </button>
-          </li>
-        </ul>
-        <TagCreateInlineForm @tag-created="handleTagCreated" labeltext="タグを追加" />
-        <div class="actions">
-          <button class="sub-button" type="button" @click="cancel">キャンセル</button>
-          <button class="primary-button" type="submit">
-            <LoadingSpinner v-if="loading" class="spinner" />
-            <span class="button-label">決定</span>
-          </button>
-        </div>
-      </form>
-    </dialog>
-  </Teleport>
+  <BaseDialog :visible="visible" @submit="submit" @close="cancel">
+    <template #title>
+      <h2>タグの割り当て</h2>
+    </template>
+    <p>割り当てるタグを選んでください</p>
+    <ul class="tag-list" ref="tagListRef">
+      <li v-for="tag in tagStore.tags" :key="tag.id">
+        <button
+          :class="['tag', { selected: selectedTagIds.includes(tag.id) }]"
+          :aria-pressed="selectedTagIds.includes(tag.id)"
+          type="button"
+          @click="toggleSelectedState(tag.id)"
+          :tag-id="tag.id"
+        >
+          {{ tag.title }}
+        </button>
+      </li>
+    </ul>
+    <TagCreateInlineForm @tag-created="handleTagCreated" labeltext="タグを追加" />
+    <template #actions>
+      <button class="sub-button" type="button" @click="cancel">キャンセル</button>
+      <button class="primary-button" type="submit">
+        <LoadingSpinner v-if="loading" class="spinner" />
+        <span class="button-label">決定</span>
+      </button>
+    </template>
+  </BaseDialog>
 </template>
 
 <style scoped>
-dialog {
-  border: none;
-  border-radius: 8px;
-  padding: 16px;
-  max-width: 400px;
-  width: 80%;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+h2 {
+  padding-bottom: 8px;
 }
 
 .tag-list {
@@ -165,11 +156,5 @@ dialog {
 }
 .tag.pulse {
   animation: pulse 0.2s ease-out;
-}
-.actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 16px;
-  margin-top: 32px;
 }
 </style>
