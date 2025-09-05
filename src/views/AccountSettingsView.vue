@@ -16,7 +16,7 @@ const isPasswordLinked = computed(() => authStore.providers.includes("password")
   <PageHeader :show-account-nav="true" :logoTo="'/main'" />
   <div class="container">
     <section>
-      <p><RouterLink to="/settings">設定画面へ戻る</RouterLink></p>
+      <p><RouterLink to="/settings" class="primary-button">設定画面へ戻る</RouterLink></p>
     </section>
     <section>
       <h2>パスワード認証の追加</h2>
@@ -36,3 +36,12 @@ const isPasswordLinked = computed(() => authStore.providers.includes("password")
     </section>
   </div>
 </template>
+
+<style scoped>
+section {
+  margin-bottom: 24px;
+}
+h2 {
+  padding-bottom: 8px;
+}
+</style>

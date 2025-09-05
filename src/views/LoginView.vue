@@ -68,66 +68,71 @@ const signInWithPassword = async () => {
     </div>
   </header>
   <div class="container">
-    <h2>このアプリについて</h2>
-    <p>
-      ふりかえり帖 (Patme)
-      は日常の「できたこと」や「ふりかえりたいこと」を記録し、自分を客観的にふりかえるためのアプリです。
-    </p>
+    <section>
+      <h2>このアプリについて</h2>
+      <p>
+        ふりかえり帖 (Patme)
+        は日常の「できたこと」や「ふりかえりたいこと」を記録し、自分を客観的にふりかえるためのアプリです。
+      </p>
+    </section>
 
-    <h2>ログイン</h2>
-    <form>
-      <fieldset>
-        <legend>アカウント連携</legend>
-        <button type="button" class="primary-button" @click="signInWithGoogle">
-          <LoadingSpinner v-if="loading === 'google'" class="spinner" />
-          <span class="button-label">Google アカウントでログイン</span>
-        </button>
-      </fieldset>
-      <fieldset>
-        <legend>パスワードでログイン</legend>
-        <label>
-          <span class="input-label">メールアドレス</span>
-          <input
-            v-model="email"
-            class="input-text"
-            name="email"
-            type="email"
-            placeholder="メールアドレス"
-          />
-        </label>
-        <label>
-          <span class="input-label">パスワード</span>
-          <input
-            v-model="password"
-            class="input-text"
-            name="password"
-            type="password"
-            placeholder="パスワード"
-          />
-        </label>
-        <button type="button" class="primary-button" @click="signInWithPassword">
-          <LoadingSpinner v-if="loading === 'email'" class="spinner" />
-          <span class="button-label">パスワードでログイン</span>
-        </button>
-        <p><RouterLink to="./reset_password">パスワードを忘れた場合（再発行）</RouterLink></p>
-      </fieldset>
-      <fieldset>
-        <legend>アカウントの新規登録</legend>
-        <RouterLink class="primary-button" to="/signup">新規登録</RouterLink>
-        <button type="button" class="primary-button" @click="signInAnonymously">
-          <LoadingSpinner v-if="loading === 'anonymous'" class="spinner" />
-          <span class="button-label">登録せずにログイン</span>
-        </button>
-        <p>
-          注：アカウント登録せずにログインした場合、ブラウザを変更するとデータが引き継がれません。
-        </p>
-      </fieldset>
-    </form>
-
-    <h2>その他事項</h2>
-    <ul>
-      <li><a href="https://github.com/asamichiruko/patme">GitHub リポジトリ</a></li>
-    </ul>
+    <section>
+      <h2>ログイン</h2>
+      <form>
+        <fieldset>
+          <legend>アカウント連携</legend>
+          <button type="button" class="primary-button" @click="signInWithGoogle">
+            <LoadingSpinner v-if="loading === 'google'" class="spinner" />
+            <span class="button-label">Google アカウントでログイン</span>
+          </button>
+        </fieldset>
+        <fieldset>
+          <legend>パスワードでログイン</legend>
+          <label>
+            <span class="input-label">メールアドレス</span>
+            <input
+              v-model="email"
+              class="input-text"
+              name="email"
+              type="email"
+              placeholder="メールアドレス"
+            />
+          </label>
+          <label>
+            <span class="input-label">パスワード</span>
+            <input
+              v-model="password"
+              class="input-text"
+              name="password"
+              type="password"
+              placeholder="パスワード"
+            />
+          </label>
+          <button type="button" class="primary-button" @click="signInWithPassword">
+            <LoadingSpinner v-if="loading === 'email'" class="spinner" />
+            <span class="button-label">パスワードでログイン</span>
+          </button>
+          <p><RouterLink to="./reset_password">パスワードを忘れた場合（再発行）</RouterLink></p>
+        </fieldset>
+        <fieldset>
+          <legend>アカウントの新規登録</legend>
+          <RouterLink class="primary-button" to="/signup">新規登録</RouterLink>
+          <button type="button" class="primary-button" @click="signInAnonymously">
+            <LoadingSpinner v-if="loading === 'anonymous'" class="spinner" />
+            <span class="button-label">登録せずにログイン</span>
+          </button>
+          <p>
+            注：アカウント登録せずにログインした場合、ブラウザを変更するとデータが引き継がれません。
+          </p>
+        </fieldset>
+      </form>
+    </section>
+    <section>
+      <h2>その他事項</h2>
+      <ul>
+        <li><a href="https://github.com/asamichiruko/patme">GitHub リポジトリ</a></li>
+      </ul>
+    </section>
   </div>
 </template>
 
@@ -139,26 +144,29 @@ const signInWithPassword = async () => {
   padding: 0;
   white-space: nowrap;
 }
-
 .index-title h1 {
   font-size: 32px;
   margin: 0;
   padding: 0;
   margin-top: 48px;
 }
-
 .index-title img {
   margin-right: 8px;
 }
-
 .index-subtitle {
   font-size: 18px;
   margin: 0;
   padding: 0;
 }
-
 .index-header {
   margin-bottom: 16px;
+}
+
+section {
+  margin-bottom: 24px;
+}
+h2 {
+  padding-bottom: 8px;
 }
 
 form {
@@ -166,14 +174,12 @@ form {
   flex-direction: column;
   gap: 16px;
 }
-
 legend {
   font-weight: bold;
   font-size: 18px;
   color: var(--color-header);
   margin: 8px 0;
 }
-
 fieldset {
   margin: 0;
   padding: 0;

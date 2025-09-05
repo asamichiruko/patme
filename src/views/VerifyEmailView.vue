@@ -41,28 +41,37 @@ async function tryLogin() {
   <PageHeader :show-account-nav="false" :logoTo="'/login'" />
 
   <div class="container">
-    <h2>アカウント認証</h2>
-    <p>
-      登録したメールアドレス宛にアカウント認証メールを送信しました。認証を完了するため、メール内のリンクにアクセスしてください。
-    </p>
-    <p class="button-paragraph">
-      <button type="button" class="primary-button" @click="tryLogin">ログイン（認証完了後）</button>
-    </p>
-    <h2>認証メールの再送</h2>
-    <p>
-      アカウント認証メールが迷惑メールとして振り分けられる場合があります。メールが届かない場合はそちらを確認し、それでもメールが受け取れない場合は以下のボタンから再送してください。
-    </p>
-    <p class="button-paragraph">
-      <button type="button" class="sub-button" @click="resendEmailVerification">
-        <LoadingSpinner v-if="loading" />
-        <span class="button-label">アカウント認証メールを再送する</span>
-      </button>
-    </p>
+    <section>
+      <h2>アカウント認証</h2>
+      <p>
+        登録したメールアドレス宛にアカウント認証メールを送信しました。認証を完了するため、メール内のリンクにアクセスしてください。
+      </p>
+      <p class="button-paragraph">
+        <button type="button" class="primary-button" @click="tryLogin">
+          ログイン（認証完了後）
+        </button>
+      </p>
+    </section>
+    <section>
+      <h2>認証メールの再送</h2>
+      <p>
+        アカウント認証メールが迷惑メールとして振り分けられる場合があります。メールが届かない場合はそちらを確認し、それでもメールが受け取れない場合は以下のボタンから再送してください。
+      </p>
+      <p>
+        <button type="button" class="sub-button" @click="resendEmailVerification">
+          <LoadingSpinner v-if="loading" />
+          <span class="button-label">アカウント認証メールを再送する</span>
+        </button>
+      </p>
+    </section>
   </div>
 </template>
 
 <style scoped>
-.button-paragraph {
-  margin: 16px 0;
+section {
+  margin-bottom: 24px;
+}
+h2 {
+  padding-bottom: 8px;
 }
 </style>

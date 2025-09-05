@@ -23,26 +23,31 @@ import TagManager from "@/components/tag/TagManager.vue"
 
     <section>
       <h2>データの保存と復元</h2>
-      <h3>エクスポート</h3>
-      <p>
-        記録を JSON ファイルとしてエクスポートします。
-        エクスポートファイルは記録の復元に利用できます。
-      </p>
-      <ExportForm />
-      <h3>インポート</h3>
-      <p>
-        アップロードしたファイルの内容で記録をリストアします。
-        <strong>既存の記録を上書き</strong>します。
-      </p>
-      <ImportForm />
+      <section>
+        <h3>エクスポート</h3>
+        <p>
+          記録を JSON ファイルとしてエクスポートします。
+          エクスポートファイルは記録の復元に利用できます。
+        </p>
+        <ExportForm />
+      </section>
+      <section>
+        <h3>インポート</h3>
+        <p>
+          アップロードしたファイルの内容で記録をリストアします。
+          <strong>既存の記録を上書き</strong>します。
+        </p>
+        <ImportForm />
+      </section>
     </section>
   </div>
 </template>
 
 <style scoped>
-.settings-form {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+section {
+  margin-bottom: 24px;
+}
+h2 {
+  padding-bottom: 8px;
 }
 </style>

@@ -89,7 +89,7 @@ async function signUpAndLogin() {
         <span class="button-label">登録</span>
       </button>
     </form>
-    <p><RouterLink to="/login">既存のアカウントでログインする</RouterLink></p>
+    <p><RouterLink to="/login" class="sub-button">既存のアカウントでログインする</RouterLink></p>
   </div>
 </template>
 
@@ -102,7 +102,6 @@ form {
   flex-direction: column;
   align-items: start;
   gap: 16px;
-  margin-bottom: 32px;
 }
 
 .input-label {
@@ -114,5 +113,12 @@ form {
   padding: 4px;
   font-size: 15px;
   width: 250px;
+}
+
+section {
+  margin-bottom: 24px;
+}
+h2 {
+  padding-bottom: 8px;
 }
 </style>
