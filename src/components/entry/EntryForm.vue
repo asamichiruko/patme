@@ -29,7 +29,7 @@ const submit = async () => {
     .createEntry({
       content,
       entryType: _entryType,
-      isReviewed: false,
+      reviewedCount: 0,
       tagIds: [],
     })
     .then(() => {

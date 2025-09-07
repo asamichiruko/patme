@@ -17,7 +17,7 @@ const submit = async () => {
   if (!params.value) return
   try {
     loading.value = true
-    await commentStore.deleteComment(params.value.id)
+    await commentStore.deleteComment(params.value.commentId, params.value.entryId)
     notify()
     trigger(`コメントを削除しました`, "success")
     closeDeleteCommentDialog()

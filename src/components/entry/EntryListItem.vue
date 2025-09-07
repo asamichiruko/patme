@@ -53,7 +53,7 @@ const handleOptionSelect = (option: Option) => {
       entryId: props.entry.id,
       initialEntryType: props.entry.entryType,
       initialContent: props.entry.content,
-      initialReviewState: props.entry.isReviewed,
+      initialReviewedCount: props.entry.reviewedCount,
       initialTagIds: props.entry.tagIds,
     })
   } else if (option.value === "delete") {
@@ -67,7 +67,7 @@ const handleOptionSelect = (option: Option) => {
     <div class="achievement-header">
       <div class="entry-type-label">
         <span class="entry-type">{{ entryTypeLabel[props.entry.entryType] }}</span>
-        <small v-if="props.entry.isReviewed">（再評価済み）</small>
+        <small v-if="props.entry.reviewedCount > 0">（再評価済み）</small>
       </div>
       <OptionMenuButton
         class="option-menu-button"

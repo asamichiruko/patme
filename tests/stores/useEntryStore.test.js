@@ -57,7 +57,7 @@ describe("useEntryStore.js", () => {
     const testAchievement = {
       content: "achievement1",
       entryType: "achievement",
-      isReviewed: false,
+      reviewedCount: 0,
       date: new Date("2025-04-01").toISOString(),
     }
     const addedAchievement = { ...testAchievement, id: "id1" }
@@ -76,7 +76,7 @@ describe("useEntryStore.js", () => {
     expect(mockEntryService.addAchievement).toHaveBeenCalledWith({
       content: "",
       entryType: "",
-      isReviewed: false,
+      reviewedCount: 0,
       date: null,
     })
     expect(result).toBeNull()

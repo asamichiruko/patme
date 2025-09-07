@@ -1,7 +1,8 @@
 import { useDialog } from "@/composables/useDialog"
 
 export type DeleteCommentDialogParams = {
-  id: string
+  commentId: string
+  entryId: string
 }
 
 const { visible, params, openDialog, closeDialog } = useDialog<DeleteCommentDialogParams>()

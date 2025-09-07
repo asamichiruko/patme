@@ -37,7 +37,7 @@ const submit = async () => {
   const entryBody: Omit<Entry, "id" | "entryId" | "createdAt"> | null = {
     content: content.value,
     entryType: selectedEntryType.value,
-    isReviewed: params.value.initialReviewState ?? false,
+    reviewedCount: params.value.initialReviewedCount ?? 0,
     tagIds: params.value.initialTagIds ?? [],
   }
 

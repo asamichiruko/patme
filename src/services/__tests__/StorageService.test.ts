@@ -73,7 +73,7 @@ describe("StorageService", () => {
     const body: Omit<Entry, "id" | "createdAt"> = {
       content: "entry 1",
       entryType: "achievement",
-      isReviewed: false,
+      reviewedCount: 0,
       tagIds: [],
     }
     mockEntryRepo.create.mockResolvedValue("entry1")
@@ -88,7 +88,7 @@ describe("StorageService", () => {
       createdAt: new Date().toISOString(),
       content: "entry 1",
       entryType: "achievement",
-      isReviewed: false,
+      reviewedCount: 0,
       tagIds: ["tag1"],
     }
     const comment: Comment = {
@@ -120,7 +120,7 @@ describe("StorageService", () => {
       createdAt: new Date().toISOString(),
       content: "entry 1",
       entryType: "achievement",
-      isReviewed: false,
+      reviewedCount: 0,
       tagIds: ["tag-dummy"],
     }
 
@@ -197,7 +197,7 @@ describe("StorageService", () => {
         createdAt: new Date().toISOString(),
         content: "entry 1",
         entryType: "achievement",
-        isReviewed: false,
+        reviewedCount: 0,
         tagIds: ["tag1"],
       },
       {
@@ -205,7 +205,7 @@ describe("StorageService", () => {
         createdAt: new Date().toISOString(),
         content: "entry 2",
         entryType: "achievement",
-        isReviewed: false,
+        reviewedCount: 0,
         tagIds: ["tag2"],
       },
     ]
@@ -246,7 +246,7 @@ describe("StorageService", () => {
           createdAt: new Date().toISOString(),
           content: "entry 1",
           entryType: "achievement" as EntryType,
-          isReviewed: false,
+          reviewedCount: 0,
           tagIds: ["tag1"],
         },
       ],

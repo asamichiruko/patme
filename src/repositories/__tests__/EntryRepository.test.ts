@@ -26,7 +26,7 @@ describe("EntryRepository", () => {
       createdAt: new Date().toISOString(),
       content: "content 1",
       entryType: "achievement",
-      isReviewed: false,
+      reviewedCount: 0,
       tagIds: [],
     }
     const entry2 = {
@@ -34,7 +34,7 @@ describe("EntryRepository", () => {
       createdAt: new Date().toISOString(),
       content: "content 2",
       entryType: "achievement",
-      isReviewed: false,
+      reviewedCount: 0,
       tagIds: [],
     }
     mockAdapter.getAll.mockResolvedValue([entry1, entry2])
@@ -49,7 +49,7 @@ describe("EntryRepository", () => {
       createdAt: new Date().toISOString(),
       content: "content 1",
       entryType: "incomplete",
-      isReviewed: true,
+      reviewedCount: 1,
       tagIds: ["tag1", "tag2"],
     }
     mockAdapter.get.mockResolvedValue(existing)
@@ -58,7 +58,7 @@ describe("EntryRepository", () => {
     expect(entry!.createdAt).toBe(existing.createdAt)
     expect(entry!.content).toBe(existing.content)
     expect(entry!.entryType).toBe(existing.entryType)
-    expect(entry!.isReviewed).toBe(existing.isReviewed)
+    expect(entry!.reviewedCount).toBe(existing.reviewedCount)
     expect(entry!.tagIds).toEqual(existing.tagIds)
   })
 
@@ -75,7 +75,7 @@ describe("EntryRepository", () => {
         createdAt: new Date().toISOString(),
         content: "content 1",
         entryType: "achievement",
-        isReviewed: false,
+        reviewedCount: 0,
         tagIds: ["tag1", "tag2"],
       },
       {
@@ -83,7 +83,7 @@ describe("EntryRepository", () => {
         createdAt: new Date().toISOString(),
         content: "content 2",
         entryType: "achievement",
-        isReviewed: false,
+        reviewedCount: 0,
         tagIds: [],
       },
     ])
@@ -98,7 +98,7 @@ describe("EntryRepository", () => {
         createdAt: new Date().toISOString(),
         content: "content 1",
         entryType: "achievement",
-        isReviewed: false,
+        reviewedCount: 0,
         tagIds: ["tag1", "tag2"],
       },
       {
@@ -106,7 +106,7 @@ describe("EntryRepository", () => {
         createdAt: new Date().toISOString(),
         content: "content 2",
         entryType: "achievement",
-        isReviewed: false,
+        reviewedCount: 0,
         tagIds: [],
       },
     ])
@@ -120,7 +120,7 @@ describe("EntryRepository", () => {
     const entryBody: Omit<Entry, "id" | "createdAt"> = {
       content: "content 1",
       entryType: "achievement",
-      isReviewed: false,
+      reviewedCount: 0,
       tagIds: [],
     }
     const id = await repo.create(entryBody)
@@ -137,7 +137,7 @@ describe("EntryRepository", () => {
       createdAt: new Date().toISOString(),
       content: "old content",
       entryType: "achievement",
-      isReviewed: false,
+      reviewedCount: 0,
       tagIds: [],
     }
     const newEntry: Entry = {
@@ -161,7 +161,7 @@ describe("EntryRepository", () => {
         createdAt: new Date().toISOString(),
         content: "content 1",
         entryType: "achievement",
-        isReviewed: false,
+        reviewedCount: 0,
         tagIds: [],
       },
       {
@@ -169,7 +169,7 @@ describe("EntryRepository", () => {
         createdAt: new Date().toISOString(),
         content: "content 2",
         entryType: "achievement",
-        isReviewed: false,
+        reviewedCount: 0,
         tagIds: ["tag1, tag2"],
       },
     ]

@@ -6,7 +6,7 @@ export interface EntryFormParams {
   entryId?: string
   initialContent?: string
   initialEntryType?: EntryType
-  initialReviewState?: boolean
+  initialReviewedCount?: number
   initialTagIds?: string[]
 }
 

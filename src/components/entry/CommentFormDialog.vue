@@ -51,7 +51,7 @@ const submit = async () => {
     if (params.value.action === "create") {
       await commentStore.addComment(params.value.entryId, commentBody)
     } else if (params.value.action === "update" && params.value.commentId) {
-      await commentStore.updateComment(params.value.commentId, commentBody)
+      await commentStore.updateComment(params.value.commentId, params.value.entryId, commentBody)
     } else {
       throw new Error("Invalid comment action")
     }

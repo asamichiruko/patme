@@ -16,7 +16,7 @@ const entries = computed<EntryWithRelations[]>(() =>
         case "all":
           return true
         case "reviewed":
-          return a.isReviewed
+          return a.reviewedCount > 0
         default:
           return a.entryType === viewEntryType.value
       }

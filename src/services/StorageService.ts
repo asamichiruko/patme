@@ -70,18 +70,26 @@ export class StorageService {
     const entry = await this.entryRepo.get(entryId)
     if (!entry) throw new Error(`entry ${entryId} not found`)
     if (commentBody.reviewType) {
-      this.entryRepo.update({ ...entry, isReviewed: true })
+      this.entryRepo.update({ ...entry, reviewedCount: entry.reviewedCount + 1 })
     }
     return await this.commentRepo.create({ ...commentBody, entryId })
   }
 
   async updateComment(
     commentId: string,
+    entryId: string,
     newCommentBody: Omit<Comment, "id" | "entryId" | "createdAt">,
   ): Promise<void> {
     const oldComment = await this.commentRepo.get(commentId)
     if (!oldComment) throw new Error(`comment ${commentId} not found`)
+    const entry = await this.entryRepo.get(entryId)
+    if (!entry) throw new Error(`Invalid comment ${commentId}: invalid entryId`)
     await this.commentRepo.update({ ...oldComment, ...newCommentBody })
+    if (oldComment.reviewType === null && newCommentBody.reviewType !== null) {
+      await this.entryRepo.update({ ...entry, reviewedCount: entry.reviewedCount + 1 })
+    } else if (oldComment.reviewType !== null && newCommentBody.reviewType === null) {
+      await this.entryRepo.update({ ...entry, reviewedCount: entry.reviewedCount - 1 })
+    }
   }
 
   async deleteEntry(id: string): Promise<void> {
@@ -93,8 +101,15 @@ export class StorageService {
     await Promise.all([...deletionPromises, this.entryRepo.delete(id)])
   }
 
-  async deleteComment(id: string): Promise<void> {
-    await this.commentRepo.delete(id)
+  async deleteComment(commentId: string, entryId: string): Promise<void> {
+    const comment = await this.commentRepo.get(commentId)
+    if (!comment) return
+    if (comment.reviewType !== null) {
+      const entry = await this.entryRepo.get(entryId)
+      if (!entry) throw new Error("invalid entryId")
+      await this.entryRepo.update({ ...entry, reviewedCount: entry.reviewedCount - 1 })
+    }
+    await this.commentRepo.delete(commentId)
   }
 
   async getAllTags(): Promise<Tag[]> {

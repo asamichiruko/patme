@@ -6,7 +6,7 @@ export const EntrySchema = z.object({
   createdAt: z.iso.datetime(),
   content: z.string(),
   entryType: EntryTypeSchema,
-  isReviewed: z.boolean(),
+  reviewedCount: z.number().int().nonnegative(),
   tagIds: z.array(z.string()).refine((arr) => new Set(arr).size === arr.length, {
     message: "Duplicate tagIds are not allowed",
   }),

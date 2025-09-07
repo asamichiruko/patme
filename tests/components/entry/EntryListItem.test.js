@@ -17,7 +17,7 @@ describe("EntryListItem.vue", () => {
     id: "achievement1",
     content: "achievement 1",
     entryType: "achievement",
-    isReviewed: false,
+    reviewedCount: 0,
     date: new Date("2025-04-01"),
     stars: [],
     tags: [],

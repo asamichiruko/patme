@@ -38,7 +38,7 @@ const handleOptionSelect = (option: Option, params: Record<string, unknown>) => 
       initialReviewType: comment.reviewType ?? undefined,
     })
   } else if (option.value === "delete") {
-    openDeleteCommentDialog({ id: comment.id })
+    openDeleteCommentDialog({ commentId: comment.id, entryId: props.entry.id })
   }
 }
 </script>
