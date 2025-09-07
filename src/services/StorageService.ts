@@ -51,6 +51,12 @@ export class StorageService {
     })
   }
 
+  async updateEntry(id: string, entryBody: Omit<Entry, "id" | "createdAt">): Promise<void> {
+    const entry = await this.entryRepo.get(id)
+    if (!entry) throw new Error(`Entry ${id} not found`)
+    await this.entryRepo.update({ ...entry, ...entryBody })
+  }
+
   async updateEntryTags(id: string, tagIds: string[]): Promise<void> {
     const entry = await this.entryRepo.get(id)
     if (!entry) throw new Error(`Entry ${id} not found`)

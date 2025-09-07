@@ -54,6 +54,21 @@ export const useEntryStore = defineStore("entry", () => {
     }
   }
 
+  async function updateEntry(
+    id: string,
+    entryBody: Omit<Entry, "id" | "createdAt">,
+  ): Promise<void> {
+    if (!storageService.value) {
+      throw new Error("StorageService has not been initialized")
+    }
+    try {
+      await storageService.value.updateEntry(id, entryBody)
+      await fetchEntriesWithRelations()
+    } catch (err) {
+      console.error("Failed to update entry", err)
+    }
+  }
+
   async function updateEntryTags(id: string, tagIds: string[]): Promise<void> {
     if (!storageService.value) {
       throw new Error("StorageService has not been initialized")
@@ -73,6 +88,7 @@ export const useEntryStore = defineStore("entry", () => {
     reset,
     createEntry,
     countEntriesWithTag,
+    updateEntry,
     updateEntryTags,
   }
 })

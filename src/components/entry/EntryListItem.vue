@@ -6,6 +6,7 @@ import TagPillList from "@/components/tag/TagPillList.vue"
 import CommentList from "./CommentList.vue"
 
 import { useCommentFormDialog } from "@/composables/useCommentFormDialog"
+import { useEntryFormDialog } from "@/composables/useEntryFormDialog"
 import type { Option } from "@/composables/useOptionMenu"
 import { useTaggingDialog } from "@/composables/useTaggingDialog"
 import type { EntryWithRelations } from "@/schemas/EntryWithRelations"
@@ -14,6 +15,7 @@ import OptionMenuButton from "../util/OptionMenuButton.vue"
 
 const { openTaggingDialog } = useTaggingDialog()
 const { openCommentFormDialog } = useCommentFormDialog()
+const { openEntryFormDialog } = useEntryFormDialog()
 
 const props = defineProps<{
   entry: EntryWithRelations
@@ -42,8 +44,17 @@ const menuOptions = [
   { value: "delete", label: "削除" },
 ]
 
-const handleOptionSelect = (option: Option, params: Record<string, unknown>) => {
-  console.log(`${params.id} で ${option.label} が押されました`)
+const handleOptionSelect = (option: Option) => {
+  if (option.value === "edit") {
+    openEntryFormDialog({
+      action: "update",
+      entryId: props.entry.id,
+      initialEntryType: props.entry.entryType,
+      initialContent: props.entry.content,
+      initialReviewState: props.entry.isReviewed,
+      initialTagIds: props.entry.tagIds,
+    })
+  }
 }
 </script>
 
@@ -58,7 +69,7 @@ const handleOptionSelect = (option: Option, params: Record<string, unknown>) => 
         class="option-menu-button"
         :options="menuOptions"
         :handler="handleOptionSelect"
-        :params="{ id: entry.id }"
+        :params="{}"
       />
       <div class="achievement-date">{{ formatRelativeDate(props.entry.createdAt) }}</div>
     </div>
