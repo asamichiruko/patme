@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useEditCommentDialog } from "@/composables/useEditCommentDialog"
+import { useCommentFormDialog } from "@/composables/useCommentFormDialog"
 import { useNotificationBar } from "@/composables/useNotificationBar"
 import type { Comment } from "@/schemas/Comment"
 import type { EntryType } from "@/schemas/EntryType"
@@ -10,7 +10,7 @@ import BaseDialog from "../util/BaseDialog.vue"
 import LoadingSpinner from "../util/LoadingSpinner.vue"
 import EntryTypeSelector from "./EntryTypeSelector.vue"
 
-const { visible, params, closeEditCommentDialog } = useEditCommentDialog()
+const { visible, params, closeCommentFormDialog } = useCommentFormDialog()
 const commentStore = useCommentStore()
 const { trigger } = useNotificationBar()
 
@@ -20,11 +20,11 @@ const selectedReviewType = ref<EntryType>("achievement")
 const loading = ref(false)
 
 watch(visible, (val) => {
-  if (val && params.value) {
-    content.value = params.value.oldContent
-    if (params.value.oldReviewType) {
+  if (val) {
+    content.value = params.value?.initialContent ?? ""
+    if (params.value?.initialReviewType) {
       showReviewType.value = true
-      selectedReviewType.value = params.value.oldReviewType
+      selectedReviewType.value = params.value.initialReviewType
     } else {
       showReviewType.value = false
     }
@@ -32,20 +32,29 @@ watch(visible, (val) => {
 })
 
 const closeDialog = () => {
-  closeEditCommentDialog()
+  content.value = ""
+  showReviewType.value = false
+  selectedReviewType.value = "achievement"
+  closeCommentFormDialog()
 }
 
 const submit = async () => {
   if (!params.value) return
 
-  const commentBody: Omit<Comment, "id" | "entryId" | "createdAt"> = {
+  const commentBody: Omit<Comment, "id" | "entryId" | "createdAt"> | null = {
     content: content.value,
     reviewType: showReviewType.value ? selectedReviewType.value : null,
   }
 
   loading.value = true
   try {
-    await commentStore.updateComment(params.value.commentId, commentBody)
+    if (params.value.action === "create") {
+      await commentStore.addComment(params.value.entryId, commentBody)
+    } else if (params.value.action === "update" && params.value.commentId) {
+      await commentStore.updateComment(params.value.commentId, commentBody)
+    } else {
+      throw new Error("Invalid comment action")
+    }
     notify()
     closeDialog()
   } catch (err) {

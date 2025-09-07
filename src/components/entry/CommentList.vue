@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useEditCommentDialog } from "@/composables/useEditCommentDialog"
+import { useCommentFormDialog } from "@/composables/useCommentFormDialog"
 import { type Option } from "@/composables/useOptionMenu"
 import type { Comment } from "@/schemas/Comment"
 import type { Entry } from "@/schemas/Entry"
@@ -11,7 +11,7 @@ const props = defineProps<{
   comments: Comment[]
 }>()
 
-const { openEditCommentDialog } = useEditCommentDialog()
+const { openCommentFormDialog } = useCommentFormDialog()
 
 const reviewTypeLabels = {
   achievement: "よかったこと",
@@ -27,12 +27,13 @@ const menuOptions = [
 const handleOptionSelect = (option: Option, params: Record<string, unknown>) => {
   const comment = params.comment as Comment
   if (option.value === "edit") {
-    openEditCommentDialog({
+    openCommentFormDialog({
+      action: "update",
       commentId: comment.id,
       entryId: props.entry.id,
       entryType: props.entry.entryType,
-      oldContent: comment.content,
-      oldReviewType: comment.reviewType,
+      initialContent: comment.content,
+      initialReviewType: comment.reviewType ?? undefined,
     })
   }
 }

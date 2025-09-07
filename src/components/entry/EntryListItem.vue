@@ -5,7 +5,7 @@ import tagImg from "@/assets/tag.svg"
 import TagPillList from "@/components/tag/TagPillList.vue"
 import CommentList from "./CommentList.vue"
 
-import { useAddCommentDialog } from "@/composables/useAddCommentDialog"
+import { useCommentFormDialog } from "@/composables/useCommentFormDialog"
 import type { Option } from "@/composables/useOptionMenu"
 import { useTaggingDialog } from "@/composables/useTaggingDialog"
 import type { EntryWithRelations } from "@/schemas/EntryWithRelations"
@@ -13,14 +13,18 @@ import { formatRelativeDate } from "@/utils/formatDate"
 import OptionMenuButton from "../util/OptionMenuButton.vue"
 
 const { openTaggingDialog } = useTaggingDialog()
-const { openAddCommentDialog } = useAddCommentDialog()
+const { openCommentFormDialog } = useCommentFormDialog()
 
 const props = defineProps<{
   entry: EntryWithRelations
 }>()
 
 const handleAddComment = async () => {
-  openAddCommentDialog({ entryId: props.entry.id, entryType: props.entry.entryType })
+  openCommentFormDialog({
+    action: "create",
+    entryId: props.entry.id,
+    entryType: props.entry.entryType,
+  })
 }
 
 const handleUpdateTagging = async () => {
