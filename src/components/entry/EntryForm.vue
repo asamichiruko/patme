@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import EntryFormTypeSelector from "@/components/entry/EntryFormTypeSelector.vue"
+import EntryTypeSelector from "@/components/entry/EntryTypeSelector.vue"
 import { useNotificationBar } from "@/composables/useNotificationBar"
 import type { EntryType } from "@/schemas/EntryType"
 import { useEntryStore } from "@/stores/useEntryStore"
@@ -50,7 +50,7 @@ const submit = async () => {
 <template>
   <form @submit.prevent="submit">
     <div class="header-label">記録の評価（種類）</div>
-    <EntryFormTypeSelector v-model="entryType" />
+    <EntryTypeSelector v-model="entryType" :show-hint="true" />
     <label>
       <div class="header-label">記録する内容</div>
       <textarea

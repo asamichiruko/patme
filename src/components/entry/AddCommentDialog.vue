@@ -5,9 +5,10 @@ import type { Comment } from "@/schemas/Comment"
 import type { EntryType } from "@/schemas/EntryType"
 import { useCommentStore } from "@/stores/useCommentStore"
 import { notify } from "@/utils/storageNotifier"
-import { ref, watch } from "vue"
+import { ref } from "vue"
 import BaseDialog from "../util/BaseDialog.vue"
 import LoadingSpinner from "../util/LoadingSpinner.vue"
+import EntryTypeSelector from "./EntryTypeSelector.vue"
 
 const { visible, params, closeAddCommentDialog } = useAddCommentDialog()
 const commentStore = useCommentStore()
@@ -15,16 +16,8 @@ const { trigger } = useNotificationBar()
 
 const content = ref("")
 const showReviewType = ref(false)
-const selectedReviewType = ref<EntryType | null>(null)
+const selectedReviewType = ref<EntryType>("achievement")
 const loading = ref(false)
-
-watch(showReviewType, (val) => {
-  if (val) {
-    selectedReviewType.value = "achievement"
-  } else {
-    selectedReviewType.value = null
-  }
-})
 
 const closeDialog = () => {
   content.value = ""
@@ -37,7 +30,7 @@ const submit = async () => {
 
   const commentBody: Omit<Comment, "id" | "entryId" | "createdAt"> | null = {
     content: content.value,
-    reviewType: selectedReviewType.value,
+    reviewType: showReviewType.value ? selectedReviewType.value : null,
   }
 
   loading.value = true
@@ -57,12 +50,6 @@ const cancel = () => {
   if (loading.value) return
   closeDialog()
 }
-
-const options = [
-  { value: "achievement", label: "よかったこと" },
-  { value: "incomplete", label: "ふりかえりたいこと" },
-  { value: "accepted", label: "受け入れたこと" },
-]
 </script>
 
 <template>
@@ -85,30 +72,13 @@ const options = [
         <input type="checkbox" v-model="showReviewType" />
         記録の再評価（改めてふりかえる）
       </label>
-      <fieldset class="entry-type-selector" v-if="showReviewType">
+      <fieldset v-if="showReviewType">
         <legend class="label-header">新しい評価</legend>
-        <label
-          v-for="option in options"
-          :key="option.value"
-          :class="[
-            'entry-type-option',
-            { selected: selectedReviewType === option.value },
-            option.value,
-          ]"
-        >
-          <input
-            type="radio"
-            name="newEntryType"
-            :value="option.value"
-            v-model="selectedReviewType"
-          />
-          <div class="entry-type-label">
-            {{ option.label }}
-            <small v-if="params && params.entryType === option.value">
-              （元の記録と同じ評価）
-            </small>
-          </div>
-        </label>
+        <EntryTypeSelector
+          v-model="selectedReviewType"
+          :show-hint="false"
+          :initial-type="params?.entryType"
+        />
       </fieldset>
     </div>
     <template #actions>
@@ -158,76 +128,5 @@ h2 {
   width: stretch;
   height: 60px;
   line-height: 1.6;
-}
-
-.entry-type-selector {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin: 8px 0;
-  flex-wrap: wrap;
-}
-
-input[type="radio"] {
-  margin: 0;
-  padding: 0;
-}
-.entry-type-option {
-  display: flex;
-  flex-direction: row;
-  gap: 8px;
-  width: fit-content;
-  padding: 6px 12px;
-  border: 2px solid transparent;
-  border-radius: 6px;
-  background-color: var(--color-bg);
-  cursor: pointer;
-  font-size: 16px;
-}
-.entry-type-label {
-  word-break: keep-all;
-  overflow-wrap: anywhere;
-}
-
-.entry-type-option.achievement {
-  background-color: var(--color-entry-type-achievement-bg);
-  border-color: var(--color-entry-type-achievement-border);
-  color: var(--color-entry-type-achievement-text);
-}
-.entry-type-option.achievement.selected {
-  border-color: var(--color-entry-type-achievement-text);
-}
-.entry-type-option.achievement:focus-within {
-  outline: 2px solid var(--color-entry-type-achievement-border);
-  outline-offset: 2px;
-  border-radius: 4px;
-}
-
-.entry-type-option.incomplete {
-  background-color: var(--color-entry-type-incomplete-bg);
-  border-color: var(--color-entry-type-incomplete-border);
-  color: var(--color-entry-type-incomplete-text);
-}
-.entry-type-option.incomplete.selected {
-  border: 2px solid var(--color-entry-type-incomplete-text);
-}
-.entry-type-option.incomplete:focus-within {
-  outline: 2px solid var(--color-entry-type-incomplete-border);
-  outline-offset: 2px;
-  border-radius: 4px;
-}
-
-.entry-type-option.accepted {
-  background-color: var(--color-entry-type-accepted-bg);
-  border-color: var(--color-entry-type-accepted-border);
-  color: var(--color-entry-type-accepted-text);
-}
-.entry-type-option.accepted.selected {
-  border: 2px solid var(--color-entry-type-accepted-text);
-}
-.entry-type-option.accepted:focus-within {
-  outline: 2px solid var(--color-entry-type-accepted-border);
-  outline-offset: 2px;
-  border-radius: 4px;
 }
 </style>

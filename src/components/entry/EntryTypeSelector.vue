@@ -1,8 +1,11 @@
 <script setup lang="ts">
+import type { EntryType } from "@/schemas/EntryType"
 import { computed } from "vue"
 
 const props = defineProps<{
-  modelValue: string
+  modelValue: EntryType
+  showHint: boolean
+  initialType?: EntryType
 }>()
 const emit = defineEmits(["update:modelValue"])
 
@@ -11,7 +14,7 @@ const localValue = computed({
   set: (val) => emit("update:modelValue", val),
 })
 
-const options = [
+const options: { value: EntryType; label: string; hint: string }[] = [
   { value: "achievement", label: "よかったこと", hint: "成功・努力・喜び" },
   { value: "incomplete", label: "ふりかえりたいこと", hint: "失敗・後悔・つまずき" },
   { value: "accepted", label: "受け入れたこと", hint: "客観的な感想" },
@@ -27,9 +30,14 @@ const options = [
     >
       <input type="radio" name="entryType" :value="option.value" v-model="localValue" />
       <div class="entry-type-label">
-        {{ option.label }}
-        <div class="entry-type-hint">
+        <div class="entry-type-name">{{ option.label }}</div>
+        <div v-if="props.showHint" class="entry-type-hint">
           {{ option.hint }}
+        </div>
+        <div>
+          <small v-if="props.initialType && option.value === props.initialType">
+            （元の記録と同じ評価）
+          </small>
         </div>
       </div>
     </label>
@@ -58,6 +66,7 @@ input[type="radio"] {
   background-color: var(--color-bg);
   cursor: pointer;
   font-size: 16px;
+  width: 180px;
 }
 
 .entry-type-option.achievement {
