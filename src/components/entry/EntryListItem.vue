@@ -6,6 +6,7 @@ import TagPillList from "@/components/tag/TagPillList.vue"
 import CommentList from "./CommentList.vue"
 
 import { useCommentFormDialog } from "@/composables/useCommentFormDialog"
+import { useDeleteEntryDialog } from "@/composables/useDeleteEntryDialog"
 import { useEntryFormDialog } from "@/composables/useEntryFormDialog"
 import type { Option } from "@/composables/useOptionMenu"
 import { useTaggingDialog } from "@/composables/useTaggingDialog"
@@ -16,6 +17,7 @@ import OptionMenuButton from "../util/OptionMenuButton.vue"
 const { openTaggingDialog } = useTaggingDialog()
 const { openCommentFormDialog } = useCommentFormDialog()
 const { openEntryFormDialog } = useEntryFormDialog()
+const { openDeleteEntryDialog } = useDeleteEntryDialog()
 
 const props = defineProps<{
   entry: EntryWithRelations
@@ -54,6 +56,8 @@ const handleOptionSelect = (option: Option) => {
       initialReviewState: props.entry.isReviewed,
       initialTagIds: props.entry.tagIds,
     })
+  } else if (option.value === "delete") {
+    openDeleteEntryDialog({ id: props.entry.id })
   }
 }
 </script>

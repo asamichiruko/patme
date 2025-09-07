@@ -84,6 +84,19 @@ export class StorageService {
     await this.commentRepo.update({ ...oldComment, ...newCommentBody })
   }
 
+  async deleteEntry(id: string): Promise<void> {
+    const comments = await this.commentRepo.getAll()
+    const deletionPromises = comments
+      .filter((comment) => comment.entryId === id)
+      .map((comment) => this.commentRepo.delete(comment.id))
+
+    await Promise.all([...deletionPromises, this.entryRepo.delete(id)])
+  }
+
+  async deleteComment(id: string): Promise<void> {
+    await this.commentRepo.delete(id)
+  }
+
   async getAllTags(): Promise<Tag[]> {
     return await this.tagRepo.getAll()
   }

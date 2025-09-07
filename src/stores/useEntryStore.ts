@@ -81,6 +81,18 @@ export const useEntryStore = defineStore("entry", () => {
     }
   }
 
+  async function deleteEntry(id: string): Promise<void> {
+    if (!storageService.value) {
+      throw new Error("StorageService has not been initialized")
+    }
+    try {
+      await storageService.value.deleteEntry(id)
+      await fetchEntriesWithRelations()
+    } catch (err) {
+      console.error("Failed to delete entry", err)
+    }
+  }
+
   return {
     entriesWithRelations,
     initialize,
@@ -90,5 +102,6 @@ export const useEntryStore = defineStore("entry", () => {
     countEntriesWithTag,
     updateEntry,
     updateEntryTags,
+    deleteEntry,
   }
 })
