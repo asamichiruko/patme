@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import AddCommentDialog from "@/components/entry/AddCommentDialog.vue"
+import EditCommentDialog from "@/components/entry/EditCommentDialog.vue"
 import DeleteTagDialog from "@/components/tag/DeleteTagDialog.vue"
 import TaggingDialog from "@/components/tag/TaggingDialog.vue"
 import PageHeader from "@/components/util/PageHeader.vue"
@@ -14,6 +15,7 @@ import { RouterView } from "vue-router"
     <RouterView />
   </div>
   <AddCommentDialog />
+  <EditCommentDialog />
   <TaggingDialog />
   <DeleteTagDialog />
 </template>

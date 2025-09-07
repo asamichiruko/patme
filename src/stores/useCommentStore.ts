@@ -30,5 +30,19 @@ export const useCommentStore = defineStore("comment", () => {
     }
   }
 
-  return { initialize, reset, addComment }
+  async function updateComment(
+    commentId: string,
+    newCommentBody: Omit<Comment, "id" | "entryId" | "createdAt">,
+  ): Promise<void> {
+    if (!storageService.value) {
+      throw new Error("StorageService has not been initialized")
+    }
+    try {
+      await storageService.value.updateComment(commentId, newCommentBody)
+    } catch (err) {
+      console.error("Failed to update comment", err)
+    }
+  }
+
+  return { initialize, reset, addComment, updateComment }
 })

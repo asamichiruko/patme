@@ -64,7 +64,7 @@ const handleOptionSelect = (option: Option, params: Record<string, unknown>) => 
     </div>
 
     <TagPillList :tags="props.entry.tags" />
-    <CommentList :comments="props.entry.comments" />
+    <CommentList :entry="props.entry" :comments="props.entry.comments" />
 
     <div class="entry-actions">
       <button class="primary-button" type="button" @click="handleAddComment">

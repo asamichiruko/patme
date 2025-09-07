@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useAddCommentDialog } from "@/composables/useAddCommentDialog"
+import { useEditCommentDialog } from "@/composables/useEditCommentDialog"
 import { useNotificationBar } from "@/composables/useNotificationBar"
 import type { Comment } from "@/schemas/Comment"
 import type { EntryType } from "@/schemas/EntryType"
@@ -9,7 +9,7 @@ import { ref, watch } from "vue"
 import BaseDialog from "../util/BaseDialog.vue"
 import LoadingSpinner from "../util/LoadingSpinner.vue"
 
-const { visible, params, closeAddCommentDialog } = useAddCommentDialog()
+const { visible, params, closeEditCommentDialog } = useEditCommentDialog()
 const commentStore = useCommentStore()
 const { trigger } = useNotificationBar()
 
@@ -18,31 +18,42 @@ const showReviewType = ref(false)
 const selectedReviewType = ref<EntryType | null>(null)
 const loading = ref(false)
 
+watch(visible, (val) => {
+  if (val && params.value) {
+    content.value = params.value.oldContent
+    if (params.value.oldReviewType) {
+      showReviewType.value = true
+      selectedReviewType.value = params.value.oldReviewType
+    } else {
+      showReviewType.value = false
+      selectedReviewType.value = null
+    }
+  }
+})
+
 watch(showReviewType, (val) => {
   if (val) {
-    selectedReviewType.value = "achievement"
+    selectedReviewType.value = params.value!.oldReviewType
   } else {
     selectedReviewType.value = null
   }
 })
 
 const closeDialog = () => {
-  content.value = ""
-  showReviewType.value = false
-  closeAddCommentDialog()
+  closeEditCommentDialog()
 }
 
 const submit = async () => {
   if (!params.value) return
 
-  const commentBody: Omit<Comment, "id" | "entryId" | "createdAt"> | null = {
+  const commentBody: Omit<Comment, "id" | "entryId" | "createdAt"> = {
     content: content.value,
     reviewType: selectedReviewType.value,
   }
 
   loading.value = true
   try {
-    await commentStore.addComment(params.value.entryId, commentBody)
+    await commentStore.updateComment(params.value.commentId, commentBody)
     notify()
     closeDialog()
   } catch (err) {

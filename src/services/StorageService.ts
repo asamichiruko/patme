@@ -69,6 +69,15 @@ export class StorageService {
     return await this.commentRepo.create({ ...commentBody, entryId })
   }
 
+  async updateComment(
+    commentId: string,
+    newCommentBody: Omit<Comment, "id" | "entryId" | "createdAt">,
+  ): Promise<void> {
+    const oldComment = await this.commentRepo.get(commentId)
+    if (!oldComment) throw new Error(`comment ${commentId} not found`)
+    await this.commentRepo.update({ ...oldComment, ...newCommentBody })
+  }
+
   async getAllTags(): Promise<Tag[]> {
     return await this.tagRepo.getAll()
   }
