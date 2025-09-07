@@ -44,5 +44,16 @@ export const useCommentStore = defineStore("comment", () => {
     }
   }
 
-  return { initialize, reset, addComment, updateComment }
+  async function deleteComment(id: string): Promise<void> {
+    if (!storageService.value) {
+      throw new Error("StorageService has not been initialized")
+    }
+    try {
+      await storageService.value.deleteComment(id)
+    } catch (err) {
+      console.error("Failed to delete comment", err)
+    }
+  }
+
+  return { initialize, reset, addComment, updateComment, deleteComment }
 })

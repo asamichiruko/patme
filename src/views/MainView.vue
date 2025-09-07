@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import CommentFormDialog from "@/components/entry/CommentFormDialog.vue"
+import DeleteCommentDialog from "@/components/entry/DeleteCommentDialog.vue"
 import DeleteEntryDialog from "@/components/entry/DeleteEntryDialog.vue"
 import EntryFormDialog from "@/components/entry/EntryFormDialog.vue"
 import DeleteTagDialog from "@/components/tag/DeleteTagDialog.vue"
@@ -20,4 +21,5 @@ import { RouterView } from "vue-router"
   <TaggingDialog />
   <DeleteTagDialog />
   <DeleteEntryDialog />
+  <DeleteCommentDialog />
 </template>

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useCommentFormDialog } from "@/composables/useCommentFormDialog"
+import { useDeleteCommentDialog } from "@/composables/useDeleteCommentDialog"
 import { type Option } from "@/composables/useOptionMenu"
 import type { Comment } from "@/schemas/Comment"
 import type { Entry } from "@/schemas/Entry"
@@ -12,6 +13,7 @@ const props = defineProps<{
 }>()
 
 const { openCommentFormDialog } = useCommentFormDialog()
+const { openDeleteCommentDialog } = useDeleteCommentDialog()
 
 const reviewTypeLabels = {
   achievement: "よかったこと",
@@ -35,6 +37,8 @@ const handleOptionSelect = (option: Option, params: Record<string, unknown>) => 
       initialContent: comment.content,
       initialReviewType: comment.reviewType ?? undefined,
     })
+  } else if (option.value === "delete") {
+    openDeleteCommentDialog({ id: comment.id })
   }
 }
 </script>
