@@ -201,7 +201,7 @@ describe("EntryList.vue", () => {
     expect(renderedItems).toEqual(["entry incomplete reviewed", "entry incomplete"])
   })
 
-  test("フィルタが「受け入れたこと」のとき accepted である entries が表示される", async () => {
+  test("フィルタが「気づいたこと」のとき accepted である entries が表示される", async () => {
     render(EntryList, {
       global: {
         plugins: [
@@ -218,7 +218,7 @@ describe("EntryList.vue", () => {
       },
     })
 
-    const filterOptionAll = screen.getByRole("radio", { name: /受け入れたこと/i })
+    const filterOptionAll = screen.getByRole("radio", { name: /気づいたこと/i })
     await fireEvent.click(filterOptionAll)
 
     const items = await screen.findAllByText(/entry/i)

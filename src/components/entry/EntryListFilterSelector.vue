@@ -11,7 +11,7 @@ const options = [
   { value: "reviewed", label: "ふりかえり済み" },
   { value: "achievement", label: "よかったこと" },
   { value: "incomplete", label: "ふりかえりたいこと" },
-  { value: "accepted", label: "受け入れたこと" },
+  { value: "accepted", label: "気づいたこと" },
 ]
 
 const localValue = ref(props.modelValue)

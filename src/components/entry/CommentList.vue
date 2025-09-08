@@ -18,7 +18,7 @@ const { openDeleteCommentDialog } = useDeleteCommentDialog()
 const reviewTypeLabels = {
   achievement: "よかったこと",
   incomplete: "ふりかえりたいこと",
-  accepted: "受け入れたこと",
+  accepted: "気づいたこと",
 }
 
 const menuOptions = [

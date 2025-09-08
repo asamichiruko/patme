@@ -17,7 +17,7 @@ const localValue = computed({
 const options: { value: EntryType; label: string; hint: string }[] = [
   { value: "achievement", label: "よかったこと", hint: "成功・努力・喜び" },
   { value: "incomplete", label: "ふりかえりたいこと", hint: "失敗・後悔・つまずき" },
-  { value: "accepted", label: "受け入れたこと", hint: "客観的な感想" },
+  { value: "accepted", label: "気づいたこと", hint: "客観的な感想" },
 ]
 </script>
 
