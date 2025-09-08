@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useOptionMenu, type Option, type OptionHandler } from "@/composables/useOptionMenu"
+import { ref } from "vue"
 
 const { showMenu } = useOptionMenu()
 
@@ -9,13 +10,23 @@ const props = defineProps<{
   params: Record<string, unknown>
 }>()
 
-const openMenu = (e: MouseEvent) => {
-  showMenu(props.options, { x: e.clientX, y: e.clientY }, props.handler, props.params)
+const buttonElement = ref<HTMLButtonElement | null>(null)
+
+const openMenu = (e: Event) => {
+  e.preventDefault()
+  const rect = buttonElement.value!.getBoundingClientRect()
+  showMenu(
+    props.options,
+    { x: rect.left, y: rect.bottom },
+    props.handler,
+    props.params,
+    buttonElement.value,
+  )
 }
 </script>
 
 <template>
-  <button type="button" class="option-menu-button" @click="openMenu">
+  <button type="button" class="option-menu-button" @click="openMenu" ref="buttonElement">
     <svg
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 24 24"
@@ -34,7 +45,12 @@ const openMenu = (e: MouseEvent) => {
 
 <style scoped>
 .option-menu-button {
-  background: none;
   cursor: pointer;
+}
+.option-menu-button:focus-visible {
+  outline-offset: 2px;
+  border-radius: 4px;
+  outline-width: 2px;
+  outline: 2px solid var(--color-border);
 }
 </style>

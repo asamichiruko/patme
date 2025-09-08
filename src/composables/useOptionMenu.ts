@@ -9,12 +9,14 @@ const options = ref<Option[]>([])
 const position = ref({ x: 0, y: 0 })
 const handler = ref<OptionHandler | null>(null)
 const params = ref<Record<string, unknown>>({})
+const triggerElement = ref<HTMLElement | null>(null)
 
 const showMenu = (
   menuOptions: Option[],
   menuPosition: Position,
   optionHandler: OptionHandler,
   menuParams: Record<string, unknown>,
+  trigger?: HTMLElement | null,
 ) => {
   if (isVisible.value) {
     isVisible.value = false
@@ -24,11 +26,14 @@ const showMenu = (
   position.value = menuPosition
   handler.value = optionHandler
   params.value = menuParams
+  triggerElement.value = trigger ?? null
   isVisible.value = true
 }
 
 const hideMenu = () => {
   isVisible.value = false
+  triggerElement.value?.focus()
+  triggerElement.value = null
 }
 
 const executeHandler = (option: Option) => {
@@ -53,6 +58,7 @@ export function useOptionMenu() {
     options,
     position,
     showMenu,
+    hideMenu,
     executeHandler,
     handleDocumentClick,
   }
