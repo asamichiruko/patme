@@ -8,6 +8,7 @@ import SignUpView from "@/views/SignUpView.vue"
 import ResetPasswordView from "@/views/ResetPasswordView.vue"
 import VerifyEmailView from "@/views/VerifyEmailView.vue"
 import AccountSettingsView from "@/views/AccountSettingsView.vue"
+import TagView from "@/views/TagView.vue"
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -57,6 +58,11 @@ const routes: Array<RouteRecordRaw> = [
         path: "/entry",
         name: "entry",
         component: EntryFormAndListView,
+      },
+      {
+        path: "/tags",
+        name: "tags",
+        component: TagView,
       },
       {
         path: "/settings",

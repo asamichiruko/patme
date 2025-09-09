@@ -7,7 +7,18 @@ import DeleteTagDialog from "@/components/tag/DeleteTagDialog.vue"
 import TaggingDialog from "@/components/tag/TaggingDialog.vue"
 import PageHeader from "@/components/util/PageHeader.vue"
 import TabNavigation from "@/components/util/TabNavigation.vue"
+import { useEntryStore } from "@/stores/useEntryStore"
+import { subscribe } from "@/utils/storageNotifier"
+import { onMounted } from "vue"
 import { RouterView } from "vue-router"
+
+const entryStore = useEntryStore()
+
+onMounted(async () => {
+  subscribe(async () => {
+    await entryStore.fetchEntriesWithRelations()
+  })
+})
 </script>
 
 <template>

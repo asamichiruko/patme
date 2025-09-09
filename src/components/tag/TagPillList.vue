@@ -1,14 +1,19 @@
 <script setup lang="ts">
 import type { Tag } from "@/schemas/Tag"
+import { computed } from "vue"
 
 const props = defineProps<{
   tags: Tag[]
 }>()
+
+const sortedTags = computed(() => {
+  return props.tags.toSorted((a, b) => a.sortOrder - b.sortOrder)
+})
 </script>
 
 <template>
   <ul class="tags" v-if="props.tags.length !== 0">
-    <li class="tag-label" v-for="tag in props.tags" :key="tag.id"># {{ tag.title }}</li>
+    <li class="tag-label" v-for="tag in sortedTags" :key="tag.id"># {{ tag.title }}</li>
   </ul>
 </template>
 
@@ -19,7 +24,7 @@ const props = defineProps<{
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin-bottom: 24px;
+  margin: 0 0 24px;
 }
 .tag-label {
   color: var(--color-tag-text);

@@ -34,7 +34,6 @@ export const useEntryStore = defineStore("entry", () => {
     }
     try {
       const id = await storageService.value.createEntry(entryBody)
-      await fetchEntriesWithRelations()
       return id
     } catch (err) {
       console.error("Failed to create entry", err)
@@ -63,7 +62,6 @@ export const useEntryStore = defineStore("entry", () => {
     }
     try {
       await storageService.value.updateEntry(id, entryBody)
-      await fetchEntriesWithRelations()
     } catch (err) {
       console.error("Failed to update entry", err)
     }
@@ -75,7 +73,6 @@ export const useEntryStore = defineStore("entry", () => {
     }
     try {
       await storageService.value.updateEntryTags(id, tagIds)
-      await fetchEntriesWithRelations()
     } catch (err) {
       console.error("Failed to update entry tags", err)
     }
@@ -87,7 +84,6 @@ export const useEntryStore = defineStore("entry", () => {
     }
     try {
       await storageService.value.deleteEntry(id)
-      await fetchEntriesWithRelations()
     } catch (err) {
       console.error("Failed to delete entry", err)
     }

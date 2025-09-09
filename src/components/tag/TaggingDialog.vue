@@ -8,26 +8,25 @@ import { notify } from "@/utils/storageNotifier"
 import { nextTick, ref, watch } from "vue"
 import BaseDialog from "../util/BaseDialog.vue"
 import LoadingSpinner from "../util/LoadingSpinner.vue"
+import TagSelector from "./TagSelector.vue"
 
 const { visible, params, closeTaggingDialog } = useTaggingDialog()
 const { trigger } = useNotificationBar()
 const entryStore = useEntryStore()
 const tagStore = useTagStore()
 
-const tagListRef = ref<HTMLUListElement | null>(null)
-const selectedTagIds = ref<string[]>([])
+const selectedTagIds = ref<Set<string>>(new Set())
 const loading = ref(false)
 
 watch(visible, (val) => {
-  if (val) {
-    if (!params.value) return
-    selectedTagIds.value = [...params.value.tagIds]
+  if (val && params.value) {
+    selectedTagIds.value = new Set(params.value.tagIds)
   }
 })
 
 const handleTagCreated = async (tagId: string) => {
-  if (!selectedTagIds.value.includes(tagId)) {
-    selectedTagIds.value.push(tagId)
+  if (!selectedTagIds.value.has(tagId)) {
+    selectedTagIds.value.add(tagId)
   }
   await nextTick(() => {
     const added = document.querySelector(`.tag[tag-id='${tagId}']`)
@@ -44,7 +43,7 @@ const submit = async () => {
   if (!params.value) return
   try {
     loading.value = true
-    await entryStore.updateEntryTags(params.value.entryId, selectedTagIds.value)
+    await entryStore.updateEntryTags(params.value.entryId, [...selectedTagIds.value])
     notify()
     closeTaggingDialog()
   } catch (err) {
@@ -59,15 +58,6 @@ const cancel = () => {
   if (loading.value) return
   closeTaggingDialog()
 }
-
-const toggleSelectedState = (id: string) => {
-  const idx = selectedTagIds.value.indexOf(id)
-  if (idx === -1) {
-    selectedTagIds.value.push(id)
-  } else {
-    selectedTagIds.value.splice(idx, 1)
-  }
-}
 </script>
 
 <template>
@@ -76,19 +66,7 @@ const toggleSelectedState = (id: string) => {
       <h2>タグの割り当て</h2>
     </template>
     <p>割り当てるタグを選んでください</p>
-    <ul class="tag-list" ref="tagListRef">
-      <li v-for="tag in tagStore.tags" :key="tag.id">
-        <button
-          :class="['tag', { selected: selectedTagIds.includes(tag.id) }]"
-          :aria-pressed="selectedTagIds.includes(tag.id)"
-          type="button"
-          @click="toggleSelectedState(tag.id)"
-          :tag-id="tag.id"
-        >
-          {{ tag.title }}
-        </button>
-      </li>
-    </ul>
+    <TagSelector :tags="tagStore.tags" v-model="selectedTagIds" />
     <TagCreateInlineForm @tag-created="handleTagCreated" labeltext="タグを追加" />
     <template #actions>
       <button class="sub-button" type="button" @click="cancel">キャンセル</button>

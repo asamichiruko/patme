@@ -16,7 +16,8 @@ export const useTagStore = defineStore("tag", () => {
       throw new Error("StorageService has not been initialized")
     }
     try {
-      tags.value = await storageService.value.getAllTags()
+      const fetchedTags = await storageService.value.getAllTags()
+      tags.value = fetchedTags.toSorted((a, b) => a.sortOrder - b.sortOrder)
     } catch (err) {
       console.error("Failed to fetch tags", err)
     }
@@ -73,9 +74,9 @@ export const useTagStore = defineStore("tag", () => {
     if (!storageService.value) {
       throw new Error("StorageService has not been initialized")
     }
+    tags.value = orderedTags
     try {
       await storageService.value.reorderTags(orderedTags)
-      await fetchTags()
     } catch (err) {
       console.error("Failed to reorder tags", err)
     }

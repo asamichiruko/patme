@@ -14,6 +14,9 @@ const isActive = (path: string) => route.path === path
     >
       ホーム
     </RouterLink>
+    <RouterLink :to="{ name: 'tags' }" class="tab-button" :class="{ active: isActive('/tags') }">
+      タグ
+    </RouterLink>
     <RouterLink
       :to="{ name: 'settings' }"
       class="tab-button"
