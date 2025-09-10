@@ -27,7 +27,6 @@ const handleAddComment = async () => {
   openCommentFormDialog({
     action: "create",
     entryId: props.entry.id,
-    entryType: props.entry.entryType,
   })
 }
 
@@ -67,7 +66,7 @@ const handleOptionSelect = (option: Option) => {
     <div class="achievement-header">
       <div class="entry-type-label">
         <span class="entry-type">{{ entryTypeLabel[props.entry.entryType] }}</span>
-        <small v-if="props.entry.reviewedCount > 0">（再評価済み）</small>
+        <small v-if="props.entry.reviewedCount > 0">（分類コメントあり）</small>
       </div>
       <OptionMenuButton
         class="option-menu-button"

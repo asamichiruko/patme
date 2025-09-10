@@ -118,7 +118,7 @@ describe("EntryList.vue", () => {
     ])
   })
 
-  test("フィルタが「ふりかえり済み」のとき reviewed である entries が表示される", async () => {
+  test("フィルタが「分類コメントあり」のとき reviewed である entries が表示される", async () => {
     render(EntryList, {
       global: {
         plugins: [
@@ -135,7 +135,7 @@ describe("EntryList.vue", () => {
       },
     })
 
-    const filterOptionReviewed = screen.getByRole("radio", { name: /ふりかえり済み/i })
+    const filterOptionReviewed = screen.getByRole("radio", { name: /分類コメントあり/i })
     await fireEvent.click(filterOptionReviewed)
 
     const items = await screen.findAllByText(/entry/i)

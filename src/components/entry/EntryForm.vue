@@ -49,7 +49,7 @@ const submit = async () => {
 
 <template>
   <form @submit.prevent="submit">
-    <div class="header-label">記録の評価（種類）</div>
+    <div class="header-label">記録の分類</div>
     <EntryTypeSelector v-model="entryType" :show-hint="true" />
     <label>
       <div class="header-label">記録する内容</div>

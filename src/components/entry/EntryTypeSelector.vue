@@ -5,7 +5,6 @@ import { computed } from "vue"
 const props = defineProps<{
   modelValue: EntryType
   showHint: boolean
-  initialType?: EntryType
 }>()
 const emit = defineEmits(["update:modelValue"])
 
@@ -16,8 +15,8 @@ const localValue = computed({
 
 const options: { value: EntryType; label: string; hint: string }[] = [
   { value: "achievement", label: "嬉しい", hint: "成功・努力・喜び" },
-  { value: "incomplete", label: "モヤモヤ", hint: "失敗・後悔・つまずき" },
-  { value: "accepted", label: "気づき", hint: "客観的な感想" },
+  { value: "incomplete", label: "モヤモヤ", hint: "失敗・後悔・不安" },
+  { value: "accepted", label: "気づき", hint: "事実・客観的な感想" },
 ]
 </script>
 
@@ -34,11 +33,6 @@ const options: { value: EntryType; label: string; hint: string }[] = [
         <div v-if="props.showHint" class="entry-type-hint">
           {{ option.hint }}
         </div>
-        <div>
-          <small v-if="props.initialType && option.value === props.initialType">
-            （元の記録と同じ評価）
-          </small>
-        </div>
       </div>
     </label>
   </div>
@@ -54,11 +48,13 @@ const options: { value: EntryType; label: string; hint: string }[] = [
 
 input[type="radio"] {
   margin: 0;
+  margin-right: 4px;
   padding: 0;
 }
 .entry-type-option {
   display: flex;
   flex-direction: row;
+  width: fit-content;
   gap: 8px;
   padding: 6px 12px;
   border: 2px solid transparent;
@@ -66,9 +62,7 @@ input[type="radio"] {
   background-color: var(--color-bg);
   cursor: pointer;
   font-size: 16px;
-  width: 180px;
 }
-
 .entry-type-option.achievement {
   background-color: var(--color-entry-type-achievement-bg);
   border-color: var(--color-entry-type-achievement-border);

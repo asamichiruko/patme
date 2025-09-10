@@ -89,15 +89,11 @@ const cancel = () => {
       </label>
       <label>
         <input type="checkbox" v-model="showReviewType" />
-        記録の再評価（改めてふりかえる）
+        コメントに分類をつける
       </label>
       <fieldset v-if="showReviewType">
-        <legend class="label-header">新しい評価</legend>
-        <EntryTypeSelector
-          v-model="selectedReviewType"
-          :show-hint="false"
-          :initial-type="params?.entryType"
-        />
+        <legend class="label-header">コメントの分類</legend>
+        <EntryTypeSelector v-model="selectedReviewType" :show-hint="false" />
       </fieldset>
     </div>
     <template #actions>

@@ -33,7 +33,6 @@ const handleOptionSelect = (option: Option, params: Record<string, unknown>) => 
       action: "update",
       commentId: comment.id,
       entryId: props.entry.id,
-      entryType: props.entry.entryType,
       initialContent: comment.content,
       initialReviewType: comment.reviewType ?? undefined,
     })
@@ -52,7 +51,7 @@ const handleOptionSelect = (option: Option, params: Record<string, unknown>) => 
         :key="comment.id"
       >
         <div v-if="comment.reviewType" class="reviewed-message">
-          {{ reviewTypeLabels[comment.reviewType] }} として再評価
+          {{ reviewTypeLabels[comment.reviewType] }}
         </div>
         <div class="comment-content">{{ comment.content }}</div>
         <div class="comment-footer">

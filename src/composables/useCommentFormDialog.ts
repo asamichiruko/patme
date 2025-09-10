@@ -4,7 +4,6 @@ import { useDialog } from "./useDialog"
 export interface CommentFormParams {
   action: "create" | "update"
   entryId: string
-  entryType: EntryType
   commentId?: string
   initialContent?: string
   initialReviewType?: EntryType

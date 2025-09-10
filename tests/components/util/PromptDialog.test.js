@@ -96,16 +96,16 @@ describe("PromptDialog.vue", () => {
     expect(closePromptMock).toHaveBeenCalledWith({ content: "text", reviewType: "achievement" })
   })
 
-  test("チェックボックスを使って再評価欄を開閉できる", async () => {
+  test("チェックボックスを使ってコメントの分類を開閉できる", async () => {
     render(PromptDialog)
 
     isOpen.value = true
     await nextTick()
 
-    const reviewCheck = screen.getByLabelText(/記録の再評価/i)
+    const reviewCheck = screen.getByLabelText(/コメントの分類/i)
     await fireEvent.click(reviewCheck)
 
-    const reviewFormLabel = screen.getByText(/新しい評価/i)
+    const reviewFormLabel = screen.getByText(/コメントの分類/i)
     expect(reviewFormLabel).toBeInTheDocument()
   })
 
@@ -115,7 +115,7 @@ describe("PromptDialog.vue", () => {
     isOpen.value = true
     await nextTick()
 
-    const reviewCheck = screen.getByLabelText(/記録の再評価/i)
+    const reviewCheck = screen.getByLabelText(/コメントの分類/i)
     await fireEvent.click(reviewCheck)
 
     let achievementRadio = screen.getByLabelText(/嬉しい/i)

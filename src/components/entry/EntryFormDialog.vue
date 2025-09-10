@@ -73,12 +73,8 @@ const cancel = () => {
     </template>
     <div class="comment-container">
       <fieldset>
-        <legend class="label-header">記録の評価（種類）</legend>
-        <EntryTypeSelector
-          v-model="selectedEntryType"
-          :show-hint="false"
-          :initial-type="params?.initialEntryType"
-        />
+        <legend class="label-header">記録の分類</legend>
+        <EntryTypeSelector v-model="selectedEntryType" :show-hint="false" />
       </fieldset>
       <label>
         <div class="label-header">記録する内容</div>
