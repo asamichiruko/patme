@@ -23,7 +23,8 @@ const toggleSelectedState = (id: string) => {
 </script>
 
 <template>
-  <ul class="tag-list">
+  <p class="empty-state" v-if="props.tags.length === 0">タグがありません</p>
+  <ul class="tag-list" v-else>
     <li v-for="tag in props.tags" :key="tag.id">
       <button
         :class="['tag', { selected: localValue.has(tag.id) }]"
@@ -39,6 +40,12 @@ const toggleSelectedState = (id: string) => {
 </template>
 
 <style scoped>
+.empty-state {
+  text-align: center;
+  padding: 16px 0;
+  color: var(--color-subtext);
+}
+
 .tag-list {
   list-style-type: none;
   padding: 16px 0;
