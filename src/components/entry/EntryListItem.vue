@@ -36,9 +36,9 @@ const handleUpdateTagging = async () => {
 }
 
 const entryTypeLabel = {
-  achievement: "よかったこと",
-  incomplete: "ふりかえりたいこと",
-  accepted: "気づいたこと",
+  achievement: "嬉しい",
+  incomplete: "モヤモヤ",
+  accepted: "気づき",
 }
 
 const menuOptions = [

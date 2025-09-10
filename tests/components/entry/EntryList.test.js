@@ -148,7 +148,7 @@ describe("EntryList.vue", () => {
     ])
   })
 
-  test("フィルタが「よかったこと」のとき achievement である entries が表示される", async () => {
+  test("フィルタが「嬉しい」のとき achievement である entries が表示される", async () => {
     render(EntryList, {
       global: {
         plugins: [
@@ -165,7 +165,7 @@ describe("EntryList.vue", () => {
       },
     })
 
-    const filterOptionAll = screen.getByRole("radio", { name: /よかったこと/i })
+    const filterOptionAll = screen.getByRole("radio", { name: /嬉しい/i })
     await fireEvent.click(filterOptionAll)
 
     const items = await screen.findAllByText(/entry/i)
@@ -174,7 +174,7 @@ describe("EntryList.vue", () => {
     expect(renderedItems).toEqual(["entry achievement reviewed", "entry achievement"])
   })
 
-  test("フィルタが「ふりかえりたいこと」のとき incomplete である entries が表示される", async () => {
+  test("フィルタが「モヤモヤ」のとき incomplete である entries が表示される", async () => {
     render(EntryList, {
       global: {
         plugins: [
@@ -191,7 +191,7 @@ describe("EntryList.vue", () => {
       },
     })
 
-    const filterOptionAll = screen.getByRole("radio", { name: /ふりかえりたいこと/i })
+    const filterOptionAll = screen.getByRole("radio", { name: /モヤモヤ/i })
     await fireEvent.click(filterOptionAll)
 
     const items = await screen.findAllByText(/entry/i)
@@ -201,7 +201,7 @@ describe("EntryList.vue", () => {
     expect(renderedItems).toEqual(["entry incomplete reviewed", "entry incomplete"])
   })
 
-  test("フィルタが「気づいたこと」のとき accepted である entries が表示される", async () => {
+  test("フィルタが「気づき」のとき accepted である entries が表示される", async () => {
     render(EntryList, {
       global: {
         plugins: [
@@ -218,7 +218,7 @@ describe("EntryList.vue", () => {
       },
     })
 
-    const filterOptionAll = screen.getByRole("radio", { name: /気づいたこと/i })
+    const filterOptionAll = screen.getByRole("radio", { name: /気づき/i })
     await fireEvent.click(filterOptionAll)
 
     const items = await screen.findAllByText(/entry/i)

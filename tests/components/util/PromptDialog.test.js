@@ -118,8 +118,8 @@ describe("PromptDialog.vue", () => {
     const reviewCheck = screen.getByLabelText(/記録の再評価/i)
     await fireEvent.click(reviewCheck)
 
-    let achievementRadio = screen.getByLabelText(/よかったこと/i)
-    let incompleteRadio = screen.getByLabelText(/ふりかえりたいこと/i)
+    let achievementRadio = screen.getByLabelText(/嬉しい/i)
+    let incompleteRadio = screen.getByLabelText(/モヤモヤ/i)
     await fireEvent.click(incompleteRadio)
     expect(achievementRadio).not.toBeChecked()
     expect(incompleteRadio).toBeChecked()
@@ -128,8 +128,8 @@ describe("PromptDialog.vue", () => {
     await fireEvent.click(reviewCheck)
     await fireEvent.click(reviewCheck)
 
-    achievementRadio = screen.getByLabelText(/よかったこと/i)
-    incompleteRadio = screen.getByLabelText(/ふりかえりたいこと/i)
+    achievementRadio = screen.getByLabelText(/嬉しい/i)
+    incompleteRadio = screen.getByLabelText(/モヤモヤ/i)
     expect(achievementRadio).toBeChecked()
     expect(incompleteRadio).not.toBeChecked()
   })

@@ -9,9 +9,9 @@ const props = defineProps<{
 const options = [
   { value: "all", label: "すべて" },
   { value: "reviewed", label: "ふりかえり済み" },
-  { value: "achievement", label: "よかったこと" },
-  { value: "incomplete", label: "ふりかえりたいこと" },
-  { value: "accepted", label: "気づいたこと" },
+  { value: "achievement", label: "嬉しい" },
+  { value: "incomplete", label: "モヤモヤ" },
+  { value: "accepted", label: "気づき" },
 ]
 
 const localValue = ref(props.modelValue)

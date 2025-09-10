@@ -16,9 +16,9 @@ const { openCommentFormDialog } = useCommentFormDialog()
 const { openDeleteCommentDialog } = useDeleteCommentDialog()
 
 const reviewTypeLabels = {
-  achievement: "よかったこと",
-  incomplete: "ふりかえりたいこと",
-  accepted: "気づいたこと",
+  achievement: "嬉しい",
+  incomplete: "モヤモヤ",
+  accepted: "気づき",
 }
 
 const menuOptions = [

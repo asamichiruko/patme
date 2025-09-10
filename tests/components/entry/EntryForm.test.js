@@ -48,7 +48,7 @@ describe("EntryForm.vue", () => {
     const textarea = screen.getByLabelText(/記録する内容/i)
     await fireEvent.update(textarea, testAchievement.content)
 
-    const achievementRadio = screen.getByRole("radio", { name: /よかったこと/i })
+    const achievementRadio = screen.getByRole("radio", { name: /嬉しい/i })
     await fireEvent.click(achievementRadio)
 
     const button = screen.getByRole("button", { name: /記録する/i })
@@ -86,7 +86,7 @@ describe("EntryForm.vue", () => {
     const textarea = screen.getByLabelText(/記録する内容/i)
     await fireEvent.update(textarea, testAchievement.content)
 
-    const achievementRadio = screen.getByRole("radio", { name: /よかったこと/i })
+    const achievementRadio = screen.getByRole("radio", { name: /嬉しい/i })
     await fireEvent.click(achievementRadio)
 
     await fireEvent.keyDown(textarea, {
@@ -145,7 +145,7 @@ describe("EntryForm.vue", () => {
     const textarea = screen.getByLabelText(/記録する内容/i)
     await fireEvent.update(textarea, testAchievement.content)
 
-    const achievementRadio = screen.getByRole("radio", { name: /よかったこと/i })
+    const achievementRadio = screen.getByRole("radio", { name: /嬉しい/i })
     await fireEvent.click(achievementRadio)
 
     const button = screen.getByRole("button", { name: /記録する/i })
@@ -183,8 +183,8 @@ describe("EntryForm.vue", () => {
     const textarea = screen.getByLabelText(/記録する内容/i)
     await fireEvent.update(textarea, testAchievement.content)
 
-    const achievementRadio = screen.getByRole("radio", { name: /よかったこと/i })
-    const incompleteRadio = screen.getByRole("radio", { name: /ふりかえりたいこと/i })
+    const achievementRadio = screen.getByRole("radio", { name: /嬉しい/i })
+    const incompleteRadio = screen.getByRole("radio", { name: /モヤモヤ/i })
     await fireEvent.click(incompleteRadio)
 
     const button = screen.getByRole("button", { name: /記録する/i })
